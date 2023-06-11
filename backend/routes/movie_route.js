@@ -1,4 +1,5 @@
 const express = require("express");
+const { uploadOptions } = require("../multer/multer");
 const { addMovie,
     getMovies,
     getMovieById,
@@ -15,7 +16,7 @@ movieRoute.get('/movies',getMovies)
 movieRoute.get('/editmovie/:id',getMovieById)
 
 /** PUT Routes */
-movieRoute.put('/editedmovies/:id', updateMovieById);
+movieRoute.post('/editedmovies/:id',uploadOptions.single("image"), updateMovieById);
 
 
 module.exports =movieRoute;

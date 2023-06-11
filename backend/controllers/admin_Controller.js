@@ -196,7 +196,7 @@ const updateAdmin = async (req, res, next) => {
       
       const movies = admin.movies;
 
-      res.json({ message: "Users found", movies });;
+      res.json({ message: "movies found", movies });;
     } catch (error) {
       // Handle any errors that occur
       res.status(500).json({ message: "Failed to fetch movies" });
@@ -236,8 +236,9 @@ const updateAdmin = async (req, res, next) => {
         language,
         description,
       };
-      
+     
       if (req.file) {
+        console.log("file:",req.file);
         // Generate a URL for the uploaded image
         const imageUrl = `${BASE_URL}/${req.file.filename}`;
         // Store the image URL in the movie data
@@ -287,7 +288,7 @@ const updateAdmin = async (req, res, next) => {
           const movie = adminmovie.movies.find((movie) => movie._id.toString() === movieId);
           
           if (!movie) {
-            return res.status(404).json({ message: 'Invalid user ID' });
+            return res.status(404).json({ message: 'Invalid movie ID' });
           }
       
           

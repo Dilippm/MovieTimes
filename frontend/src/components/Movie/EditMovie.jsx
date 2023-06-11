@@ -1,35 +1,69 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { EditMovie } from '../../api-helpers/api-helpers'; // Import the EditMovie function from your API helpers file
+import { editMovie } from '../../api-helpers/api-helpers';
+import axios from 'axios';
+import BaseURL from '../../config';
 
-const MovieForm = ({ movie }) => {
-  const [open, setOpen] = React.useState(false);
-  const [movieData, setMovieData] = React.useState({
+function EditMovie({ movieId }) {
+  const [open, setOpen] = useState(false);
+  const [movieData, setMovieData] = useState({
     title: '',
     language: '',
     description: '',
     file: null,
   });
-  const [errors, setErrors] = React.useState({
+  const [errors, setErrors] = useState({
     title: '',
     language: '',
     description: '',
     file: '',
   });
+  const [movieDetails, setMovieDetails] = useState(null);
 
-  React.useEffect(() => {
-    setMovieData({
-      title: movie.title,
-      language: movie.language,
-      description: movie.description,
-      file: null,
-    });
-  }, [movie]);
+  useEffect(() => {
+    const fetchMovieDetails = async () => {
+      try {
+        const token = localStorage.getItem('admintoken');
+        const response = await axios.get(`${BaseURL}movie/editmovie/${movieId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        setMovieDetails(response.data.movie);
+  
+        // Set the initial file value if it exists
+        if (response.data.movie.postedUrl) {
+          setMovieData((prevData) => ({
+            ...prevData,
+            file: response.data.movie.postedUrl,
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to fetch movie details:', error);
+      }
+    };
+  
+    fetchMovieDetails();
+  }, [movieId]);
+  
+
+  useEffect(() => {
+    if (movieDetails) {
+      setMovieData((prevData) => ({
+        ...prevData,
+        title: movieDetails.title,
+        language: movieDetails.language,
+        description: movieDetails.description,
+        image: movieDetails.postedUrl,
+      }));
+    }
+  }, [movieDetails]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -40,11 +74,19 @@ const MovieForm = ({ movie }) => {
   };
 
   const handleInputChange = (event) => {
-    setMovieData({ ...movieData, [event.target.name]: event.target.value });
-  };
+    const { name, value, files } = event.target;
 
-  const handleFileChange = (event) => {
-    setMovieData({ ...movieData, file: event.target.files[0] });
+    if (name === 'file') {
+      setMovieData((prevData) => ({
+        ...prevData,
+        file: files[0], // Get the first file from the files array
+      }));
+    } else {
+      setMovieData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const validateInputs = () => {
@@ -86,8 +128,8 @@ const MovieForm = ({ movie }) => {
     }
 
     try {
-      // Call the EditMovie API helper function
-      const response = await EditMovie(movie.id, movieData, movieData.file);
+      const response = await editMovie(movieId, movieData, movieData.file);
+      console.log('response:', response);
       console.log('Movie edited successfully:', response);
 
       // Reset form fields and close the dialog
@@ -112,7 +154,7 @@ const MovieForm = ({ movie }) => {
   return (
     <div>
       <Button variant="contained" onClick={handleClickOpen} style={{ border: 'none', color: 'white' }}>
-        <b>EDIT </b>
+        <b>EDIT</b>
       </Button>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>EDIT MOVIE</DialogTitle>
@@ -159,6 +201,7 @@ const MovieForm = ({ movie }) => {
             error={!!errors.description}
             helperText={errors.description}
           />
+          <img src={movieData.image} width={'200px'} height={'200px'} alt="Movie Poster" />
           <TextField
             autoFocus
             margin="dense"
@@ -168,7 +211,7 @@ const MovieForm = ({ movie }) => {
             type="file"
             fullWidth
             variant="standard"
-            onChange={handleFileChange}
+            onChange={handleInputChange}
             error={!!errors.file}
             helperText={errors.file}
           />
@@ -180,6 +223,6 @@ const MovieForm = ({ movie }) => {
       </Dialog>
     </div>
   );
-};
+}
 
-export default MovieForm;
+export default EditMovie;
