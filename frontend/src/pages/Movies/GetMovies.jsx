@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
+import { ToastContainer,toast  } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import BaseURL from '../../config';
 import Header from '../../components/AdminHeader';
 import { getMovies } from '../../api-helpers/api-helpers';
 import AddMovie from '../../components/Movie/AddMovie';
-import { useNavigate } from 'react-router-dom';
-import EditMovie from '../../components/Movie/EditMovie';
 
+import EditMovie from '../../components/Movie/EditMovie';
+import MovieDetails from '../../components/Movie/ViewMovie';
+import ViewMovie from '../../components/Movie/ViewMovie';
 const GetMovies = () => {
-  const navigate = useNavigate();
+
   const [movies, setMovies] = useState([]);
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     getMovies()
@@ -46,12 +51,33 @@ const GetMovies = () => {
     }
   };
 
-  const handleEditMovie = (movie) => {
-    navigate(`/admin/editmovie/${movie._id}`);
+  const handleAddMovie = () => {
+    getMovies()
+      .then((data) => {
+        setMovies(data.movies);
+        toast.success('Movie Added Successfully'); // Display the success toast
+      })
+      .catch((err) => console.log(err));
   };
 
+  const handleEditMovie = () => {
+    getMovies()
+      .then((data) => {
+        setMovies(data.movies);
+        toast.success('Movie edited Successfully'); // Display the success toast
+      })
+      .catch((err) => console.log(err));
+  };
+  const handleViewMovie = (movie) => {
+    setSelectedMovie(movie);
+    setOpenDialog(true);
+  };
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
   return (
     <>
+     <ToastContainer /> 
       <Header />
 
       <Box>
@@ -59,7 +85,7 @@ const GetMovies = () => {
           <b>All Movies</b>
         </Typography>
         <Box marginTop={4} marginLeft={3}>
-          <AddMovie />
+          <AddMovie onAddMovie={handleAddMovie} />
         </Box>
 
         <Box width={'80%'} margin={'auto'}>
@@ -129,17 +155,21 @@ const GetMovies = () => {
                   >
                     {movie.status ? 'Listed' : 'Unlisted'}
                   </Button>
-                  <EditMovie movieId={movie._id} />
+                  <EditMovie movieId={movie._id} onEditMovie={handleEditMovie} />
                   <Button
-                    variant="contained"
-                    style={{ marginLeft: '5px', backgroundColor: 'ThreeDHighlight', color: 'white' }}
-                  >
-                    View
-                  </Button>
+                  variant="contained"
+                  style={{ marginLeft: '5px', backgroundColor: 'ThreeDHighlight', color: 'white' }}
+                  onClick={() => handleViewMovie(movie)}
+                >
+                  View
+                </Button>
+                <ViewMovie open={openDialog} handleClose={handleCloseDialog} movie={selectedMovie} />
                 </Box>
               </Box>
             </Box>
           ))}
+            <MovieDetails open={openDialog} handleClose={handleCloseDialog} movie={selectedMovie} />
+            
         </Box>
       </Box>
     </>

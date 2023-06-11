@@ -1,21 +1,16 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import { AddMovie } from '../../api-helpers/api-helpers'; // Import the AddMovie function from your API helpers file
+import React, { useState } from 'react';
+import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { AddMovie } from '../../api-helpers/api-helpers';
 
-const MovieForm = () => {
-  const [open, setOpen] = React.useState(false);
-  const [movieData, setMovieData] = React.useState({
+const MovieForm = ({ onAddMovie }) => {
+  const [open, setOpen] = useState(false);
+  const [movieData, setMovieData] = useState({
     title: '',
     language: '',
     description: '',
     file: null,
   });
-  const [errors, setErrors] = React.useState({
+  const [errors, setErrors] = useState({
     title: '',
     language: '',
     description: '',
@@ -77,11 +72,9 @@ const MovieForm = () => {
     }
 
     try {
-      // Call the AddMovie API helper function
       const response = await AddMovie(movieData, movieData.file);
       console.log('Movie added successfully:', response);
 
-      // Reset form fields and close the dialog
       setMovieData({
         title: '',
         language: '',
@@ -94,6 +87,11 @@ const MovieForm = () => {
         description: '',
         file: '',
       });
+
+      if (onAddMovie) {
+        onAddMovie();
+      }
+
       handleClose();
     } catch (error) {
       console.error('Failed to add movie:', error);
