@@ -275,4 +275,52 @@ export const updateOwnerProfile= async(data,image)=>{
     }
   };
  
- 
+
+  export const getMovieDetails = async (id) => {
+    try {
+      console.log("id:",id);
+      const token = localStorage.getItem('admintoken')
+      console.log("tokenadmin:",token);
+      const response = await axios.get(`${BaseURL}movie/editmovie/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  console.log("resdats:",response);
+      if (response.status === 200) {
+        return response.data.movie;
+      } else {
+        throw new Error('Failed to fetch movie details');
+      }
+    } catch (error) {
+      console.log(error);
+      throw new Error('Failed to fetch movie details');
+    }
+  };
+  
+export const editMovie = async (movieId, movieData,file) => {
+  try {
+   console.log("files",file);
+    const admintoken = localStorage.getItem('admintoken');
+    const formData = new FormData();
+      formData.append('image', file);
+      formData.append('admindata', JSON.stringify(movieData));
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${admintoken}`,
+        },
+        withCredentials: true,
+      };
+    const response = await axios.post(`${BaseURL}movie/editedmovies/${movieId}`, formData, config)
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error('Failed to edit movie');
+    }
+  } catch (error) {
+    console.error('Failed to edit movie:', error);
+    throw new Error('Failed to edit movie');
+  }
+};

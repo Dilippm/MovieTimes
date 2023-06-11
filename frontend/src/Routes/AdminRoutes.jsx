@@ -9,7 +9,7 @@ import AdminProtectedRoutes from './AdminProtectedRoutes';
 import GetMovies from '../pages/Movies/GetMovies';
 import AdminHeader from '../components/AdminHeader';
 import AddMovie from '../components/Movie/AddMovie';
-import EditMovie from '../pages/Movies/EditMovie';
+import EditMovie from '../components/Movie/EditMovie';
 const AdminRoutes = () => {
   return (
     <>

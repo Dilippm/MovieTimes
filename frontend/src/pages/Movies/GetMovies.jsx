@@ -6,12 +6,11 @@ import Header from '../../components/AdminHeader';
 import { getMovies } from '../../api-helpers/api-helpers';
 import AddMovie from '../../components/Movie/AddMovie';
 import { useNavigate } from 'react-router-dom';
+import EditMovie from '../../components/Movie/EditMovie';
 
 const GetMovies = () => {
-  const navigate =useNavigate();
+  const navigate = useNavigate();
   const [movies, setMovies] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(2);
 
   useEffect(() => {
     getMovies()
@@ -19,58 +18,38 @@ const GetMovies = () => {
       .catch((err) => console.log(err));
   }, []);
 
-  const handlePreviousPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
-  };
-
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-
-  const handleStatusChange = async (movieId) => {
+  const handleStatusChange = async (movie) => {
     try {
-      // Retrieve the token from localStorage
       const token = localStorage.getItem('admintoken');
-  
-      const response = await axios.post(`${BaseURL}admin/moviestatus/${movieId}`, null, {
+      const response = await axios.post(`${BaseURL}admin/moviestatus/${movie._id}`, null, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       if (response.status === 200) {
         const updatedStatus = response.data.movie.status;
-        setMovies((prevMovies) => {
-          const updatedMovie = prevMovies.map((movie) => {
-            if (movie._id === movieId) {
+        setMovies((prevMovies) =>
+          prevMovies.map((prevMovie) => {
+            if (prevMovie._id === movie._id) {
               return {
-                ...movie,
+                ...prevMovie,
                 status: updatedStatus,
               };
             }
-            return movie;
-          });
-          return updatedMovie;
-        });
+            return prevMovie;
+          })
+        );
       }
     } catch (error) {
       console.log(error);
     }
   };
-  
 
-  const getPaginatedMovies = () => {
-    const startIndex = (currentPage - 1) * perPage;
-    const endIndex = startIndex + perPage;
-    return movies.slice(startIndex, endIndex);
+  const handleEditMovie = (movie) => {
+    navigate(`/admin/editmovie/${movie._id}`);
   };
 
-  const totalPages = Math.ceil(movies.length / perPage);
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
-  const handleEditMovie = (movieId) => {
-    // Navigate to "/editmovie" path when the "Edit Movie" button is clicked
-    navigate(`/admin/editmovie/${movieId}`);
-  };
   return (
     <>
       <Header />
@@ -104,7 +83,6 @@ const GetMovies = () => {
                 <b>Language</b>
               </Typography>
             </Box>
-
             <Box flex={1}>
               <Typography variant="h4">
                 <b>Image</b>
@@ -117,7 +95,7 @@ const GetMovies = () => {
             </Box>
           </Box>
 
-          {getPaginatedMovies().map((movie, index) => (
+          {movies.map((movie, index) => (
             <Box
               key={index}
               display="flex"
@@ -138,51 +116,30 @@ const GetMovies = () => {
               <Box flex={1}>
                 <img src={movie.postedUrl} alt="Movie Poster" style={{ width: '100px', height: '100px' }} />
               </Box>
-
               <Box flex={0.75}>
-                <Box>
-                <Button
-  variant="outlined"
-  style={{
-    backgroundColor: movie.status ? 'green' : '#edb009',
-    color: 'white',
-    marginRight: '5px',
-  }}
-  onClick={() => handleStatusChange(movie._id)}
->
-  {movie.status ? 'Listed' : 'Unlisted'}
-</Button>
-
-<Button variant="contained" onClick={() => handleEditMovie(movie._id)}>
-                    Edit Movie
+                <Box display="flex" alignItems="center">
+                  <Button
+                    variant="outlined"
+                    style={{
+                      backgroundColor: movie.status ? 'green' : '#edb009',
+                      color: 'white',
+                      marginRight: '5px',
+                    }}
+                    onClick={() => handleStatusChange(movie)}
+                  >
+                    {movie.status ? 'Listed' : 'Unlisted'}
                   </Button>
-                  <Button variant="contained" style={{ marginLeft: '5px', backgroundColor: 'ThreeDHighlight', color: 'white' }}>
+                  <EditMovie movieId={movie._id} />
+                  <Button
+                    variant="contained"
+                    style={{ marginLeft: '5px', backgroundColor: 'ThreeDHighlight', color: 'white' }}
+                  >
                     View
                   </Button>
                 </Box>
               </Box>
             </Box>
           ))}
-
-          <Box display="flex" justifyContent="center" marginTop={4} marginBottom={10}>
-            <Button variant="contained" onClick={handlePreviousPage} disabled={currentPage === 1}>
-              Previous Page
-            </Button>
-            {pageNumbers.map((pageNumber) => (
-              <Button
-                key={pageNumber}
-                variant="outlined"
-                onClick={() => setCurrentPage(pageNumber)}
-                disabled={pageNumber === currentPage}
-                style={{ marginLeft: '10px' }}
-              >
-                {pageNumber}
-              </Button>
-            ))}
-            <Button variant="contained" onClick={handleNextPage} disabled={currentPage === totalPages} style={{ marginLeft: '10px' }}>
-              Next Page
-            </Button>
-          </Box>
         </Box>
       </Box>
     </>
