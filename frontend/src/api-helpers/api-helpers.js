@@ -25,7 +25,7 @@ export const sendUserAuthRequest = async (data) => {
       email: data.email,
       password: data.password
     });
-
+    
     const resData = res.data;
     return resData;
   } catch (err) {

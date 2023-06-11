@@ -22,10 +22,13 @@ const App = () => {
   const dispatch = useDispatch();
   const isAdminLoggedIn = useSelector((state) => state.admin.isLoggedIn);
   const isUserLoggedIn = useSelector((state) => state.user.isLoggedIn);
+ 
   const isOwnerLoggedIn = useSelector((state) => state.owner.isLoggedIn);
   console.log("isAdminLoggedin", isAdminLoggedIn);
   console.log("isUserLoggedin", isUserLoggedIn);
   console.log("isOwnerLoggedin", isOwnerLoggedIn);
+  
+
 
   useEffect(() => {
     if (localStorage.getItem("userId")) {
