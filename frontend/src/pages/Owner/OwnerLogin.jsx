@@ -29,12 +29,16 @@ const OwnerLogin = () => {
     e.preventDefault();
     try {
       const resData = await ownerLogin(inputs);
+      
       if (resData) {
         // Login success
         dispatch(ownerActions.login())
-      localStorage.setItem("ownerId",resData.id,resData.token)
+      localStorage.setItem("ownerId",resData.id)
+      localStorage.setItem("ownertoken",resData.token)
+      localStorage.setItem("ownername",resData.name)
+      localStorage.setItem("ownerimage",resData.image)
         toast.success(resData.message);
-        navigate('/owner_home');
+        navigate('/owner/home');
       }
     } catch (err) {
       console.log(err);

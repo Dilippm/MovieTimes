@@ -62,7 +62,8 @@ const AdminHeader = () => {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
   const theme = useTheme();
-
+let adminName =localStorage.getItem("adminname");
+let adminImage =localStorage.getItem("adminimage");
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -94,6 +95,15 @@ const AdminHeader = () => {
           <Typography variant="h3" noWrap component="div">
             MovieTime
           </Typography>
+         
+          <Button variant="outlined"sx={{marginLeft:"1100px" ,color:"white"}} >
+  <Typography variant="h5" noWrap component="div">
+    {adminName}
+  </Typography>
+</Button>
+
+       
+          
           <Tabs
   textColor="white"
   indicatorColor="secondary"
@@ -136,8 +146,8 @@ const AdminHeader = () => {
         </DrawerHeader>
          {/* Profile Picture */}
          <ListItem disablePadding sx={{ marginBottom: '50px', marginLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-  <Avatar alt="Profile Picture" src="/path/to/profile-picture.jpg" sx={{ width: '80px', height: '80px', marginBottom: '10px' }} />
-  <ListItemText primary="John Doe" primaryTypographyProps={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }} />
+  <Avatar alt="Profile Picture" src={adminImage} sx={{ width: '80px', height: '80px', marginBottom: '10px' }} />
+  <ListItemText primary={adminName} primaryTypographyProps={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }} />
 </ListItem>
 
         <List

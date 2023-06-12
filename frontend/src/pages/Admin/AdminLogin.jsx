@@ -29,9 +29,12 @@ const AdminLogin = () => {
   e.preventDefault();
   try {
     const resData = await adminLogin(inputs); 
+    console.log("admindata:",resData);
     if (resData) {
       dispatch(adminActions.login())
       localStorage.setItem("adminId",resData.id,resData.token)
+      localStorage.setItem("adminname",resData.name)
+      localStorage.setItem("adminimage",resData.image)
       // Login success
       toast.success(resData.message);
       navigate('/admin_home');

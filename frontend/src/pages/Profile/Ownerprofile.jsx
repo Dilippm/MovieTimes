@@ -38,12 +38,12 @@ const OwnerProfile = () => {
       const resData = await updateOwnerProfile(state.owner, imageFile);
       if (resData) {
         toast.success("Profile updated successfully");
-        navigate('/ownerprofile');
+        navigate('/owner/ownerprofile');
       }
     } catch (error) {
       console.log(error);
       toast.error("Failed to update profile");
-      navigate('/ownerprofile');
+      navigate('/owner/ownerprofile');
     }
   };
 

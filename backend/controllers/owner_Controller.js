@@ -66,9 +66,10 @@ const ownerLogin = async (req,res,next)=>{
             .json({error: "email or password wrong"})
     }
     const token = jwt.sign({id:owner._id},jwtSecret,{expiresIn:"1d"})
+    
     return res
         .status(200)
-        .json({message: "Login successfull",token,id:owner._id});
+        .json({message: "Login successfull",token,id:owner._id,name:owner.name,image:owner.image});
 
 }
 const getOwner =async(req,res,next)=>{

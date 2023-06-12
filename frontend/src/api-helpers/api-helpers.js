@@ -60,7 +60,7 @@ export const adminLogin = async (data) => {
     });
 
     const resData = res.data;
-    console.log("resData admin:" ,resData);
+   
     localStorage.setItem("admintoken",resData.token)
     return resData;
   } catch (err) {
@@ -80,8 +80,9 @@ export const ownerLogin = async(data)=>{
       password: data.password,
       
     });
-
+      
     const resData = res.data;
+    
     return resData;
   } catch (err) {
     console.log(err);
