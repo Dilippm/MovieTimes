@@ -38,12 +38,12 @@ const AdminProfile = () => {
       const resData = await updateAdminProfile(state.admin, imageFile);
       if (resData) {
         toast.success("Profile updated successfully");
-        navigate('/adminprofile');
+        navigate('/admin/adminprofile');
       }
     } catch (error) {
       console.log(error);
       toast.error("Failed to update profile");
-      navigate('/adminprofile');
+      navigate('/admin/adminprofile');
     }
   };
 

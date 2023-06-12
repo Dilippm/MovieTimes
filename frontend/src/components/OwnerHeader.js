@@ -55,8 +55,8 @@ const OwnerHeader = () => {
     { text: 'Dashboard', route: '/owner/home' },
     { text: 'Banner', route: '/admin' },
     { text: 'User', route: '/admin_user' },
-    { text: 'Theater', route: '/admin_theater' },
-    { text: 'Movie', route: '/admin_movie' },
+    { text: 'Theater', route: '/owner/owner_theater' },
+    { text: 'Movie', route: '/owner/owner_movies' },
     { text: 'Revenue Report', route: '/admin_report' },
   ];
   const [open, setOpen] = useState(false);
@@ -94,11 +94,14 @@ const OwnerHeader = () => {
           <Typography variant="h3" noWrap component="div">
             MovieTime
           </Typography>
-          <Button variant="outlined"sx={{marginLeft:"1100px" ,color:"white"}} >
-  <Typography variant="h5" noWrap component="div">
-    {ownername}
-  </Typography>
-</Button>
+          {
+            ownername && <Button variant="outlined"sx={{marginLeft:"1100px" ,color:"white"}} >
+            <Typography variant="h5" noWrap component="div">
+              {ownername} 
+            </Typography>
+          </Button>
+          }
+          
           <Tabs
   textColor="white"
   indicatorColor="secondary"

@@ -3,10 +3,16 @@ import BaseURL from '../config'
 
 
 
+/**Owner side get movie */
 export const getAllMovies = async () => {
   try {
-    const res = await axios.get(`${BaseURL}movie/movies`);
-    console.log("resdatmves",res);
+    const ownerToken = localStorage.getItem("ownertoken"); 
+    const res = await axios.get(`${BaseURL}movie/movies`, {
+      headers: {
+        Authorization: `Bearer ${ownerToken}` 
+      }
+    });
+    console.log("resdatmves", res);
     if (res.status !== 200) {
       console.log('No Data');
       return null;
@@ -18,6 +24,7 @@ export const getAllMovies = async () => {
     return null;
   }
 };
+
 /** user Login */
 export const sendUserAuthRequest = async (data) => {
   try {
@@ -95,6 +102,7 @@ export const ownerLogin = async(data)=>{
 /**Owner Register */
 export const OwnerSignup = async(data)=>{
   try {
+    
     const res = await axios.post(`${BaseURL}owner/register`, {
       name:data.name,
       email: data.email,
@@ -103,6 +111,7 @@ export const OwnerSignup = async(data)=>{
     });
 
     const resData = res.data;
+  
     return resData;
   } catch (err) {
     console.log(err);
@@ -276,18 +285,18 @@ export const updateOwnerProfile= async(data,image)=>{
     }
   };
  
-
+/**Specific Movie */
   export const getMovieDetails = async (id) => {
     try {
       console.log("id:",id);
       const token = localStorage.getItem('admintoken')
-      console.log("tokenadmin:",token);
+      
       const response = await axios.get(`${BaseURL}movie/editmovie/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  console.log("resdats:",response);
+
       if (response.status === 200) {
         return response.data.movie;
       } else {
@@ -298,7 +307,7 @@ export const updateOwnerProfile= async(data,image)=>{
       throw new Error('Failed to fetch movie details');
     }
   };
-  
+  /**Edit Movie */
 export const editMovie = async (movieId, movieData,file) => {
   try {
    console.log("files",file);
@@ -325,3 +334,4 @@ export const editMovie = async (movieId, movieData,file) => {
     throw new Error('Failed to edit movie');
   }
 };
+

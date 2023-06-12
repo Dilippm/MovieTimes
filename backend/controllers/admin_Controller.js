@@ -1,7 +1,9 @@
 const Admin = require("../models/Admin");
 const Movie =require("../models/Movies")
+
 const jwt =require("jsonwebtoken");
 const config = require('../config');
+const Owner = require("../models/Owner");
 const jwtSecret = config.JWT_SECRET;
 const BASE_URL =config.BASE_URL;
 /* admin Login */
@@ -128,7 +130,7 @@ const updateAdmin = async (req, res, next) => {
   };
   
 
-
+/**Block or unblock user */
   const updateuserStatus = async (req, res, next) => {
     
     const token = req.headers.authorization;
@@ -180,6 +182,7 @@ const updateAdmin = async (req, res, next) => {
       return res.status(500).json({ message: 'Request failed' });
     }
   };
+  /**Get Movies */
   const getMovies = async(req,res,next)=>{
     try {
       // Fetch all admins and populate the 'user' field
@@ -204,59 +207,69 @@ const updateAdmin = async (req, res, next) => {
 
   }
   
+  /**Add A Movie */
   const addMovie = async (req, res, next) => {
-   
     const { title, language, description } = JSON.parse(req.body.admindata);
     const token = req.headers.authorization;
-    
+  
     if (!token) {
       return res.status(404).json({ message: "Token not found" });
     }
-    
+  
     let adminId;
     try {
       const decodedToken = jwt.verify(token.split(" ")[1], jwtSecret);
-      
+  
       adminId = decodedToken.id;
     } catch (error) {
       console.log(error);
       res.status(400).json({ message: error.message });
     }
-    
   
-    
     try {
       let admin = await Admin.findById(adminId);
       if (!admin) {
         return res.status(404).json({ message: "Admin not found" });
       }
-      
+  
       const newMovieData = {
         title,
         language,
         description,
       };
-     
+  
       if (req.file) {
-        console.log("file:",req.file);
+        console.log("file:", req.file);
         // Generate a URL for the uploaded image
         const imageUrl = `${BASE_URL}/${req.file.filename}`;
         // Store the image URL in the movie data
         newMovieData.postedUrl = imageUrl;
       }
-      
+  
       const newMovie = new Movie(newMovieData);
       const savedMovie = await newMovie.save();
-      
-      admin.movies.push(savedMovie);
+  
+
+      admin.movies.push(savedMovie._id);
       await admin.save();
-      
+  
+     
+      const owners = await Owner.find({});
+      if (!owners || owners.length === 0) {
+        return res.status(404).json({ message: "No owners found" });
+      }
+      for (let i = 0; i < owners.length; i++) {
+        owners[i].movies.push(savedMovie._id);
+        await owners[i].save();
+      }
+  
       res.status(200).json({ message: "Movie added successfully" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Failed to add movie" });
     }
   };
+  
   /**update movie status */
    const updatemovieStatus= async(req,res,next)=>{
     const token = req.headers.authorization;
@@ -292,7 +305,7 @@ const updateAdmin = async (req, res, next) => {
           }
       
           
-          if (movie.status) {
+          if (movie.status==true) {
             movie.status = false; 
           } else if(movie.status==false) {
             movie.status = true; 
@@ -309,8 +322,7 @@ const updateAdmin = async (req, res, next) => {
 
       
    }
-
-
+  
 module.exports = {
    adminLogin,
    updateAdmin,
@@ -319,6 +331,7 @@ module.exports = {
    updateuserStatus,
    getMovies,
    addMovie,
-   updatemovieStatus
+   updatemovieStatus,
+
  
 };

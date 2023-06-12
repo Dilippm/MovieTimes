@@ -23,7 +23,13 @@ const ownerSchema = new mongoose.Schema({
     image: {
         type: String,
         default: ''
-    }
+    },
+    movies:[
+        {
+            type:mongoose.Types.ObjectId,
+            ref:"Movie",
+        }
+    ]
 });
 
 module.exports = mongoose.model("Owner", ownerSchema);

@@ -1,6 +1,7 @@
 
 const Movie = require("../models/Movies")
 const Admin =require("../models/Admin")
+const Owner = require("../models/Owner")
 const jwt = require("jsonwebtoken");
 const config = require('../config');
 const jwtSecret = config.JWT_SECRET;

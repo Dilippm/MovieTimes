@@ -51,7 +51,7 @@ const OwnerLogin = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
       <Box
         sx={{
           width: 500,
@@ -110,7 +110,7 @@ const OwnerLogin = () => {
                 textAlign: 'center'
               }}
               onClick={() => {
-                navigate('/owner_register')
+                navigate('/owner/owner_register')
               }}
             >
               <b> Register</b>

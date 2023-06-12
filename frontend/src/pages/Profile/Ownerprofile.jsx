@@ -74,8 +74,10 @@ const OwnerProfile = () => {
     <>
       <OwnerHeader/>
       <Box width={"100%"} height={"100%"} margin={"auto"} marginTop={3}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-          <Box sx={{ width: 500, height: 750, backgroundColor: '#eeeeee' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+        <Box sx={{ width: 500, height: 750, backgroundColor: '#eeeeee', boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.2)" }} >
+
+
             <Typography variant='h4' textAlign='center' marginTop={3}>
               <b>PROFILE</b>
             </Typography>

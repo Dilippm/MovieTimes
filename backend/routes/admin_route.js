@@ -14,4 +14,5 @@ adminRoute.get('/:id',getAdmin)
 adminRoute.get("/users/:id",getUsers)
 adminRoute.get("/movies/:id",getMovies)
 
+
 module.exports = adminRoute;
