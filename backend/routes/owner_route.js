@@ -4,7 +4,7 @@ const { ownerRegister,
    
     ownerLogin,
 getOwner,
-updateOwner,getAllOwners } = require("../controllers/owner_Controller");
+updateOwner,getTheatres } = require("../controllers/owner_Controller");
 const ownerRoute = express.Router();
 
 /*POST Routes*/
@@ -14,6 +14,7 @@ ownerRoute.post('/login', ownerLogin)
 ownerRoute.post('/:id',uploadOptions.single("image") ,updateOwner)
 /*GET Routes*/
 ownerRoute.get('/:id',getOwner)
+ownerRoute.get('/theatre'.getTheatres)
 
 
 module.exports = ownerRoute;

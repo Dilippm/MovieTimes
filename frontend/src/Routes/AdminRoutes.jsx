@@ -10,6 +10,7 @@ import GetMovies from '../pages/Movies/GetMovies';
 import AdminHeader from '../components/AdminHeader';
 import AddMovie from '../components/Movie/AddMovie';
 import EditMovie from '../components/Movie/EditMovie';
+import OwnerDetails from '../pages/Admin/OwnerDetails';
 
 const AdminRoutes = () => {
   return (
@@ -23,6 +24,7 @@ const AdminRoutes = () => {
           <Route path ="/admin_movies" element={<AdminProtectedRoutes><GetMovies/></AdminProtectedRoutes>}/>
           <Route path ="/add_movie" element={<AdminProtectedRoutes><AddMovie/></AdminProtectedRoutes>}/>
           <Route path ='/editmovie/:id'element ={<AdminProtectedRoutes><EditMovie/></AdminProtectedRoutes>}/>
+          <Route path ='/owners' element ={<AdminProtectedRoutes><OwnerDetails/></AdminProtectedRoutes>}/>
          
         </Routes>
     </>

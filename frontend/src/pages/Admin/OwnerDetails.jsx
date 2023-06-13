@@ -12,55 +12,58 @@ const OwnerDetails = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getOwnerDetail();
-        setUsers(data.users);
-        setFilteredUsers(data.users);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  
     fetchData();
   }, []);
-  
 
-//   const changeUserStatus = async (index) => {
-//     try {
-//       // Get the user ID based on the index
-//       const userId = users[index]._id;
+  const fetchData = async () => {
+    try {
+      const data = await getOwnerDetail();
+      setUsers(data.owners);
+      setFilteredUsers(data.owners);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-//       // Retrieve the token from localStorage
-//       const token = localStorage.getItem('admintoken');
+  const changeOwnerStatus = async (index) => {
+    try {
+      const ownerId = users[index]._id;
+      const token = localStorage.getItem('admintoken');
 
-//       const response = await axios.post(`${BaseURL}admin/users/${userId}`, null, {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       });
+      const response = await axios.post(
+        `${BaseURL}admin/owners/${ownerId}`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-//       if (response.status === 200) {
-//         const updatedStatus = response.data.user.status;
-//         setUsers((prevUsers) => {
-//           const updatedUsers = [...prevUsers];
-//           updatedUsers[index].status = updatedStatus;
-//           return updatedUsers;
-//         });
-//       }
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   };
+      if (response.status === 200) {
+        const updatedStatus = response.data.owner.status;
+
+        setUsers((prevUsers) => {
+          const updatedUsers = [...prevUsers];
+          updatedUsers[index].status = updatedStatus;
+          return updatedUsers;
+        });
+
+        fetchData(); 
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    const filtered = users.filter((user) => {
+    const filtered = users && users.filter((user) => {
       const nameMatch = user.name && user.name.toLowerCase().includes(searchValue.toLowerCase());
-     
       return nameMatch;
     });
     setFilteredUsers(filtered);
   }, [searchValue, users]);
+
 
   const handleSearchInputChange = (event) => {
     setSearchValue(event.target.value);
@@ -72,7 +75,7 @@ const OwnerDetails = () => {
       <Box width="100%" height="100%" margin="auto"></Box>
       <Box margin="auto" marginTop={1}>
         <Typography variant="h3" padding={2} textAlign="center" bgcolor="#900C3F" color="white">
-          <b>All Users</b>
+          <b>All Owners</b>
         </Typography>
         <Box width={'30%'} height={'80%'} margin="auto" marginTop={4}>
           <TextField
@@ -118,7 +121,7 @@ const OwnerDetails = () => {
             </Typography>
           </Box>
           {filteredUsers &&
-            filteredUsers.map((user, index) => (
+            filteredUsers.map((users, index) => (
               <Box
                 key={index}
                 display="flex"
@@ -130,19 +133,19 @@ const OwnerDetails = () => {
                 bgcolor="#f5f5f5"
                 height={'150px'}
               >
-                <Typography variant="h5">{user.name}</Typography>
-                <Typography variant="h5">{user.phone}</Typography>
-                <Typography variant="h5">{user.email}</Typography>
+                <Typography variant="h5">{users.name}</Typography>
+                <Typography variant="h5">{users.phone}</Typography>
+                <Typography variant="h5">{users.email}</Typography>
 
                 <Button
                   variant="outlined"
-                  // onClick={() => changeUserStatus(index)}
+                  onClick={() => changeOwnerStatus(index)}
                   style={{
-                    backgroundColor: user.status ? 'green' : 'red',
+                    backgroundColor: users.Isapproved ? 'green' : 'red',
                     color: 'white',
                   }}
                 >
-                  {user.status ? 'Active' : 'Inactive'}
+                  {users.Isapproved ? 'Active' : 'Inactive'}
                 </Button>
               </Box>
             ))}

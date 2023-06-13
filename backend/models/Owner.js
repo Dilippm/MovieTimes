@@ -24,6 +24,10 @@ const ownerSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    Isapproved:{
+        type:Boolean,
+        default:false
+    },
     movies:[
         {
             type:mongoose.Types.ObjectId,

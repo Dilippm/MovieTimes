@@ -334,4 +334,16 @@ export const editMovie = async (movieId, movieData,file) => {
     throw new Error('Failed to edit movie');
   }
 };
+/**GET All Owners */
+ export const getOwnerDetail = async()=>{
+  let id = localStorage.getItem("adminId");
+  
+  const res = await axios.get(`${BaseURL}admin/owners/${id}`);
 
+  if(res.status!==200){
+    return console.log("unexpected error");
+  }
+  console.log("ownerdata:",res.data);
+  const resData = res.data;
+  return resData
+ }

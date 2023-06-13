@@ -84,7 +84,7 @@ const updateAdmin = async (req, res, next) => {
   const getAdmin= async(req,res,next)=>{
     const {id} = req.params;
     try {
-        let admin = await Admin.findById(id);
+        let admin = await Admin.findById({_id:id})
        
         if (!admin) {
             return res
@@ -322,7 +322,82 @@ const updateAdmin = async (req, res, next) => {
 
       
    }
+   /**get All owners */
+   const getOwners =async(req,res,next)=>{
+   
+    try {
+     let adminId =req.params.id
+      const admin = await Admin.findById(adminId).populate({
+        path: "owners",
+        select: "name phone email Isapproved " 
+      });
+      if (!admin) {
+        return res.status(404).json({ message: "Admin not found" });
+      }
+     
+      
+      const owners = admin.owners;
+     
+
+      res.json({ message: "owners found", owners });;
+      
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({message:error.message});
+    }
+
+   }
+  /**Change owner status */
+  const changeOwnerStatus=async(req,res,next)=>{
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return res.status(404).json({ message: 'Token not found' });
+    }
+   
+    let adminId;
   
+    try {
+  
+      const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
+
+      adminId = decodedToken.id;
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ message: error.message });
+    }
+    const ownerId = req.params.id;
+   
+    try {
+      const adminUser = await Admin.findOne({ _id: adminId }).populate('owners');
+      
+      if (!adminUser) {
+        return res.status(404).json({ message: 'Invalid admin ID' });
+      }
+  
+      const owner = adminUser.owners.find((user) => user._id.toString() === ownerId);
+    
+      if (!owner) {
+        return res.status(404).json({ message: 'Invalid owner ID' });
+      }
+  
+      
+      if (owner.Isapproved) {
+        owner.Isapproved = false; 
+      } else if(owner.Isapproved==false) {
+        owner.Isapproved = true; 
+      }
+      
+      await owner.save();
+  
+  
+      return res.status(200).json({ message: 'User updated successfully', owner });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: 'Request failed' });
+    }
+
+  }
 module.exports = {
    adminLogin,
    updateAdmin,
@@ -332,6 +407,8 @@ module.exports = {
    getMovies,
    addMovie,
    updatemovieStatus,
+   getOwners,
+   changeOwnerStatus
 
  
 };
