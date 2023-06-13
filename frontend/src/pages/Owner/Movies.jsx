@@ -8,7 +8,7 @@ const Movies = () => {
   useEffect(() => {
     const fetchMovies = async () => {
       const data = await getAllMovies();
-      console.log("movies at owner:", data.movies);
+     
       if (data) {
         setMovies(data.movies);
       }

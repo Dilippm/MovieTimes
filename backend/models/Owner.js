@@ -33,7 +33,14 @@ const ownerSchema = new mongoose.Schema({
             type:mongoose.Types.ObjectId,
             ref:"Movie",
         }
+    ],
+    theatres:[
+        {
+            type:mongoose.Types.ObjectId,
+            ref:"Theatre",  
+        }
     ]
+    
 });
 
 module.exports = mongoose.model("Owner", ownerSchema);

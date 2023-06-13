@@ -1,6 +1,8 @@
 const Owner = require("../models/Owner");
 const Admin= require("../models/Admin")
 const User =require("../models/User")
+const Movie =require("../models/Movies")
+const Theatre =require("../models/Theatre")
 const bcrypt = require("bcryptjs");
 const jwt =require("jsonwebtoken");
 const config = require('../config');
@@ -139,7 +141,114 @@ const updateOwner = async (req, res, next) => {
       return res.status(500).json({ message: "Something went wrong" });
     }
   };
- 
+
+  /**Get Movies */
+  const getMovies=async(req,res,next)=>{
+    const { id } = req.params;
+    let owner = await Owner.findById(id);
+    if(!owner){
+      return res
+            .status(500)
+            .json({error: "Unexpected error occurred"});
+
+    }
+    let movies = await Movie.find();
+    if(!movies){
+      return res.status(500).json({error:"no movies found"})
+    }
+  
+    return res.status(200).json({message:"movies found",movies})
+
+  }
+/**Get All theaters */
+const getTheatres = async (req, res, next) => {
+  console.log("vanur");
+  const {id} =req.params
+  const token = req.headers.authorization;
+  console.log("toekn owner:",token);
+  if (!token) {
+    return res.status(404).json({ message: 'Token not found' });
+  }
+
+  let ownerId;
+
+  try {
+    const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
+    ownerId = decodedToken.id;
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: error.message });
+  }
+
+  try {
+    const owner = await Owner.findById(id).populate('theatres');
+
+
+    if (!owner) {
+      return res.status(404).json({ message: 'Owner not found' });
+    }
+
+   
+    const ownerName = owner.name;
+    const theaters = owner.theatres;
+
+    res.status(200).json({ ownerName, theaters });
+  } catch (error) {
+    console.error('Failed to get theaters:', error);
+    res.status(500).json({ message: 'Failed to get theaters' });
+  }
+};
+
+
+  /**Add Theatre  */
+  const addTheatre = async (req, res, next) => {
+    const { name, seats, timings, movieName } = req.body;
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(404).json({ message: 'Token not found' });
+    }
+  
+    let ownerId;
+  
+    try {
+      const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
+      ownerId = decodedToken.id;
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ message: error.message });
+    }
+  
+   
+  
+    try {
+      const ownerUser = await Owner.findOne({ _id: ownerId });
+  
+      if (!ownerUser) {
+        return res.status(404).json({ message: 'Invalid owner ID' });
+      }
+  
+      const newTheatreData = {
+        name,
+        seats,
+        movies: movieName,
+        showTimings: timings.map((startTime) => ({ startTime }))
+      };
+  
+      const newTheatre = new Theatre(newTheatreData);
+      newTheatre.owner = ownerUser._id; 
+const savedTheatre = await newTheatre.save();
+      ownerUser.theatres.push(savedTheatre._id);
+      await ownerUser.save();
+  
+      res.status(200).json({ message: 'Theatre added successfully' });
+    } catch (error) {
+      console.error('Failed to add theatre:', error);
+      res.status(500).json({ message: 'Failed to add theatre' });
+    }
+  };
+  
+  module.exports = addTheatre;
+  
   
 module.exports ={
     ownerRegister,
@@ -147,6 +256,9 @@ module.exports ={
     ownerLogin,
     getOwner,
     updateOwner,
+    getTheatres,
+    addTheatre,
+    getMovies
     
 
 

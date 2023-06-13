@@ -12,7 +12,7 @@ export const getAllMovies = async () => {
         Authorization: `Bearer ${ownerToken}` 
       }
     });
-    console.log("resdatmves", res);
+   
     if (res.status !== 200) {
       console.log('No Data');
       return null;
@@ -347,3 +347,59 @@ export const editMovie = async (movieId, movieData,file) => {
   const resData = res.data;
   return resData
  }
+ 
+ /**Get movies in theater */
+ export const getownerMovies =async()=>{
+  const id= localStorage.getItem("ownerId");
+  const res = await axios.get(`${BaseURL}owner/movies/${id}`);
+  if(res.status!==200){
+    return console.log("unexpected error");
+  }
+  const resData = res.data.movies;
+ 
+  return resData
+
+ }
+ /**Add thatre */
+ export const AddTheatre = async (theatreData) => {
+  try {
+    const token = localStorage.getItem("ownertoken");
+    const response = await axios.post(`${BaseURL}owner/add_theatre`, theatreData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (response.status!=200) {
+      throw new Error('Failed to add theatre');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(`Failed to add theatre: ${error.message}`);
+  }
+};
+/**Get theatre list of owner */
+export const GetTheatres = async () => {
+  try {
+    const token = localStorage.getItem('ownertoken');
+    const id = localStorage.getItem('ownerId');
+    const response = await axios.get(`${BaseURL}owner/theatre/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error('Failed to get theaters');
+    }
+ 
+    const data = response.data;
+    console.log('theaters:', data.theaters);
+    
+
+    return data.theaters;
+  } catch (error) {
+    throw new Error(`Failed to get theaters: ${error.message}`);
+  }
+};
