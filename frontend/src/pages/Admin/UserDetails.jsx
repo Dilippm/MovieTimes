@@ -10,15 +10,24 @@ const UserDetails = () => {
   const [users, setUsers] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const limit = 2; // Number of users per page
 
   useEffect(() => {
-    getUsers()
+    fetchUsers(currentPage);
+  }, [currentPage]);
+
+  const fetchUsers = (page) => {
+    getUsers(page, limit)
       .then((data) => {
         setUsers(data.users);
         setFilteredUsers(data.users);
+        setTotalPages(data.totalPages);
       })
       .catch((err) => console.log(err));
-  }, []);
+  };
 
   const changeUserStatus = async (index) => {
     try {
@@ -28,11 +37,15 @@ const UserDetails = () => {
       // Retrieve the token from localStorage
       const token = localStorage.getItem('admintoken');
 
-      const response = await axios.post(`${BaseURL}admin/users/${userId}`, null, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post(
+        `${BaseURL}admin/users/${userId}`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.status === 200) {
         const updatedStatus = response.data.user.status;
@@ -49,8 +62,10 @@ const UserDetails = () => {
 
   useEffect(() => {
     const filtered = users.filter((user) => {
-      const nameMatch = user.name && user.name.toLowerCase().includes(searchValue.toLowerCase());
-     
+      const nameMatch =
+        user.name &&
+        user.name.toLowerCase().includes(searchValue.toLowerCase());
+
       return nameMatch;
     });
     setFilteredUsers(filtered);
@@ -60,12 +75,22 @@ const UserDetails = () => {
     setSearchValue(event.target.value);
   };
 
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
   return (
     <>
       <Header />
       <Box width="100%" height="100%" margin="auto"></Box>
       <Box margin="auto" marginTop={1}>
-        <Typography variant="h3" padding={2} textAlign="center" bgcolor="#900C3F" color="white">
+        <Typography
+          variant="h3"
+          padding={2}
+          textAlign="center"
+          bgcolor="#900C3F"
+          color="white"
+        >
           <b>All Users</b>
         </Typography>
         <Box width={'30%'} height={'80%'} margin="auto" marginTop={4}>
@@ -140,6 +165,26 @@ const UserDetails = () => {
                 </Button>
               </Box>
             ))}
+        </Box>
+        <Box display="flex" justifyContent="center" marginTop={4} marginBottom={3} >
+          {currentPage > 1 && (
+            <Button sx={{margin:"10px", width:"100px",height:"40px" }}
+              variant="contained"
+              color="primary"
+              onClick={() => handlePageChange(currentPage - 1)}
+            >
+              Previous
+            </Button>
+          )}
+          {currentPage < totalPages && (
+            <Button sx={{margin:"10px", width:"100px" }}
+              variant="contained"
+              color="primary"
+              onClick={() => handlePageChange(currentPage + 1)}
+            >
+              Next
+            </Button>
+          )}
         </Box>
       </Box>
     </>

@@ -1,6 +1,6 @@
 const Admin = require("../models/Admin");
 const Movie =require("../models/Movies")
-
+const User =require("../models/User")
 const jwt =require("jsonwebtoken");
 const config = require('../config');
 const Owner = require("../models/Owner");
@@ -108,26 +108,36 @@ const updateAdmin = async (req, res, next) => {
   /** GET users */
   const getUsers = async (req, res, next) => {
     try {
-      // Fetch all admins and populate the 'user' field
-      let adminId = req.params.id;
-
-   
-      const admin = await Admin.findById(adminId).populate({
-        path: "users",
-        select: "name email phone status" // Specify the fields you want to retrieve
-      });
+      const adminId = req.params.id;
+      const page = parseInt(req.query.page) || 1; // Get the page parameter from the query, default to 1 if not provided
+      const limit = parseInt(req.query.limit) || 10; // Get the limit parameter from the query, default to 10 if not provided
+  
+      const admin = await Admin.findById(adminId)
+        .populate({
+          path: "users",
+          select: "name email phone status",
+          options: {
+            skip: (page - 1) * limit, // Calculate the number of documents to skip based on the page and limit
+            limit: limit, // Set the limit for the number of documents to retrieve
+          },
+        })
+        .exec();
+  
       if (!admin) {
         return res.status(404).json({ message: "Admin not found" });
       }
-      
+  
       const users = admin.users;
-
-      res.json({ message: "Users found", users });;
+      const totalCount = await User.find().count()
+ 
+  
+      res.json({ message: "Users found", users, totalUsers: totalCount, totalPages: Math.ceil(totalCount / limit) });
     } catch (error) {
       // Handle any errors that occur
       res.status(500).json({ message: "Failed to fetch users" });
     }
   };
+  
   
 
 /**Block or unblock user */
@@ -183,29 +193,35 @@ const updateAdmin = async (req, res, next) => {
     }
   };
   /**Get Movies */
-  const getMovies = async(req,res,next)=>{
+  const getMovies = async (req, res, next) => {
     try {
-      // Fetch all admins and populate the 'user' field
-      let adminId = req.params.id;
-
-   
+      const adminId = req.params.id;
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+  
       const admin = await Admin.findById(adminId).populate({
-        path: "movies",
-        select: "title language description status postedUrl" // Specify the fields you want to retrieve
+        path: 'movies',
+        select: 'title language description status postedUrl',
+        options: {
+          skip: (page - 1) * limit,
+          limit: limit,
+        },
       });
+  
       if (!admin) {
-        return res.status(404).json({ message: "Admin not found" });
+        return res.status(404).json({ message: 'Admin not found' });
       }
-      
+  
       const movies = admin.movies;
-
-      res.json({ message: "movies found", movies });;
+      const totalCount = await Movie.find().count();
+      const totalPages = Math.ceil(totalCount / limit);
+  
+      res.json({ message: 'Movies found', movies, totalPages });
     } catch (error) {
-      // Handle any errors that occur
-      res.status(500).json({ message: "Failed to fetch movies" });
+      res.status(500).json({ message: 'Failed to fetch movies', error });
     }
-
-  }
+  };
+  
   
   /**Add A Movie */
   const addMovie = async (req, res, next) => {

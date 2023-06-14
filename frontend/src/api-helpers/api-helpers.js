@@ -236,29 +236,38 @@ export const updateOwnerProfile= async(data,image)=>{
   }
 
   /**get all users */
-  export const getUsers = async()=>{
-    const id= localStorage.getItem("adminId");
-    const res = await axios.get(`${BaseURL}admin/users/${id}`);
-    if(res.status!==200){
-      return console.log("unexpected error");
-    }
-    const resData = res.data;
-    console.log("resData:",resData);
-    return resData
+  export const getUsers = async (page, limit) => {
+    const id = localStorage.getItem("adminId");
+    const res = await axios.get(`${BaseURL}admin/users/${id}`, {
+      params: { page, limit }, // Include page and limit as query parameters
+    });
   
-  }
+    if (res.status !== 200) {
+      throw new Error("Unexpected error");
+    }
+  
+    const resData = res.data;
+    console.log("resData:", resData);
+    return resData;
+  };
+  
   /* get movies*/
-  export const getMovies = async()=>{
-    const id= localStorage.getItem("adminId");
-    const res = await axios.get(`${BaseURL}admin/movies/${id}`);
-    if(res.status!==200){
-      return console.log("unexpected error");
-    }
-    const resData = res.data;
-    console.log("resData:",resData);
-    return resData
-  
+ export const getMovies = async (page, limit) => {
+  const id = localStorage.getItem('adminId');
+  const res = await axios.get(`${BaseURL}admin/movies/${id}`, {
+    params: {
+      page,
+      limit,
+    },
+  });
+  if (res.status !== 200) {
+    throw new Error('Unexpected error');
   }
+  const resData = res.data;
+  console.log('resData:', resData);
+  return resData;
+};
+
   /* Add Movie*/
   export const AddMovie = async (movieData, file) => {
     try {

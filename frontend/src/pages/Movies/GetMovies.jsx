@@ -1,36 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
-import { ToastContainer,toast  } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import TextField from '@mui/material/TextField';
 import axios from 'axios';
 import BaseURL from '../../config';
 import Header from '../../components/AdminHeader';
-import { getMovies } from '../../api-helpers/api-helpers';
+import { getMovies} from '../../api-helpers/api-helpers';
 import AddMovie from '../../components/Movie/AddMovie';
-
 import EditMovie from '../../components/Movie/EditMovie';
-import MovieDetails from '../../components/Movie/ViewMovie';
 import ViewMovie from '../../components/Movie/ViewMovie';
-const GetMovies = () => {
 
+const GetMovies = () => {
   const [movies, setMovies] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState([]);
+
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const limit = 2; // Number of movies per page
 
   useEffect(() => {
-    getMovies()
-      .then((data) => setMovies(data.movies))
+    fetchMovies(currentPage);
+  }, [currentPage]);
+
+  const fetchMovies = (page) => {
+    getMovies(page, limit)
+      .then((data) => {
+        setMovies(data.movies);
+        setTotalPages(data.totalPages);
+      })
       .catch((err) => console.log(err));
-  }, []);
+  };
 
   const handleStatusChange = async (movie) => {
     try {
       const token = localStorage.getItem('admintoken');
-      const response = await axios.post(`${BaseURL}admin/moviestatus/${movie._id}`, null, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post(
+        `${BaseURL}admin/moviestatus/${movie._id}`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.status === 200) {
         const updatedStatus = response.data.movie.status;
@@ -51,39 +67,71 @@ const GetMovies = () => {
     }
   };
 
+  useEffect(() => {
+    const filtered = movies.filter((movie) => {
+      const nameMatch =
+        movie.title &&
+        movie.title.toLowerCase().includes(searchValue.toLowerCase());
+
+      return nameMatch;
+    });
+    setFilteredUsers(filtered);
+  }, [searchValue, movies]);
+
+  const handleSearchInputChange = (event) => {
+    setSearchValue(event.target.value);
+  };
+
   const handleAddMovie = () => {
-    getMovies()
-      .then((data) => {
-        setMovies(data.movies);
-        toast.success('Movie Added Successfully'); // Display the success toast
-      })
-      .catch((err) => console.log(err));
+    fetchMovies(currentPage); // Fetch movies from the current page
+    toast.success('Movie Added Successfully'); // Display the success toast
   };
 
   const handleEditMovie = () => {
-    getMovies()
-      .then((data) => {
-        setMovies(data.movies);
-        toast.success('Movie edited Successfully'); // Display the success toast
-      })
-      .catch((err) => console.log(err));
+    fetchMovies(currentPage); // Fetch movies from the current page
+    toast.success('Movie edited Successfully'); // Display the success toast
   };
+
   const handleViewMovie = (movie) => {
     setSelectedMovie(movie);
     setOpenDialog(true);
   };
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
   return (
     <>
-     <ToastContainer /> 
+      <ToastContainer />
       <Header />
 
       <Box>
         <Typography variant="h3" padding={2} textAlign="center" bgcolor="#900C3F" color="white">
           <b>All Movies</b>
         </Typography>
+        <Box width={'30%'} height={'80%'} margin="auto" marginTop={4}>
+          <TextField
+            sx={{
+              input: {
+                color: 'white',
+                border: '3px solid black',
+                borderRadius: 30,
+                backgroundColor: 'black',
+                width: '500px',
+                height: '40px',
+              },
+            }}
+            variant="standard"
+            placeholder="Search By Name "
+            value={searchValue}
+            onChange={handleSearchInputChange}
+          />
+        </Box>
         <Box marginTop={4} marginLeft={3}>
           <AddMovie onAddMovie={handleAddMovie} />
         </Box>
@@ -121,7 +169,7 @@ const GetMovies = () => {
             </Box>
           </Box>
 
-          {movies.map((movie, index) => (
+          {filteredUsers.map((movie, index) => (
             <Box
               key={index}
               display="flex"
@@ -140,7 +188,11 @@ const GetMovies = () => {
                 <Typography variant="h5">{movie.language}</Typography>
               </Box>
               <Box flex={1}>
-                <img src={movie.postedUrl} alt="Movie Poster" style={{ width: '100px', height: '100px' }} />
+                <img
+                  src={movie.postedUrl}
+                  alt="Movie Poster"
+                  style={{ width: '100px', height: '100px' }}
+                />
               </Box>
               <Box flex={0.75}>
                 <Box display="flex" alignItems="center">
@@ -157,19 +209,40 @@ const GetMovies = () => {
                   </Button>
                   <EditMovie movieId={movie._id} onEditMovie={handleEditMovie} />
                   <Button
-                  variant="contained"
-                  style={{ marginLeft: '5px', backgroundColor: 'ThreeDHighlight', color: 'white' }}
-                  onClick={() => handleViewMovie(movie)}
-                >
-                  View
-                </Button>
-                <ViewMovie open={openDialog} handleClose={handleCloseDialog} movie={selectedMovie} />
+                    variant="contained"
+                    style={{ marginLeft: '5px', backgroundColor: 'ThreeDHighlight', color: 'white' }}
+                    onClick={() => handleViewMovie(movie)}
+                  >
+                    View
+                  </Button>
+                  <ViewMovie open={openDialog} handleClose={handleCloseDialog} movie={selectedMovie} />
                 </Box>
               </Box>
             </Box>
           ))}
-            <MovieDetails open={openDialog} handleClose={handleCloseDialog} movie={selectedMovie} />
-            
+
+          <Box display="flex" justifyContent="center" marginTop={4} marginBottom={3}>
+            {currentPage > 1 && (
+              <Button
+                sx={{ margin: '10px', width: '100px', height: '40px' }}
+                variant="contained"
+                color="primary"
+                onClick={() => handlePageChange(currentPage - 1)}
+              >
+                Previous
+              </Button>
+            )}
+            {currentPage < totalPages && (
+              <Button
+                sx={{ margin: '10px', width: '100px' }}
+                variant="contained"
+                color="primary"
+                onClick={() => handlePageChange(currentPage + 1)}
+              >
+                Next
+              </Button>
+            )}
+          </Box>
         </Box>
       </Box>
     </>
