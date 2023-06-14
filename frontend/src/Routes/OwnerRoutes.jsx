@@ -11,6 +11,7 @@ import OwnerPublicRoutes from './OwnerPublicRoutes';
 import Theater from '../pages/Owner/Theater';
 import Movies from "../pages/Owner/Movies"
 import OwnerHeader from '../components/OwnerHeader';
+import EditTheatre from '../pages/Owner/EditTheatre';
 const OwnerRoutes =()=>{
     return (
         <>
@@ -23,7 +24,7 @@ const OwnerRoutes =()=>{
           <Route path="/ownerprofile" element={<OwnerProtectedRoutes><OwnerProfile/></OwnerProtectedRoutes>} />
           <Route path="/owner_theater" element={<OwnerProtectedRoutes><Theater/></OwnerProtectedRoutes>} />
           <Route path="/owner_movies" element={<OwnerProtectedRoutes><Movies/></OwnerProtectedRoutes>} />
-          
+          <Route path ='/edit_theatre/:id' element={<OwnerProtectedRoutes><EditTheatre/></OwnerProtectedRoutes>}/>
             
             </Routes>
         </>

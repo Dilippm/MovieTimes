@@ -2,17 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Link, useNavigate } from 'react-router-dom'; // Import Link and useNavigate from React Router
 import Header from '../../components/OwnerHeader';
 import { GetTheatres, AddTheatre } from '../../api-helpers/api-helpers';
 import AddTheatreForm from '../../components/Theatre/AddTheatreForm';
 
 const Theater = () => {
+  const navigate = useNavigate();
   const [theatre, setTheatre] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await GetTheatres();
+      
         setTheatre(data);
       } catch (error) {
         console.log(error);
@@ -85,7 +88,9 @@ const Theater = () => {
           </Box>
 
           {/* Display the theatre data */}
+        
           {theatre.map((theatreItem, index) => (
+         
             <Box
               key={index}
               display="flex"
@@ -96,7 +101,7 @@ const Theater = () => {
               marginBottom={'80px'}
               bgcolor="#f5f5f5"
               height={'150px'}
-            >
+            > 
               <Box flex={1}>
                 <Typography variant="h5"> <b>{theatreItem.name}</b> </Typography>
               </Box>
@@ -113,11 +118,11 @@ const Theater = () => {
               <Box flex={1}>
                 <Typography variant="h5"> <b>{theatreItem.movies}</b> </Typography>
               </Box>
-              <Box flex={0.75}>
-                <Box display="flex" alignItems="center">
-                  {/* Add the required button components here */}
-                </Box>
+              <Box flex={1}>
+                <Button variant='contained' onClick={() => navigate(`/owner/edit_theatre/${theatreItem._id}`)}>Edit</Button>
+                
               </Box>
+            
             </Box>
           ))}
         </Box>

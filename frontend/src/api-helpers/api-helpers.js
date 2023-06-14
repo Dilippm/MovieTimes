@@ -404,11 +404,52 @@ export const GetTheatres = async () => {
     }
  
     const data = response.data;
-    console.log('theaters:', data.theaters);
+   
     
 
     return data.theaters;
   } catch (error) {
     throw new Error(`Failed to get theaters: ${error.message}`);
+  }
+};
+/**Get Theatre Details */
+export const getTheatreDetails = async(id)=>{
+  try {
+   
+    const token =localStorage.getItem('ownertoken');
+    const response =await axios.get(`${BaseURL}owner/edittheatre/${id}`,{
+      headers:{
+        Authorization: `Bearer ${token}`,
+      }
+    })
+
+    if(response.status==200){
+      return response.data.theatre;
+    }else{
+      throw new Error('Failed to fetch thatre details');
+    }
+  } catch (error) {
+    console.log(error);
+      throw new Error('Failed to fetch theatre details');
+  }
+
+}
+/**Edit theatre */
+export const updateTheatreDetails = async ( theatreId, updatedDetails) => {
+  try {
+  let token = localStorage.getItem("ownertoken")
+
+    // Make the API request to update the theater details
+    const response = await axios.post(`${BaseURL}owner/updatetheatre/${theatreId}`, updatedDetails, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Return the updated theater details if necessary
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to update theater details');
   }
 };

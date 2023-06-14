@@ -162,10 +162,10 @@ const updateOwner = async (req, res, next) => {
   }
 /**Get All theaters */
 const getTheatres = async (req, res, next) => {
-  console.log("vanur");
+
   const {id} =req.params
   const token = req.headers.authorization;
-  console.log("toekn owner:",token);
+  
   if (!token) {
     return res.status(404).json({ message: 'Token not found' });
   }
@@ -247,7 +247,102 @@ const savedTheatre = await newTheatre.save();
     }
   };
   
-  module.exports = addTheatre;
+ /***Get A Theatre */
+ const getSpecificTheatre = async(req,res,next)=>{
+
+  const token = req.headers.authorization;
+ 
+        if (!token) {
+          return res.status(404).json({ message: 'Token not found' });
+        }
+       
+        let ownerId;
+      
+        try {
+      
+          const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
+    
+          ownerId = decodedToken.id;
+        
+        } catch (error) {
+          console.log(error);
+          return res.status(400).json({ message: error.message });
+        }
+    
+        const theatreId = req.params.id;
+       
+        try {
+          const ownertheatre = await Owner.findOne({ _id: ownerId }).populate('theatres');
+     
+          if (!ownertheatre) {
+            return res.status(404).json({ message: 'Invalid admin ID' });
+          }
+          const theatre = ownertheatre.theatres.find((theatre) => theatre._id.toString() === theatreId);
+          if (!theatre) {
+            return res.status(404).json({ message: 'Invalid theatre ID' });
+          }
+        
+          return res.status(200).json({ message: 'theatre found successfully', theatre });
+        } catch (error) {
+          console.log(error);
+          return res.status(500).json({ message: 'Request failed' });
+          
+        }
+ }
+  /**Update teh thatre */
+  const updateTheatre = async (req, res, next) => {
+    const token = req.headers.authorization;
+  
+    if (!token) {
+      return res.status(404).json({ message: 'Token not found' });
+    }
+  
+    let ownerId;
+  
+    try {
+      const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
+      ownerId = decodedToken.id;
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ message: error.message });
+    }
+  
+    const theatreId = req.params.id;
+    const updatedDetails = req.body;
+  
+  
+    try {
+      const ownertheatre = await Owner.findOne({ _id: ownerId }).populate('theatres');
+  
+      if (!ownertheatre) {
+        return res.status(404).json({ message: 'Invalid owner ID' });
+      }
+  
+      const theatre = ownertheatre.theatres.find((theatre) => theatre._id.toString() === theatreId);
+  
+      if (!theatre) {
+        return res.status(404).json({ message: 'Invalid theatre ID' });
+      }
+ 
+    
+      theatre.name = updatedDetails.name;
+      theatre.seats = updatedDetails.seats;
+      theatre.movies = updatedDetails.movies;
+      theatre.showTimings = updatedDetails.showTimings.map((timing) => ({
+        _id: timing._id || new mongoose.Types.ObjectId(),
+        startTime: timing.startTime,
+        owner: ownerId,
+      }));
+  
+      // Save the updated theater details
+      await theatre.save();
+  
+      return res.status(200).json({ message: 'Theatre updated successfully', theatre });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: 'Request failed' });
+    }
+  };
   
   
 module.exports ={
@@ -258,7 +353,9 @@ module.exports ={
     updateOwner,
     getTheatres,
     addTheatre,
-    getMovies
+    getMovies,
+    getSpecificTheatre,
+    updateTheatre
     
 
 
