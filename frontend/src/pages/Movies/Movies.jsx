@@ -18,6 +18,7 @@ const Movies = () => {
   const fetchMovies = () => {
     getAllMovies(currentPage)
       .then((data) => {
+      
         setMovies(data.movies);
         setTotalPages(data.totalPages);
       })
@@ -75,6 +76,7 @@ const Movies = () => {
             <MovieItems
               key={index}
               postedUrl={movie.postedUrl}
+              id ={movie._id}
               title={movie.title}
               language={movie.language}
               description={movie.description}

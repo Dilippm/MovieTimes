@@ -88,7 +88,7 @@ const Home = () => {
               postedUrl={movie.postedUrl}
               description={movie.description}
               language={movie.language}
-              id={movie.id}
+              id={movie._id}
             />
           ))}
         </Box>

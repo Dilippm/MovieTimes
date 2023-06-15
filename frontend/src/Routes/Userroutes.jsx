@@ -9,6 +9,8 @@ import Movies from '../pages/Movies/Movies';
 import User from '../pages/User/User';
 import UserProfile from '../pages/Profile/userProfile';
 import UserRegistration from '../pages/User/UserRegister';
+import MoviePage from '../pages/User/MoviePage';
+import SeatSelection from '../pages/User/SeatSelection';
 const UserRoutes = () => {
   return (
     <>
@@ -18,6 +20,8 @@ const UserRoutes = () => {
           <Route exact path="/login" element={<UserPublicRoutes><User /></UserPublicRoutes>} />
           <Route exact path="/register" element={<UserPublicRoutes><UserRegistration /></UserPublicRoutes>} />
           <Route path="/profile" element={<UserProtectedRoutes><UserProfile /></UserProtectedRoutes>} />
+          <Route path ='/viewmovie/:id' element ={<MoviePage/>}/>
+          <Route path='/movieseats' element ={<SeatSelection/>}/>
        
          
         </Routes>

@@ -4,8 +4,13 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { CardActionArea } from '@mui/material';
 import Button from '@mui/material/Button';
-
+import { useNavigate } from 'react-router-dom';
 const MovieItems = ({ title  , language, postedUrl, id }) => {
+  const navigate = useNavigate();
+
+  const handleButtonClick = () => {
+    navigate(`/viewmovie/${id}`);
+  };
     return (
       <Card className='poster-box' sx={{ width: 300, height: 370, borderRadius: 5, ":hover": { boxShadow: "10px 10px 20px #ccc" }, margin: 5, backgroundImage: `url(${postedUrl})`, backgroundSize: 'cover',  }}>
         <CardActionArea>
@@ -27,9 +32,10 @@ const MovieItems = ({ title  , language, postedUrl, id }) => {
     variant="contained"
     sx={{
       "&:hover": {
-        backgroundColor: '#e91e63' // Change the color here
+        backgroundColor: '#e91e63' 
       }
     }}
+    onClick={handleButtonClick}
   >
     Book Ticket
   </Button>

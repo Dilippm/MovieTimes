@@ -1,5 +1,7 @@
 const User = require("../models/User");
 const Admin =require("../models/Admin")
+const Theatre =require("../models/Theatre");
+const Movie=  require("../models/Movies");
 const Booking = require("../models/Bookings")
 const bcrypt = require("bcryptjs");
 const config = require('../config');
@@ -208,6 +210,28 @@ const getUser= async(req,res,next)=>{
         
     }
 }
+const getTheatre = async (req, res) => {
+    try {
+       
+      const {id} = req.params; 
+     
+      const movie = await Movie.findOne({_id:id});
+      
+      const theatre = await Theatre.find({movies:movie.title});
+    
+      if(!theatre){
+        res.status(400).json({message:'no theatre found'})
+      }
+      const theatreNames = theatre.map(theatre => theatre.name);
+      
+   
+    res.status(200).json({message:"found",theatreNames});
+    } catch (error) {
+      console.error('Failed to fetch theaters:', error);
+      res.status(500).json({ error: 'Failed to fetch theaters' });
+    }
+  };
+  
 module.exports = {
     getUsers,
     userRegister,
@@ -215,5 +239,6 @@ module.exports = {
     userLogin,
     getBookingsofUser,
     userGooleLogin,
-    getUser
+    getUser,
+    getTheatre
 };

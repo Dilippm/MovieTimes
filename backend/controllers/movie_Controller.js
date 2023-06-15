@@ -174,13 +174,31 @@ const getMovies = async (req, res, next) => {
     }
   };
   
+  /**Get User Specific movie */
+  const getUserMovie =async(req,res,next)=>{
+    try {
+      const movieId = req.params.id;
+    const movie = await Movie.find({_id:movieId})
+
+    if (!movie) {
+      return res.status(404).json({ message: 'Invalid movie ID' });
+    }
+
+    res.json({ message: 'Movie found', movie });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch the movie' });
+    }
+    
+
+  }
   
 
 module.exports = {
     addMovie,
     getMovies,
     getMovieById,
-    updateMovieById
+    updateMovieById,
+    getUserMovie
   
 
 }

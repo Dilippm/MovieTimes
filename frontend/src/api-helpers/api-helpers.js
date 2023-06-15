@@ -302,7 +302,7 @@ export const updateOwnerProfile= async(data,image)=>{
 /**Specific Movie */
   export const getMovieDetails = async (id) => {
     try {
-      console.log("id:",id);
+      
       const token = localStorage.getItem('admintoken')
       
       const response = await axios.get(`${BaseURL}movie/editmovie/${id}`, {
@@ -456,5 +456,34 @@ export const updateTheatreDetails = async ( theatreId, updatedDetails) => {
     return response.data;
   } catch (error) {
     throw new Error('Failed to update theater details');
+  }
+};
+/**Get Specific movie to User */
+export const getMovieById = async(id)=>{
+  try {
+    const res = await axios.get(`${BaseURL}movie/usermovie/${id}`);
+
+    if (res.status !== 200) {
+      console.log('No Data');
+      return null;
+    }
+
+    const data = res.data;
+    
+    return data;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+  
+}
+export const getTheatresByMovie = async (id) => {
+  try {
+
+    const response = await axios.get(`${BaseURL}user/movie/${id}`);
+   
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch theatres');
   }
 };
