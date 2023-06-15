@@ -202,7 +202,7 @@ const getTheatres = async (req, res, next) => {
 
   /**Add Theatre  */
   const addTheatre = async (req, res, next) => {
-    const { name, seats, timings, movieName } = req.body;
+    const { name, seats, price,timings, movieName } = req.body;
     const token = req.headers.authorization;
     if (!token) {
       return res.status(404).json({ message: 'Token not found' });
@@ -230,6 +230,7 @@ const getTheatres = async (req, res, next) => {
       const newTheatreData = {
         name,
         seats,
+        price,
         movies: movieName,
         showTimings: timings.map((startTime) => ({ startTime }))
       };
@@ -327,6 +328,7 @@ const savedTheatre = await newTheatre.save();
     
       theatre.name = updatedDetails.name;
       theatre.seats = updatedDetails.seats;
+      theatre.price = updatedDetails.pric;
       theatre.movies = updatedDetails.movies;
       theatre.showTimings = updatedDetails.showTimings.map((timing) => ({
         _id: timing._id || new mongoose.Types.ObjectId(),

@@ -4,19 +4,24 @@ import BaseURL from '../config'
 
 
 /**Owner side get movie */
-export const getAllMovies = async () => {
+export const getAllMovies = async (currentPage, moviesPerPage) => {
   try {
-    const ownerToken = localStorage.getItem("ownertoken"); 
+    const ownerToken = localStorage.getItem("ownertoken");
     const res = await axios.get(`${BaseURL}movie/movies`, {
       headers: {
-        Authorization: `Bearer ${ownerToken}` 
-      }
+        Authorization: `Bearer ${ownerToken}`,
+      },
+      params: {
+        page: currentPage,
+        limit: moviesPerPage,
+      },
     });
-   
+
     if (res.status !== 200) {
       console.log('No Data');
       return null;
     }
+
     const data = res.data;
     return data;
   } catch (err) {

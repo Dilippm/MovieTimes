@@ -73,6 +73,9 @@ const EditTheatre = () => {
   const handleSeatsChange = (event) => {
     setTheatreDetails({ ...theatreDetails, seats: event.target.value });
   };
+  const handlePriceChange = (event) => {
+    setTheatreDetails({ ...theatreDetails, price: event.target.value });
+  };
 
   const handleUpdateTheatre = async () => {
     try {
@@ -111,6 +114,15 @@ const EditTheatre = () => {
               fullWidth
               value={theatreDetails.seats}
               onChange={handleSeatsChange}
+            />
+              <Typography variant="h6" sx={{ marginBottom: '0.5rem' }}>
+              Price:
+            </Typography>
+            <TextField
+              variant="standard"
+              fullWidth
+              value={theatreDetails.price}
+              onChange={handlePriceChange}
             />
 
             <Typography variant="h6" sx={{ marginBottom: '0.5rem' }}>

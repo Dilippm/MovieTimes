@@ -52,20 +52,24 @@ const addMovie = async (req, res, next) => {
   };
 /** Get All Movies added */
 const getMovies = async (req, res, next) => {
-  
-   
-     
-       
-        try {
-          const movies = await Movie.find({ status: false });
-        
-          return res.status(200).json({ movies });
-        } catch (error) {
-          console.log(error);
-          return res.status(500).json({ message: "Request failed" });
-        }
-        
-  };
+  const currentPage = parseInt(req.query.page) || 1;
+  const moviesPerPage = parseInt(req.query.limit) || 3;
+
+  try {
+    const totalMovies = await Movie.countDocuments({ status: false });
+    const totalPages = Math.ceil(totalMovies / moviesPerPage);
+
+    const movies = await Movie.find({ status: false })
+      .skip((currentPage - 1) * moviesPerPage)
+      .limit(moviesPerPage);
+
+    return res.status(200).json({ movies, totalPages });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Request failed" });
+  }
+};
+
 
 
   /** Get specific movie by ID */
