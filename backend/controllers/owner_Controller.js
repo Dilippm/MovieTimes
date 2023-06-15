@@ -1,30 +1,43 @@
 const Owner = require("../models/Owner");
+const Admin= require("../models/Admin")
 const User =require("../models/User")
+const Movie =require("../models/Movies")
+const Theatre =require("../models/Theatre")
 const bcrypt = require("bcryptjs");
 const jwt =require("jsonwebtoken");
 const config = require('../config');
 const jwtSecret = config.JWT_SECRET;
+const mongoose = require('mongoose');
+
+
 /*theater Owner Registration*/ 
 const ownerRegister = async (req, res, next) => {
-    const { name, email, password, phone } = req.body;
-    if (!name || !email || !password || !phone) {
-      return res.status(422).json({ error: "Invalid inputs" });
+  const { name, email, password, phone } = req.body;
+  if (!name || !email || !password || !phone) {
+    return res.status(422).json({ error: "Invalid inputs" });
+  }
+  const newPassword = bcrypt.hashSync(password);
+  try {
+    const existingOwner = await Owner.findOne({ email });
+    if (existingOwner) {
+      return res.status(409).json({ message: "Owner already exists" });
     }
-    const newPassword = bcrypt.hashSync(password);
-    try {
-      const existingOwner = await Owner.findOne({ email });
-      if (existingOwner) {
-        return res.status(409).json({ message: "Owner already exists" });
-      }
-      const owner = new Owner({ name, email, password: newPassword, phone });
-      await owner.save();
+    const owner = new Owner({ name, email, password: newPassword, phone });
   
-      return res.status(200).json({ message: "Registered successfully", owner });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ error: "Unexpected error occurred" });
-    }
-  };
+    await owner.save();
+    
+ let admin = await Admin.findOne(); 
+    admin.owners.push(owner); 
+    admin = await admin.populate("owners");
+    await admin.save();
+    
+    return res.status(200).json({ message: "Registered successfully", owner });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Unexpected error occurred" });
+  }
+};
+
   /*To get all user details*/
   const getUsers = async (req, res, next) => {
     let users;
@@ -66,34 +79,31 @@ const ownerLogin = async (req,res,next)=>{
             .json({error: "email or password wrong"})
     }
     const token = jwt.sign({id:owner._id},jwtSecret,{expiresIn:"1d"})
+    
     return res
         .status(200)
-        .json({message: "Login successfull",token,id:owner._id});
+        .json({message: "Login successfull",token,id:owner._id,name:owner.name,image:owner.image});
 
 }
-const getOwner =async(req,res,next)=>{
-    const {id} = req.params;
-    try {
-        let owner = await Owner.findById(id);
-       
-        if (!owner) {
-            return res
-                .status(404)
-                .json({message: "Admin not found"});
-        }
-        
-        return res
-        .status(200)
-        .json({message: "user found successfully", owner});
-
-    } catch (error) {
-        console.log(error);
-        return res
-            .status(500)
-            .json({message: "Something went wrong"});
-        
+const getOwner = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid owner ID' });
     }
-}
+
+    let owner = await Owner.findById(id);
+
+    if (!owner) {
+      return res.status(404).json({ message: 'Owner not found' });
+    }
+
+    return res.status(200).json({ message: 'Owner found successfully', owner });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Something went wrong' });
+  }
+};
 /** admin update */
 const updateOwner = async (req, res, next) => {
     const { id } = req.params;
@@ -131,13 +141,125 @@ const updateOwner = async (req, res, next) => {
       return res.status(500).json({ message: "Something went wrong" });
     }
   };
+
+  /**Get Movies */
+  const getMovies=async(req,res,next)=>{
+    const { id } = req.params;
+    let owner = await Owner.findById(id);
+    if(!owner){
+      return res
+            .status(500)
+            .json({error: "Unexpected error occurred"});
+
+    }
+    let movies = await Movie.find();
+    if(!movies){
+      return res.status(500).json({error:"no movies found"})
+    }
+  
+    return res.status(200).json({message:"movies found",movies})
+
+  }
+/**Get All theaters */
+const getTheatres = async (req, res, next) => {
+  console.log("vanur");
+  const {id} =req.params
+  const token = req.headers.authorization;
+  console.log("toekn owner:",token);
+  if (!token) {
+    return res.status(404).json({ message: 'Token not found' });
+  }
+
+  let ownerId;
+
+  try {
+    const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
+    ownerId = decodedToken.id;
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: error.message });
+  }
+
+  try {
+    const owner = await Owner.findById(id).populate('theatres');
+
+
+    if (!owner) {
+      return res.status(404).json({ message: 'Owner not found' });
+    }
+
+   
+    const ownerName = owner.name;
+    const theaters = owner.theatres;
+
+    res.status(200).json({ ownerName, theaters });
+  } catch (error) {
+    console.error('Failed to get theaters:', error);
+    res.status(500).json({ message: 'Failed to get theaters' });
+  }
+};
+
+
+  /**Add Theatre  */
+  const addTheatre = async (req, res, next) => {
+    const { name, seats, timings, movieName } = req.body;
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(404).json({ message: 'Token not found' });
+    }
+  
+    let ownerId;
+  
+    try {
+      const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
+      ownerId = decodedToken.id;
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ message: error.message });
+    }
+  
+   
+  
+    try {
+      const ownerUser = await Owner.findOne({ _id: ownerId });
+  
+      if (!ownerUser) {
+        return res.status(404).json({ message: 'Invalid owner ID' });
+      }
+  
+      const newTheatreData = {
+        name,
+        seats,
+        movies: movieName,
+        showTimings: timings.map((startTime) => ({ startTime }))
+      };
+  
+      const newTheatre = new Theatre(newTheatreData);
+      newTheatre.owner = ownerUser._id; 
+const savedTheatre = await newTheatre.save();
+      ownerUser.theatres.push(savedTheatre._id);
+      await ownerUser.save();
+  
+      res.status(200).json({ message: 'Theatre added successfully' });
+    } catch (error) {
+      console.error('Failed to add theatre:', error);
+      res.status(500).json({ message: 'Failed to add theatre' });
+    }
+  };
+  
+  module.exports = addTheatre;
+  
   
 module.exports ={
     ownerRegister,
     getUsers,
     ownerLogin,
     getOwner,
-    updateOwner
+    updateOwner,
+    getTheatres,
+    addTheatre,
+    getMovies
+    
 
 
 }

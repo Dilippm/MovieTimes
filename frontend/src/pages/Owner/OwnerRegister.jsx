@@ -24,10 +24,11 @@ const OwnerRegister = () => {
         e.preventDefault();
         try {
           const resData = await OwnerSignup(inputs); 
+     
           if (resData) {
             // Login success
             toast.success(resData.message);
-            navigate('/owner');
+            navigate('/owner/login');
           } 
         } catch (err) {
           console.log(err);

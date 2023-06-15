@@ -9,7 +9,7 @@ import { editMovie } from '../../api-helpers/api-helpers';
 import axios from 'axios';
 import BaseURL from '../../config';
 
-function EditMovie({ movieId }) {
+function EditMovie({ movieId, onEditMovie }) {
   const [open, setOpen] = useState(false);
   const [movieData, setMovieData] = useState({
     title: '',
@@ -146,6 +146,11 @@ function EditMovie({ movieId }) {
         file: '',
       });
       handleClose();
+
+      // Call the onEditMovie callback
+      if (onEditMovie) {
+        onEditMovie();
+      }
     } catch (error) {
       console.error('Failed to edit movie:', error);
     }

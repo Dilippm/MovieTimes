@@ -29,12 +29,16 @@ const OwnerLogin = () => {
     e.preventDefault();
     try {
       const resData = await ownerLogin(inputs);
+      
       if (resData) {
         // Login success
         dispatch(ownerActions.login())
-      localStorage.setItem("ownerId",resData.id,resData.token)
+      localStorage.setItem("ownerId",resData.id)
+      localStorage.setItem("ownertoken",resData.token)
+      localStorage.setItem("ownername",resData.name)
+      localStorage.setItem("ownerimage",resData.image)
         toast.success(resData.message);
-        navigate('/owner_home');
+        navigate('/owner/home');
       }
     } catch (err) {
       console.log(err);
@@ -47,7 +51,7 @@ const OwnerLogin = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
       <Box
         sx={{
           width: 500,
@@ -106,7 +110,7 @@ const OwnerLogin = () => {
                 textAlign: 'center'
               }}
               onClick={() => {
-                navigate('/owner_register')
+                navigate('/owner/owner_register')
               }}
             >
               <b> Register</b>

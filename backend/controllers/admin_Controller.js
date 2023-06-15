@@ -1,7 +1,9 @@
 const Admin = require("../models/Admin");
 const Movie =require("../models/Movies")
+const User =require("../models/User")
 const jwt =require("jsonwebtoken");
 const config = require('../config');
+const Owner = require("../models/Owner");
 const jwtSecret = config.JWT_SECRET;
 const BASE_URL =config.BASE_URL;
 /* admin Login */
@@ -37,7 +39,7 @@ const adminLogin = async (req, res, next) => {
     const token = jwt.sign({ id: admin._id }, jwtSecret, { expiresIn: "1d" });
     return res
         .status(200)
-        .json({ message: "Login successful", token,id:admin.id });
+        .json({ message: "Login successful", token,id:admin.id,name:admin.name,image:admin.image });
 };
 
 /** admin update */
@@ -82,7 +84,7 @@ const updateAdmin = async (req, res, next) => {
   const getAdmin= async(req,res,next)=>{
     const {id} = req.params;
     try {
-        let admin = await Admin.findById(id);
+        let admin = await Admin.findById({_id:id})
        
         if (!admin) {
             return res
@@ -106,29 +108,39 @@ const updateAdmin = async (req, res, next) => {
   /** GET users */
   const getUsers = async (req, res, next) => {
     try {
-      // Fetch all admins and populate the 'user' field
-      let adminId = req.params.id;
-
-   
-      const admin = await Admin.findById(adminId).populate({
-        path: "users",
-        select: "name email phone status" // Specify the fields you want to retrieve
-      });
+      const adminId = req.params.id;
+      const page = parseInt(req.query.page) || 1; // Get the page parameter from the query, default to 1 if not provided
+      const limit = parseInt(req.query.limit) || 10; // Get the limit parameter from the query, default to 10 if not provided
+  
+      const admin = await Admin.findById(adminId)
+        .populate({
+          path: "users",
+          select: "name email phone status",
+          options: {
+            skip: (page - 1) * limit, // Calculate the number of documents to skip based on the page and limit
+            limit: limit, // Set the limit for the number of documents to retrieve
+          },
+        })
+        .exec();
+  
       if (!admin) {
         return res.status(404).json({ message: "Admin not found" });
       }
-      
+  
       const users = admin.users;
-
-      res.json({ message: "Users found", users });;
+      const totalCount = await User.find().count()
+ 
+  
+      res.json({ message: "Users found", users, totalUsers: totalCount, totalPages: Math.ceil(totalCount / limit) });
     } catch (error) {
       // Handle any errors that occur
       res.status(500).json({ message: "Failed to fetch users" });
     }
   };
   
+  
 
-
+/**Block or unblock user */
   const updateuserStatus = async (req, res, next) => {
     
     const token = req.headers.authorization;
@@ -180,83 +192,100 @@ const updateAdmin = async (req, res, next) => {
       return res.status(500).json({ message: 'Request failed' });
     }
   };
-  const getMovies = async(req,res,next)=>{
+  /**Get Movies */
+  const getMovies = async (req, res, next) => {
     try {
-      // Fetch all admins and populate the 'user' field
-      let adminId = req.params.id;
-
-   
-      const admin = await Admin.findById(adminId).populate({
-        path: "movies",
-        select: "title language description status postedUrl" // Specify the fields you want to retrieve
-      });
-      if (!admin) {
-        return res.status(404).json({ message: "Admin not found" });
-      }
-      
-      const movies = admin.movies;
-
-      res.json({ message: "movies found", movies });;
-    } catch (error) {
-      // Handle any errors that occur
-      res.status(500).json({ message: "Failed to fetch movies" });
-    }
-
-  }
+      const adminId = req.params.id;
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
   
+      const admin = await Admin.findById(adminId).populate({
+        path: 'movies',
+        select: 'title language description status postedUrl',
+        options: {
+          skip: (page - 1) * limit,
+          limit: limit,
+        },
+      });
+  
+      if (!admin) {
+        return res.status(404).json({ message: 'Admin not found' });
+      }
+  
+      const movies = admin.movies;
+      const totalCount = await Movie.find().count();
+      const totalPages = Math.ceil(totalCount / limit);
+  
+      res.json({ message: 'Movies found', movies, totalPages });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch movies', error });
+    }
+  };
+  
+  
+  /**Add A Movie */
   const addMovie = async (req, res, next) => {
-   
     const { title, language, description } = JSON.parse(req.body.admindata);
     const token = req.headers.authorization;
-    
+  
     if (!token) {
       return res.status(404).json({ message: "Token not found" });
     }
-    
+  
     let adminId;
     try {
       const decodedToken = jwt.verify(token.split(" ")[1], jwtSecret);
-      
+  
       adminId = decodedToken.id;
     } catch (error) {
       console.log(error);
       res.status(400).json({ message: error.message });
     }
-    
   
-    
     try {
       let admin = await Admin.findById(adminId);
       if (!admin) {
         return res.status(404).json({ message: "Admin not found" });
       }
-      
+  
       const newMovieData = {
         title,
         language,
         description,
       };
-     
+  
       if (req.file) {
-        console.log("file:",req.file);
+        console.log("file:", req.file);
         // Generate a URL for the uploaded image
         const imageUrl = `${BASE_URL}/${req.file.filename}`;
         // Store the image URL in the movie data
         newMovieData.postedUrl = imageUrl;
       }
-      
+  
       const newMovie = new Movie(newMovieData);
       const savedMovie = await newMovie.save();
-      
-      admin.movies.push(savedMovie);
+  
+
+      admin.movies.push(savedMovie._id);
       await admin.save();
-      
+  
+     
+      const owners = await Owner.find({});
+      if (!owners || owners.length === 0) {
+        return res.status(404).json({ message: "No owners found" });
+      }
+      for (let i = 0; i < owners.length; i++) {
+        owners[i].movies.push(savedMovie._id);
+        await owners[i].save();
+      }
+  
       res.status(200).json({ message: "Movie added successfully" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Failed to add movie" });
     }
   };
+  
   /**update movie status */
    const updatemovieStatus= async(req,res,next)=>{
     const token = req.headers.authorization;
@@ -292,7 +321,7 @@ const updateAdmin = async (req, res, next) => {
           }
       
           
-          if (movie.status) {
+          if (movie.status==true) {
             movie.status = false; 
           } else if(movie.status==false) {
             movie.status = true; 
@@ -309,8 +338,82 @@ const updateAdmin = async (req, res, next) => {
 
       
    }
+   /**get All owners */
+   const getOwners =async(req,res,next)=>{
+   
+    try {
+     let adminId =req.params.id
+      const admin = await Admin.findById(adminId).populate({
+        path: "owners",
+        select: "name phone email Isapproved " 
+      });
+      if (!admin) {
+        return res.status(404).json({ message: "Admin not found" });
+      }
+     
+      
+      const owners = admin.owners;
+     
 
+      res.json({ message: "owners found", owners });;
+      
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({message:error.message});
+    }
 
+   }
+  /**Change owner status */
+  const changeOwnerStatus=async(req,res,next)=>{
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return res.status(404).json({ message: 'Token not found' });
+    }
+   
+    let adminId;
+  
+    try {
+  
+      const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
+
+      adminId = decodedToken.id;
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ message: error.message });
+    }
+    const ownerId = req.params.id;
+   
+    try {
+      const adminUser = await Admin.findOne({ _id: adminId }).populate('owners');
+      
+      if (!adminUser) {
+        return res.status(404).json({ message: 'Invalid admin ID' });
+      }
+  
+      const owner = adminUser.owners.find((user) => user._id.toString() === ownerId);
+    
+      if (!owner) {
+        return res.status(404).json({ message: 'Invalid owner ID' });
+      }
+  
+      
+      if (owner.Isapproved) {
+        owner.Isapproved = false; 
+      } else if(owner.Isapproved==false) {
+        owner.Isapproved = true; 
+      }
+      
+      await owner.save();
+  
+  
+      return res.status(200).json({ message: 'User updated successfully', owner });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: 'Request failed' });
+    }
+
+  }
 module.exports = {
    adminLogin,
    updateAdmin,
@@ -319,6 +422,9 @@ module.exports = {
    updateuserStatus,
    getMovies,
    addMovie,
-   updatemovieStatus
+   updatemovieStatus,
+   getOwners,
+   changeOwnerStatus
+
  
 };

@@ -10,6 +10,7 @@ const userSlice =createSlice({
         logout(state){
             localStorage.removeItem("userId")
             localStorage.removeItem("token")
+            localStorage.removeItem("name")
             state.isLoggedIn =false;
         },
     }
@@ -25,6 +26,9 @@ const adminSlice =createSlice({
         },
         logout(state){
             localStorage.removeItem("adminId")
+            localStorage.removeItem("admintoken")
+            localStorage.removeItem("adminname")
+            localStorage.removeItem("adminimage")
             state.isLoggedIn =false;
         },
     }
@@ -40,6 +44,9 @@ const ownerSlice =createSlice({
         },
         logout(state){
             localStorage.removeItem("ownerId")
+            localStorage.removeItem("ownertoken")
+            localStorage.removeItem("ownername")
+            localStorage.removeItem("ownerimage")
             state.isLoggedIn =false;
         },
     }

@@ -36,6 +36,18 @@ const adminSchema = new mongoose.Schema({
             type:mongoose.Types.ObjectId,
             ref:"Movie",
         }
+    ],
+    owners:[
+        {
+            type:mongoose.Types.ObjectId,
+            ref:"Owner",
+        }
+    ],
+    theatres:[
+        {
+            type:mongoose.Types.ObjectId,
+            ref:"Theatre",
+        }
     ]
 });
 

@@ -23,7 +23,24 @@ const ownerSchema = new mongoose.Schema({
     image: {
         type: String,
         default: ''
-    }
+    },
+    Isapproved:{
+        type:Boolean,
+        default:false
+    },
+    movies:[
+        {
+            type:mongoose.Types.ObjectId,
+            ref:"Movie",
+        }
+    ],
+    theatres:[
+        {
+            type:mongoose.Types.ObjectId,
+            ref:"Theatre",  
+        }
+    ]
+    
 });
 
 module.exports = mongoose.model("Owner", ownerSchema);

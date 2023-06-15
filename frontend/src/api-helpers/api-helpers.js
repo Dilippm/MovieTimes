@@ -3,10 +3,16 @@ import BaseURL from '../config'
 
 
 
+/**Owner side get movie */
 export const getAllMovies = async () => {
   try {
-    const res = await axios.get(`${BaseURL}movie/movies`);
-    console.log("resdatmves",res);
+    const ownerToken = localStorage.getItem("ownertoken"); 
+    const res = await axios.get(`${BaseURL}movie/movies`, {
+      headers: {
+        Authorization: `Bearer ${ownerToken}` 
+      }
+    });
+   
     if (res.status !== 200) {
       console.log('No Data');
       return null;
@@ -18,6 +24,7 @@ export const getAllMovies = async () => {
     return null;
   }
 };
+
 /** user Login */
 export const sendUserAuthRequest = async (data) => {
   try {
@@ -25,7 +32,7 @@ export const sendUserAuthRequest = async (data) => {
       email: data.email,
       password: data.password
     });
-
+    
     const resData = res.data;
     return resData;
   } catch (err) {
@@ -60,7 +67,7 @@ export const adminLogin = async (data) => {
     });
 
     const resData = res.data;
-    console.log("resData admin:" ,resData);
+   
     localStorage.setItem("admintoken",resData.token)
     return resData;
   } catch (err) {
@@ -80,8 +87,9 @@ export const ownerLogin = async(data)=>{
       password: data.password,
       
     });
-
+      
     const resData = res.data;
+    
     return resData;
   } catch (err) {
     console.log(err);
@@ -94,6 +102,7 @@ export const ownerLogin = async(data)=>{
 /**Owner Register */
 export const OwnerSignup = async(data)=>{
   try {
+    
     const res = await axios.post(`${BaseURL}owner/register`, {
       name:data.name,
       email: data.email,
@@ -102,6 +111,7 @@ export const OwnerSignup = async(data)=>{
     });
 
     const resData = res.data;
+  
     return resData;
   } catch (err) {
     console.log(err);
@@ -226,29 +236,38 @@ export const updateOwnerProfile= async(data,image)=>{
   }
 
   /**get all users */
-  export const getUsers = async()=>{
-    const id= localStorage.getItem("adminId");
-    const res = await axios.get(`${BaseURL}admin/users/${id}`);
-    if(res.status!==200){
-      return console.log("unexpected error");
-    }
-    const resData = res.data;
-    console.log("resData:",resData);
-    return resData
+  export const getUsers = async (page, limit) => {
+    const id = localStorage.getItem("adminId");
+    const res = await axios.get(`${BaseURL}admin/users/${id}`, {
+      params: { page, limit }, // Include page and limit as query parameters
+    });
   
-  }
+    if (res.status !== 200) {
+      throw new Error("Unexpected error");
+    }
+  
+    const resData = res.data;
+    console.log("resData:", resData);
+    return resData;
+  };
+  
   /* get movies*/
-  export const getMovies = async()=>{
-    const id= localStorage.getItem("adminId");
-    const res = await axios.get(`${BaseURL}admin/movies/${id}`);
-    if(res.status!==200){
-      return console.log("unexpected error");
-    }
-    const resData = res.data;
-    console.log("resData:",resData);
-    return resData
-  
+ export const getMovies = async (page, limit) => {
+  const id = localStorage.getItem('adminId');
+  const res = await axios.get(`${BaseURL}admin/movies/${id}`, {
+    params: {
+      page,
+      limit,
+    },
+  });
+  if (res.status !== 200) {
+    throw new Error('Unexpected error');
   }
+  const resData = res.data;
+  console.log('resData:', resData);
+  return resData;
+};
+
   /* Add Movie*/
   export const AddMovie = async (movieData, file) => {
     try {
@@ -275,18 +294,18 @@ export const updateOwnerProfile= async(data,image)=>{
     }
   };
  
-
+/**Specific Movie */
   export const getMovieDetails = async (id) => {
     try {
       console.log("id:",id);
       const token = localStorage.getItem('admintoken')
-      console.log("tokenadmin:",token);
+      
       const response = await axios.get(`${BaseURL}movie/editmovie/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  console.log("resdats:",response);
+
       if (response.status === 200) {
         return response.data.movie;
       } else {
@@ -297,7 +316,7 @@ export const updateOwnerProfile= async(data,image)=>{
       throw new Error('Failed to fetch movie details');
     }
   };
-  
+  /**Edit Movie */
 export const editMovie = async (movieId, movieData,file) => {
   try {
    console.log("files",file);
@@ -322,5 +341,74 @@ export const editMovie = async (movieId, movieData,file) => {
   } catch (error) {
     console.error('Failed to edit movie:', error);
     throw new Error('Failed to edit movie');
+  }
+};
+/**GET All Owners */
+ export const getOwnerDetail = async()=>{
+  let id = localStorage.getItem("adminId");
+  
+  const res = await axios.get(`${BaseURL}admin/owners/${id}`);
+
+  if(res.status!==200){
+    return console.log("unexpected error");
+  }
+  console.log("ownerdata:",res.data);
+  const resData = res.data;
+  return resData
+ }
+ 
+ /**Get movies in theater */
+ export const getownerMovies =async()=>{
+  const id= localStorage.getItem("ownerId");
+  const res = await axios.get(`${BaseURL}owner/movies/${id}`);
+  if(res.status!==200){
+    return console.log("unexpected error");
+  }
+  const resData = res.data.movies;
+ 
+  return resData
+
+ }
+ /**Add thatre */
+ export const AddTheatre = async (theatreData) => {
+  try {
+    const token = localStorage.getItem("ownertoken");
+    const response = await axios.post(`${BaseURL}owner/add_theatre`, theatreData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (response.status!=200) {
+      throw new Error('Failed to add theatre');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(`Failed to add theatre: ${error.message}`);
+  }
+};
+/**Get theatre list of owner */
+export const GetTheatres = async () => {
+  try {
+    const token = localStorage.getItem('ownertoken');
+    const id = localStorage.getItem('ownerId');
+    const response = await axios.get(`${BaseURL}owner/theatre/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error('Failed to get theaters');
+    }
+ 
+    const data = response.data;
+    console.log('theaters:', data.theaters);
+    
+
+    return data.theaters;
+  } catch (error) {
+    throw new Error(`Failed to get theaters: ${error.message}`);
   }
 };

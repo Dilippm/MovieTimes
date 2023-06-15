@@ -52,17 +52,18 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 const OwnerHeader = () => {
   const navigate = useNavigate();
   const menuItems = [
-    { text: 'Dashboard', route: '/owner_home' },
+    { text: 'Dashboard', route: '/owner/home' },
     { text: 'Banner', route: '/admin' },
     { text: 'User', route: '/admin_user' },
-    { text: 'Theater', route: '/admin_theater' },
-    { text: 'Movie', route: '/admin_movie' },
+    { text: 'Theater', route: '/owner/owner_theater' },
+    { text: 'Movie', route: '/owner/owner_movies' },
     { text: 'Revenue Report', route: '/admin_report' },
   ];
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
   const theme = useTheme();
-
+  let ownername =localStorage.getItem("ownername");
+  let ownerimage =localStorage.getItem("ownerimage");
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -73,7 +74,7 @@ const OwnerHeader = () => {
 
   const logOut = () => {
     dispatch(ownerActions.logout());
-    navigate('/owner');
+    navigate('/owner/login');
   };
 
   return (
@@ -93,6 +94,14 @@ const OwnerHeader = () => {
           <Typography variant="h3" noWrap component="div">
             MovieTime
           </Typography>
+          {
+            ownername && <Button variant="outlined"sx={{marginLeft:"1100px" ,color:"white"}} >
+            <Typography variant="h5" noWrap component="div">
+              {ownername} 
+            </Typography>
+          </Button>
+          }
+          
           <Tabs
   textColor="white"
   indicatorColor="secondary"
@@ -103,7 +112,7 @@ const OwnerHeader = () => {
 >
   <Tab
     LinkComponent={Link}
-    to="/ownerprofile"
+    to="/owner/ownerprofile"
     label="profile"
     sx={{
       fontSize: '20px',
@@ -135,8 +144,8 @@ const OwnerHeader = () => {
         </DrawerHeader>
          {/* Profile Picture */}
          <ListItem disablePadding sx={{ marginBottom: '50px', marginLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-  <Avatar alt="Profile Picture" src="/path/to/profile-picture.jpg" sx={{ width: '80px', height: '80px', marginBottom: '10px' }} />
-  <ListItemText primary="John Doe" primaryTypographyProps={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }} />
+  <Avatar alt="Profile Picture" src={ownerimage} sx={{ width: '80px', height: '80px', marginBottom: '10px' }} />
+  <ListItemText primary={ownername} primaryTypographyProps={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }} />
 </ListItem>
 
         <List

@@ -170,14 +170,15 @@ const UserRegister = () => {
                         variant='contained'>
                       <b>Register</b>  
                     </Button>
-                    <Box sx={{mt:3 }}> 
-                    <GoogleLogin
-  className="my-button"
-  onSuccess={googleSuccess}
-  onError={googleError}
-  
-/>
-                    </Box>
+                    <Box sx={{ fontSize: '24px', marginLeft:'70px',marginTop:"24px"  }}>
+  <GoogleLogin
+    className="my-button"
+    onSuccess={googleSuccess}
+    onError={googleError}
+    shape="pill"
+    size="large"
+  />
+</Box>
                     
                     <Link
 sx={{

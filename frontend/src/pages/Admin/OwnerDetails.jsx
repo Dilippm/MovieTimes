@@ -3,42 +3,35 @@ import { Box, Button, Typography } from '@mui/material';
 import axios from 'axios';
 import BaseURL from '../../config';
 import Header from '../../components/AdminHeader';
-import { getUsers } from '../../api-helpers/api-helpers';
+import { getOwnerDetail } from '../../api-helpers/api-helpers';
 import TextField from '@mui/material/TextField';
 
-const UserDetails = () => {
+const OwnerDetails = () => {
   const [users, setUsers] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-
-  const limit = 2; // Number of users per page
 
   useEffect(() => {
-    fetchUsers(currentPage);
-  }, [currentPage]);
+    fetchData();
+  }, []);
 
-  const fetchUsers = (page) => {
-    getUsers(page, limit)
-      .then((data) => {
-        setUsers(data.users);
-        setFilteredUsers(data.users);
-        setTotalPages(data.totalPages);
-      })
-      .catch((err) => console.log(err));
+  const fetchData = async () => {
+    try {
+      const data = await getOwnerDetail();
+      setUsers(data.owners);
+      setFilteredUsers(data.owners);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const changeUserStatus = async (index) => {
+  const changeOwnerStatus = async (index) => {
     try {
-      // Get the user ID based on the index
-      const userId = users[index]._id;
-
-      // Retrieve the token from localStorage
+      const ownerId = users[index]._id;
       const token = localStorage.getItem('admintoken');
 
       const response = await axios.post(
-        `${BaseURL}admin/users/${userId}`,
+        `${BaseURL}admin/owners/${ownerId}`,
         null,
         {
           headers: {
@@ -48,12 +41,15 @@ const UserDetails = () => {
       );
 
       if (response.status === 200) {
-        const updatedStatus = response.data.user.status;
+        const updatedStatus = response.data.owner.status;
+
         setUsers((prevUsers) => {
           const updatedUsers = [...prevUsers];
           updatedUsers[index].status = updatedStatus;
           return updatedUsers;
         });
+
+        fetchData(); 
       }
     } catch (error) {
       console.log(error);
@@ -61,22 +57,16 @@ const UserDetails = () => {
   };
 
   useEffect(() => {
-    const filtered = users.filter((user) => {
-      const nameMatch =
-        user.name &&
-        user.name.toLowerCase().includes(searchValue.toLowerCase());
-
+    const filtered = users && users.filter((user) => {
+      const nameMatch = user.name && user.name.toLowerCase().includes(searchValue.toLowerCase());
       return nameMatch;
     });
     setFilteredUsers(filtered);
   }, [searchValue, users]);
 
+
   const handleSearchInputChange = (event) => {
     setSearchValue(event.target.value);
-  };
-
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
   };
 
   return (
@@ -84,14 +74,8 @@ const UserDetails = () => {
       <Header />
       <Box width="100%" height="100%" margin="auto"></Box>
       <Box margin="auto" marginTop={1}>
-        <Typography
-          variant="h3"
-          padding={2}
-          textAlign="center"
-          bgcolor="#900C3F"
-          color="white"
-        >
-          <b>All Users</b>
+        <Typography variant="h3" padding={2} textAlign="center" bgcolor="#900C3F" color="white">
+          <b>All Owners</b>
         </Typography>
         <Box width={'30%'} height={'80%'} margin="auto" marginTop={4}>
           <TextField
@@ -137,7 +121,7 @@ const UserDetails = () => {
             </Typography>
           </Box>
           {filteredUsers &&
-            filteredUsers.map((user, index) => (
+            filteredUsers.map((users, index) => (
               <Box
                 key={index}
                 display="flex"
@@ -149,46 +133,26 @@ const UserDetails = () => {
                 bgcolor="#f5f5f5"
                 height={'150px'}
               >
-                <Typography variant="h5">{user.name}</Typography>
-                <Typography variant="h5">{user.phone}</Typography>
-                <Typography variant="h5">{user.email}</Typography>
+                <Typography variant="h5">{users.name}</Typography>
+                <Typography variant="h5">{users.phone}</Typography>
+                <Typography variant="h5">{users.email}</Typography>
 
                 <Button
                   variant="outlined"
-                  onClick={() => changeUserStatus(index)}
+                  onClick={() => changeOwnerStatus(index)}
                   style={{
-                    backgroundColor: user.status ? 'green' : 'red',
+                    backgroundColor: users.Isapproved ? 'green' : 'red',
                     color: 'white',
                   }}
                 >
-                  {user.status ? 'Active' : 'Inactive'}
+                  {users.Isapproved ? 'Active' : 'Inactive'}
                 </Button>
               </Box>
             ))}
-        </Box>
-        <Box display="flex" justifyContent="center" marginTop={4} marginBottom={3} >
-          {currentPage > 1 && (
-            <Button sx={{margin:"10px", width:"100px",height:"40px" }}
-              variant="contained"
-              color="primary"
-              onClick={() => handlePageChange(currentPage - 1)}
-            >
-              Previous
-            </Button>
-          )}
-          {currentPage < totalPages && (
-            <Button sx={{margin:"10px", width:"100px" }}
-              variant="contained"
-              color="primary"
-              onClick={() => handlePageChange(currentPage + 1)}
-            >
-              Next
-            </Button>
-          )}
         </Box>
       </Box>
     </>
   );
 };
 
-export default UserDetails;
+export default OwnerDetails;
