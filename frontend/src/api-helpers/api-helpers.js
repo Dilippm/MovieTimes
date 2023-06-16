@@ -3,6 +3,7 @@ import BaseURL from '../config'
 
 
 
+
 /**Owner side get movie */
 export const getAllMovies = async (currentPage, moviesPerPage) => {
   try {
@@ -481,9 +482,39 @@ export const getTheatresByMovie = async (id) => {
   try {
 
     const response = await axios.get(`${BaseURL}user/movie/${id}`);
-   
+ 
     return response.data;
   } catch (error) {
     throw new Error('Failed to fetch theatres');
   }
 };
+
+
+export const fetchDataByTheatreId = async (id) => {
+  try {
+
+    const response = await axios.get(`${BaseURL}user/theatres/${id}`);
+   
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch theatre data');
+  }
+};
+export const theatreReserve = async(data)=>{
+  try {
+    const token = localStorage.getItem("token");
+    console.log("usertoken:",token);
+    console.log("date:",data);
+    const response= await axios.post(`${BaseURL}user/reservation`, data, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },})
+      if(response.status==200){
+        return response.data;
+      }
+  } catch (error) {
+    throw new Error('Failed to update theater details');
+  }
+
+}

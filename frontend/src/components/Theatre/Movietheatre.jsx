@@ -14,8 +14,8 @@ const Movietheatre = ({ selectedMovie }) => {
     const fetchTheatres = async () => {
       try {
         const theatresResponse = await getTheatresByMovie(selectedMovie);
-      
-        setTheatres(theatresResponse.theatreNames);
+      console.log("theatreresposne:",theatresResponse);
+        setTheatres(theatresResponse.theatreData);
       } catch (error) {
         console.error('Failed to fetch theatres:', error);
       }
@@ -26,15 +26,17 @@ const Movietheatre = ({ selectedMovie }) => {
 
  
   const filteredTheatres = theatres.filter(theatre =>
-    theatre.toLowerCase().includes(searchQuery.toLowerCase())
+    theatre.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  
 
   const handleSearchChange = event => {
     setSearchQuery(event.target.value);
   };
-const handleButton = ()=>{
-    navigate(`/movieseats`)
-}
+  const handleButton = (id) => {
+   
+    navigate(`/movieseats/${id}`);
+  };
   return (
     <div>
       <TextField
@@ -60,9 +62,9 @@ const handleButton = ()=>{
                   color: 'black',
                 },
               }}
-              onClick={handleButton}
+              onClick={() => handleButton(theatre.id)}
             >
-              {theatre}
+              {theatre.name}
             </Button>
           ))}
         </div>

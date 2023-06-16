@@ -21,7 +21,7 @@ const UserRoutes = () => {
           <Route exact path="/register" element={<UserPublicRoutes><UserRegistration /></UserPublicRoutes>} />
           <Route path="/profile" element={<UserProtectedRoutes><UserProfile /></UserProtectedRoutes>} />
           <Route path ='/viewmovie/:id' element ={<MoviePage/>}/>
-          <Route path='/movieseats' element ={<SeatSelection/>}/>
+          <Route path='/movieseats/:id' element ={<SeatSelection/>}/>
        
          
         </Routes>

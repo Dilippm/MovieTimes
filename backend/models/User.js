@@ -17,23 +17,50 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: Number,
-       
         minLength: 10
     },
-    status:{
-        type:Boolean,
+    status: {
+        type: Boolean,
         default: true
     },
     image: {
         type: String,
         default: ''
     },
-    bookings:[
+    reservation: [
+        {
+            theatreName: {
+                type: String,
+                default: ''
+            },
+            movieName: {
+                type: String,
+                default: ''
+            },
+            Date: {
+                type: String,
+                default: ''
+            },
+            Time:{
+                type:String,
+                default:''
+            },
+            SeatsSelected: [
+                String 
+            ],
+            price: {
+                type: String,
+                default: ''
+            }
+        }
+    ],
+    bookings: [
         {
             type: mongoose.Types.ObjectId,
-            ref:"Booking"
-
-    }]
+            ref: "Booking"
+        }
+    ]
 });
 
 module.exports = mongoose.model("User", userSchema);
+

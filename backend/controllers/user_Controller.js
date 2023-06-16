@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Admin =require("../models/Admin")
 const Theatre =require("../models/Theatre");
+const Reservation =require('../models/Reservation')
 const Movie=  require("../models/Movies");
 const Booking = require("../models/Bookings")
 const bcrypt = require("bcryptjs");
@@ -212,26 +213,102 @@ const getUser= async(req,res,next)=>{
 }
 const getTheatre = async (req, res) => {
     try {
-       
-      const {id} = req.params; 
-     
-      const movie = await Movie.findOne({_id:id});
+      const { id } = req.params;
       
-      const theatre = await Theatre.find({movies:movie.title});
-    
-      if(!theatre){
-        res.status(400).json({message:'no theatre found'})
+      const movie = await Movie.findOne({ _id: id });
+      
+      const theatre = await Theatre.find({ movies: movie.title });
+      
+      if (!theatre || theatre.length === 0) {
+        return res.status(400).json({ message: 'No theatres found' });
       }
-      const theatreNames = theatre.map(theatre => theatre.name);
       
-   
-    res.status(200).json({message:"found",theatreNames});
+      const theatreData = theatre.map(({ _id, name }) => ({ id: _id, name }));
+      
+      res.status(200).json({ message: 'Theatres found', theatreData });
     } catch (error) {
-      console.error('Failed to fetch theaters:', error);
-      res.status(500).json({ error: 'Failed to fetch theaters' });
+      console.error('Failed to fetch theatres:', error);
+      res.status(500).json({ error: 'Failed to fetch theatres' });
     }
   };
   
+  const TheatreDetail = async (req, res, next) => {
+    try {
+      const {id} = req.params;
+    
+      const theatre = await Theatre.findOne({ _id: id });
+      if (!theatre) {
+        return res.status(404).json({ message: 'Theatre not found' });
+      }
+    
+      res.json(theatre);
+    } catch (error) {
+      console.error('Failed to fetch theatre details:', error);
+      next(error);
+    }
+  };
+  const userReservation =async(req,res,next)=>{
+    const token = req.headers.authorization;
+
+   
+    if (!token) {
+      return res.status(401).json({ message: 'User token not found.' });
+    }
+      
+    let userId;
+      
+    try {
+  
+      const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
+
+      userId = decodedToken.id;
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found.' });
+      }
+  
+      const { theatreName,movieName,  Time, Date, seatsSelected, price } = req.body;
+      const existingReservation = await Reservation.findOne({
+        theatreName,
+        movieName,
+        Time,
+        Date,
+        SeatsSelected: { $in: seatsSelected },
+      });
+    
+      if (existingReservation) {
+       
+        return res.status(400).json({ error: 'Sorry Seats are already reserved'});
+      }
+    
+      
+      const reservationData = new Reservation({
+        theatreName,
+        movieName,
+        Time,
+        Date,
+        SeatsSelected: seatsSelected,
+        price,
+      });
+    
+     
+      await reservationData.save();
+  
+    
+      user.reservation.push(reservationData);
+  
+     
+      await user.save();
+  
+      
+      res.json({ message: 'Reservation stored successfully.' });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ message: error.message });
+    }
+
+  }
+ 
 module.exports = {
     getUsers,
     userRegister,
@@ -240,5 +317,8 @@ module.exports = {
     getBookingsofUser,
     userGooleLogin,
     getUser,
-    getTheatre
+    getTheatre,
+    TheatreDetail,
+    userReservation,
+    
 };
