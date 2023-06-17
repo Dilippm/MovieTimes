@@ -4,6 +4,8 @@ import Body from '../../components/Seat/Body';
 import { Box, Typography, Button } from '@mui/material';
 import { fetchDataByTheatreId,theatreReserve } from '../../api-helpers/api-helpers';
 import Header from '../../components/Header';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -11,7 +13,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 
 const SeatSelection = () => {
-  const navigate =useNavigate()
+  const navigate = useNavigate();
   const { id } = useParams();
   const today = dayjs();
   const tomorrow = dayjs().add(3, 'day');
@@ -19,17 +21,14 @@ const SeatSelection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [reservedSeats, setReservedSeats] = useState([]);
   const [selectedShowTiming, setSelectedShowTiming] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(today); // Track selected date
+  const [selectedDate, setSelectedDate] = useState(today); 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetchDataByTheatreId(id);
-        console.log('response:', response);
         setData(response);
-
         setIsLoading(false);
       } catch (error) {
         setError(error);
@@ -58,6 +57,45 @@ const SeatSelection = () => {
     setSelectedDate(date);
   };
 
+  const handleContinueClick = async () => {
+    
+    if (!selectedShowTiming) {
+      toast.error('Please select a show timing.');
+      return;
+    }
+  
+    if (selectedSeats.length === 0) {
+      toast.error('Please select at least one seat.');
+      return;
+    }
+    const theatreName = data.name;
+    const movieName = data.movies;
+    const Date = selectedDate.format('YYYY-MM-DD');
+    const showTime = selectedShowTiming;
+    const totalPrice = data.price * selectedSeats.length;
+    const seatsSelected = selectedSeats.map((seat) => String(seat));
+    const payload = {
+      theatreName,
+      movieName,
+      Date,
+      Time: showTime,
+      seatsSelected, 
+      SeatsSelected: selectedSeats,
+      price: totalPrice,
+    };
+
+    try {
+      const reservation = await theatreReserve(payload);
+      console.log("reservation", reservation.reservationData);
+      if (reservation) {
+        navigate('/booking');
+      }
+    } catch(error) {
+      console.error('Failed to reserve movie');
+      toast.error('Failed to reserve movie. Please try again.');
+    }
+  };
+
   if (isLoading) {
     return <p>Loading...</p>;
   }
@@ -66,65 +104,34 @@ const SeatSelection = () => {
     return <p>Error: {error.message}</p>;
   }
 
-    const handleContinueClick = async () => {
- 
-      const theatreName = data.name;
-      const movieName = data.movies;
-      const Date = selectedDate.format('YYYY-MM-DD');
-      const showTime = selectedShowTiming;
-      const totalPrice = data.price * selectedSeats.length;
-      const seatsSelected = selectedSeats.map((seat) => String(seat));
-      const payload = {
-        theatreName,
-        movieName,
-        Date,
-        Time:showTime,
-        seatsSelected, 
-        SeatsSelected: selectedSeats,
-        price: totalPrice,
-      };
-    try{
-      const reservation = await theatreReserve(payload);
-      if(reservation){
-        setReservedSeats(selectedSeats)
-        navigate('/booking')
-      }
-      
-    }catch(error){
-      console.error("failed to reserve movie")
-    }
-     
-
-  }
-  
-
   return (
     <div>
       <Header />
-      
+      <ToastContainer />
       <Box sx={{ margin: '50px', display: 'flex', justifyContent: 'center',  width: "500px", marginLeft: "700px" }}>
-  <Typography variant="h6" sx={{ marginRight: '10px', paddingTop: '4px' }}>  <b>Show Timings:</b> </Typography>
-  {data.showTimings.map((showTiming, index) => (
-    <Button
-      sx={{ marginLeft: '50px', border: '1px solid brown', width: '100px', height: '75px',color:"white",backgroundColor:"black",'&:hover': {
-        backgroundColor: '#9e0b38',
-      }, }}
-      key={index}
-      variant="contained"
-      onClick={() => handleShowTimingClick(showTiming.startTime)}
-    >
-      <b>{showTiming.startTime}</b>
-    </Button>
-  ))}
-</Box>
+        <Typography variant="h6" sx={{ marginRight: '10px', paddingTop: '4px' }}>
+          <b>Show Timings:</b>
+        </Typography>
+        {data.showTimings.map((showTiming, index) => (
+          <Button
+            sx={{ marginLeft: '50px', border: '1px solid brown', width: '100px', height: '75px', color: "white", backgroundColor: "black", '&:hover': { backgroundColor: '#9e0b38' } }}
+            key={index}
+            variant="contained"
+            onClick={() => handleShowTimingClick(showTiming.startTime)}
+          >
+            <b>{showTiming.startTime}</b>
+          </Button>
+        ))}
+      </Box>
 
-<hr style={{ boxShadow: '10px 20px 0px rgba(10, 0, 20, 0.7)',}}></hr>
+      <hr style={{ boxShadow: '10px 20px 0px rgba(10, 0, 20, 0.7)' }} />
+
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '50px' }}>
-      <div
+        <div
           style={{
             width: '2px',
             backgroundColor: '#000',
-           marginLeft:"50px",
+            marginLeft: "50px",
             marginRight: '50px',
             boxShadow: '10px 20px 0px rgba(10, 0, 20, 0.7)'
           }}
@@ -133,23 +140,22 @@ const SeatSelection = () => {
           <h1 style={{ marginLeft: '400px' }}>Screen This way</h1>
           <br />
           <br />
-          <div style={{ marginLeft: '10px',marginBottom:"30px" }}>
-            <Body data={data} onSeatsSelected={handleSeatsSelected}   />
+          <div style={{ marginLeft: '10px', marginBottom: "30px" }}>
+            <Body data={data} selectedShowTiming={selectedShowTiming} selectedDate={selectedDate} onSeatsSelected={handleSeatsSelected} />
           </div>
-          <hr style={{ boxShadow: '10px 20px 0px rgba(10, 0, 20, 0.7)', marginBottom:"30px"}}></hr>
+          <hr style={{ boxShadow: '10px 20px 0px rgba(10, 0, 20, 0.7)', marginBottom: "30px" }}></hr>
         </Box>
         <div
           style={{
             width: '2px',
             backgroundColor: '#000',
-           
             marginRight: '200px',
             boxShadow: '10px 20px 0px rgba(10, 0, 20, 0.7)'
           }}
         ></div>
         <Box
           sx={{
-            marginTop:"150px",
+            marginTop: "150px",
             marginRight: '150px',
             width: '25%',
             height: '500px',
@@ -188,8 +194,7 @@ const SeatSelection = () => {
           <Typography variant="h4">
             {' '}
             <b>Seats Selected:</b>{' '}
-            
-            <i style={{ color: '#3f4652', fontWeight: 'bolder',fontSize:"30px" }}>{selectedSeats.join(', ')}</i>{' '}
+            <i style={{ color: '#3f4652', fontWeight: 'bolder', fontSize: "30px" }}>{selectedSeats.join(', ')}</i>{' '}
           </Typography>
           <Typography variant="h4">
             {' '}
@@ -197,10 +202,9 @@ const SeatSelection = () => {
             <i style={{ color: '#3f4652', fontWeight: 'bolder' }}>{selectedShowTiming}</i>{' '}
           </Typography>
           <Typography variant="h4">
-  <b>Price:</b>{' '}
-  <i style={{ color: '#3f4652' }}>₹ {data.price * selectedSeats.length}/-</i>
-</Typography>
-
+            <b>Price:</b>{' '}
+            <i style={{ color: '#3f4652' }}>₹ {data.price * selectedSeats.length}/-</i>
+          </Typography>
 
           <Button
             variant="contained"

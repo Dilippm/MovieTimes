@@ -1,5 +1,5 @@
 const express = require("express");
-const {getUsers, userRegister, updateUser, userLogin, getBookingsofUser,userGooleLogin,getUser,getTheatre,TheatreDetail,userReservation} = require(
+const {getUsers, userRegister, updateUser, userLogin, getBookingsofUser,userGooleLogin,getUser,getTheatre,TheatreDetail,userReservation,reservedSeats} = require(
     "../controllers/user_Controller"
 );
 const { uploadOptions } = require("../multer/multer");
@@ -13,7 +13,7 @@ userRouter.get("/booking/:id", getBookingsofUser);
 userRouter.get('/:id',getUser);
 userRouter.get('/movie/:id', getTheatre);
 userRouter.get('/theatres/:id', TheatreDetail);
-
+userRouter.get('/reservedseats/:id',reservedSeats)
 /**POST ROUTES */
 
 userRouter.post('/register', userRegister)

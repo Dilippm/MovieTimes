@@ -211,6 +211,7 @@ const getUser= async(req,res,next)=>{
         
     }
 }
+/**Get the theaters movie palying */
 const getTheatre = async (req, res) => {
     try {
       const { id } = req.params;
@@ -247,6 +248,7 @@ const getTheatre = async (req, res) => {
       next(error);
     }
   };
+  /**user reservation */
   const userReservation =async(req,res,next)=>{
     const token = req.headers.authorization;
 
@@ -301,14 +303,36 @@ const getTheatre = async (req, res) => {
       await user.save();
   
       
-      res.json({ message: 'Reservation stored successfully.' });
+      res.json({ message: 'Reservation stored successfully.' ,reservationData});
     } catch (error) {
       console.log(error);
       return res.status(400).json({ message: error.message });
     }
 
   }
- 
+  /**block the seats */
+  const reservedSeats = async (req, res, next) => {
+    try {
+      const { movie, theatre, date, time } = req.query;
+      
+  
+      const seats = await Reservation.find({
+        movieName: movie,
+        theatreName: theatre,
+        Date: date,
+        Time: time,
+      }).select("SeatsSelected");
+  
+      const reservedSeats = seats.map((reservation) => reservation.SeatsSelected);
+   
+  
+      res.json({ reservedSeats });
+    } catch (error) {
+      console.log("Error fetching reserved seats:", error);
+      res.status(500).json({ error: "Failed to fetch reserved seats" });
+    }
+  };
+  
 module.exports = {
     getUsers,
     userRegister,
@@ -320,5 +344,6 @@ module.exports = {
     getTheatre,
     TheatreDetail,
     userReservation,
+    reservedSeats
     
 };
