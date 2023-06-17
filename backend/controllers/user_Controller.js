@@ -332,6 +332,50 @@ const getTheatre = async (req, res) => {
       res.status(500).json({ error: "Failed to fetch reserved seats" });
     }
   };
+  /**booking page */
+  const showBooking = async(req,res,next)=>{
+    try {
+      
+      const id = req.params.id; 
+      const token = req.headers.authorization;
+
+   console.log("id, token",id,token);
+      if (!token) {
+        return res.status(401).json({ message: 'User token not found.' });
+      }
+        
+      let userId;
+      try {
+        const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
+
+      userId = decodedToken.id;
+      const user = await User.findById(userId);
+      console.log("user",user);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found.' });
+      }
+      const reservation = user.reservation.id(id); 
+
+      if (!reservation) {
+        return res.status(404).json({ message: 'Reservation not found' });
+      }
+      console.log("reservation",reservation);
+      
+      res.status(200).json({ reservation });
+      } catch (error) {
+        console.log(error);
+      return res.status(400).json({ message: error.message });
+      }
+  
+    
+     
+    } catch (error) {
+      
+      console.log("Error fetching reserved seats:", error);
+      res.status(500).json({ error: "Failed to fetch reserved seats" });
+    }
+
+  }
   
 module.exports = {
     getUsers,
@@ -344,6 +388,7 @@ module.exports = {
     getTheatre,
     TheatreDetail,
     userReservation,
-    reservedSeats
+    reservedSeats,
+    showBooking
     
 };

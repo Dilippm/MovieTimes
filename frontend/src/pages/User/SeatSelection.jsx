@@ -86,9 +86,11 @@ const SeatSelection = () => {
 
     try {
       const reservation = await theatreReserve(payload);
-      console.log("reservation", reservation.reservationData);
+     
       if (reservation) {
-        navigate('/booking');
+    
+        let id = reservation.reservationData._id
+        navigate(`/booking/${id}`);
       }
     } catch(error) {
       console.error('Failed to reserve movie');

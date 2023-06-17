@@ -11,9 +11,13 @@ import UserProfile from '../pages/Profile/userProfile';
 import UserRegistration from '../pages/User/UserRegister';
 import MoviePage from '../pages/User/MoviePage';
 import SeatSelection from '../pages/User/SeatSelection';
+import Bookings from '../pages/User/Bookings'
+import Header from '../components/Header';
+import Successpage from '../components/Payment/Successpage';
 const UserRoutes = () => {
   return (
     <>
+    
       <Routes>
           <Route exact path="/" element={<Home />} />
           <Route exact path="/movies" element={<Movies />} />
@@ -22,6 +26,8 @@ const UserRoutes = () => {
           <Route path="/profile" element={<UserProtectedRoutes><UserProfile /></UserProtectedRoutes>} />
           <Route path ='/viewmovie/:id' element ={<MoviePage/>}/>
           <Route path='/movieseats/:id' element ={<SeatSelection/>}/>
+          <Route path ='/booking/:id' element={<UserProtectedRoutes><Bookings/></UserProtectedRoutes>}/>
+          <Route path ='/checkout-success' element ={<UserProtectedRoutes><Successpage/></UserProtectedRoutes>}/>
        
          
         </Routes>

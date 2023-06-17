@@ -11,7 +11,7 @@ const ownerRouter =require("./routes/owner_route")
 const adminRouter =require("./routes/admin_route");
 const movieRouter= require("./routes/movie_route")
 const bookingRouter =require("./routes/booking_route")
-
+const router =require("./routes/stripe")
 app.use(express.json());
 // Enable CORS
 app.use(
@@ -27,7 +27,7 @@ app.use("/owner", ownerRouter);
 app.use("/admin",adminRouter);
 app.use("/movie",movieRouter);
 app.use("/booking",bookingRouter);
-
+app.use('/payment',router);
 // server connection
 app.listen(5000, () => {
   console.log(`Connected to localhost port ${5000}`);
