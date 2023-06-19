@@ -191,14 +191,52 @@ const getMovies = async (req, res, next) => {
     
 
   }
+  const getMoviesByLanguage = async (req, res, next) => {
+    try {
+      const { language, page } = req.query;
+      const pageSize = 10; // Number of movies per page
+      const currentPage = parseInt(page, 10) || 1;
   
-
+      const query = {};
+  
+      if (language) {
+        query.language = language;
+      }
+  
+      const totalMovies = await Movie.countDocuments(query);
+      const totalPages = Math.ceil(totalMovies / pageSize);
+  
+      const movies = await Movie.find(query)
+        .skip((currentPage - 1) * pageSize)
+        .limit(pageSize);
+  
+      res.json({
+        movies,
+        totalPages,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+  const getMovieLanguages = async (req, res, next) => {
+    try {
+      const languages = await Movie.distinct('language');
+      res.json({
+        languages,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+  
 module.exports = {
     addMovie,
     getMovies,
     getMovieById,
     updateMovieById,
-    getUserMovie
+    getUserMovie,
+    getMoviesByLanguage,
+    getMovieLanguages
   
 
 }

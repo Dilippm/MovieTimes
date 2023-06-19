@@ -500,6 +500,7 @@ export const fetchDataByTheatreId = async (id) => {
     throw new Error('Failed to fetch theatre data');
   }
 };
+/**Rserved thereter */
 export const theatreReserve = async (data) => {
   try {
     const token = localStorage.getItem("token");
@@ -527,4 +528,32 @@ export const theatreReserve = async (data) => {
     throw new Error('Failed to update theater details');
   }
 };
+
+/** getmovies by language */
+export const getMoviesByLanguage = async (selectedLanguage, currentPage) => {
+  try {
+    const response = await axios.get(`${BaseURL}movie/moviesbylan`, {
+      params: {
+        language: selectedLanguage,
+        page: currentPage,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getDistinctLanguages =async()=>{
+  try {
+    const response = await axios.get(`${BaseURL}movie/movieslan`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+
+
+
 
