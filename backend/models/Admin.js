@@ -48,6 +48,12 @@ const adminSchema = new mongoose.Schema({
             type:mongoose.Types.ObjectId,
             ref:"Theatre",
         }
+    ],
+    bookings: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: "Booking"
+        }
     ]
 });
 

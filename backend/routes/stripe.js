@@ -17,8 +17,9 @@ router.post('/create-checkout-session', async (req, res) => {
     return res.status(400).json({ message: 'User not found' });
   }
 
-  const { theatreName, movieName, Date, Time, SeatsSelected, price } =
+  const { theatreName, movieName, Date, Time, SeatsSelected, price, _id } =
     req.body.reservationDetails;
+  let reservationId = _id;
 
   const line_items = [
     {
@@ -26,7 +27,7 @@ router.post('/create-checkout-session', async (req, res) => {
         currency: 'Inr',
         product_data: {
           name: theatreName,
-          description: `${movieName} - ${SeatsSelected}`,
+          description: `${movieName} - ${SeatsSelected} - ${Date} - ${Time}`,
         },
         unit_amount: price * 100,
       },
@@ -38,24 +39,11 @@ router.post('/create-checkout-session', async (req, res) => {
     const session = await stripe.checkout.sessions.create({
       line_items,
       mode: 'payment',
-      success_url: `${CLIENT}/checkout-success`,
+      success_url: `${CLIENT}/checkout-success?reservationId=${encodeURIComponent(reservationId)}`,
       cancel_url: `${CLIENT}/movies`,
     });
 
-    const payment = new Booking({
-      theater: theatreName,
-      movie: movieName,
-      date: Date,
-      time: Time,
-      seatNumber: SeatsSelected,
-      price,
-      user: user._id,
-    });
-
-    const savedBooking = await payment.save();
-
-    user.bookings.push(savedBooking._id);
-    await user.save();
+  
 
     res.send({ url: session.url });
   } catch (error) {

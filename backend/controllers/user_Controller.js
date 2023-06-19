@@ -4,6 +4,7 @@ const Theatre =require("../models/Theatre");
 const Reservation =require('../models/Reservation')
 const Movie=  require("../models/Movies");
 const Booking = require("../models/Bookings")
+const Owner =require("../models/Owner")
 const bcrypt = require("bcryptjs");
 const config = require('../config');
 const jwtSecret = config.JWT_SECRET;
@@ -339,7 +340,7 @@ const getTheatre = async (req, res) => {
       const id = req.params.id; 
       const token = req.headers.authorization;
 
-   console.log("id, token",id,token);
+ 
       if (!token) {
         return res.status(401).json({ message: 'User token not found.' });
       }
@@ -350,7 +351,7 @@ const getTheatre = async (req, res) => {
 
       userId = decodedToken.id;
       const user = await User.findById(userId);
-      console.log("user",user);
+     
       if (!user) {
         return res.status(404).json({ message: 'User not found.' });
       }
@@ -359,7 +360,7 @@ const getTheatre = async (req, res) => {
       if (!reservation) {
         return res.status(404).json({ message: 'Reservation not found' });
       }
-      console.log("reservation",reservation);
+     
       
       res.status(200).json({ reservation });
       } catch (error) {
@@ -376,6 +377,56 @@ const getTheatre = async (req, res) => {
     }
 
   }
+  /**saving the booing data to user admin and owner */
+  const userBooking = async (req, res, next) => {
+    try {
+      const userId = req.params.id;
+    
+  
+      const user = await User.findById(userId);
+     
+      if (!user) {
+        return res.status(404).json({ message: 'User not found.' });
+      }
+
+      const { theatreName, movieName, Date, Time, SeatsSelected, price, _id } =
+        req.body.bookingDetails;
+      let reservationId = _id;
+      const payment = new Booking({
+        theater: theatreName,
+        movie: movieName,
+        date: Date,
+        time: Time,
+        seatNumber: SeatsSelected,
+        price,
+        user: user._id,
+      });
+  
+      const savedBooking = await payment.save();
+      
+  
+      user.bookings.push(savedBooking._id);
+      await user.save();
+      const admin = await Admin.findOne();
+      admin.bookings.push(savedBooking._id);
+      await admin.save();;
+      const theatre = await Theatre.find({ name: theatreName }).populate('owner');
+  
+      
+      const ownerId = theatre[0].owner._id;
+  
+      const owner = await Owner.findById(ownerId);
+
+      owner.bookings.push(savedBooking._id);
+      await owner.save();
+    
+    } catch (error) {
+      console.error('Error saving booking details:', error);
+      res.status(500).json({ error: 'Error saving booking details.' });
+    }
+  };
+  
+  
   
 module.exports = {
     getUsers,
@@ -389,6 +440,7 @@ module.exports = {
     TheatreDetail,
     userReservation,
     reservedSeats,
-    showBooking
+    showBooking,
+    userBooking
     
 };

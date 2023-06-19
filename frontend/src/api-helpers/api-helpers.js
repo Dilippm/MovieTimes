@@ -506,9 +506,8 @@ export const theatreReserve = async (data) => {
     if (!token) {
       throw new Error('Please log in to make a reservation.');
     }
-    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in ISO format (YYYY-MM-DD)
-    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Get current time (HH:MM)
-
+    const currentDate = new Date().toISOString().split('T')[0]; 
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); 
     if (data.Date === currentDate && data.Time < currentTime) {
       throw new Error('Selected time is in the past. Please choose a valid show timing.');
     }

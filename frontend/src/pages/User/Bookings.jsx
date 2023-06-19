@@ -44,34 +44,35 @@ const Bookings = () => {
       <Typography variant="h4" marginTop={8} padding={2} textAlign="center" bgcolor="#900C3F" color="white">
         <b>Booking</b>
       </Typography>
-      <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" minHeight="60vh">
-        <Card style={{ width: '400px' }}>
-          <CardContent>
-            <Typography variant="h5" component="h2" align="center">
-              Theater: {reservationDetails.theatreName}
+      <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" minHeight="70vh" >
+      <Card style={{ width: '500px', height: '550px', border: '3px solid #000', boxShadow: '10px 20px 4px rgba(0, 0, 0, 0.5)',backgroundColor:"#ECD5BB" }}>
+          <CardContent >
+            <Typography style={{marginBottom:"20px",marginTop:"10px"}} variant="h5" component="h2" align="center">
+             <b>Theater:<i style={{color:"#3D0C02"}}>{reservationDetails.theatreName}</i> </b> 
             </Typography>
             <br />
-            <Typography color="textSecondary" variant="h5" component="h2" align="center">
-              Movie: {reservationDetails.movieName}
+            <Typography style={{marginBottom:"20px"}}  variant="h5" component="h2" align="center">
+             <b> Movie:  <i style={{color:"#3D0C02"}}>{reservationDetails.movieName}</i></b>
             </Typography>
             <br />
-            <Typography color="textSecondary" variant="h5" component="h2" align="center">
-              Date: {reservationDetails.Date}
+            <Typography style={{marginBottom:"20px"}}  variant="h5" component="h2" align="center">
+             <b>Date: <i style={{color:"#3D0C02"}}>{reservationDetails.Date}</i></b> 
             </Typography>
             <br />
-            <Typography color="textSecondary" variant="h5" component="h2" align="center">
-              Time: {reservationDetails.Time}
+            <Typography style={{marginBottom:"20px"}} variant="h5" component="h2" align="center">
+             <b>Time:<i style={{color:"#3D0C02"}}>{reservationDetails.Time}</i>  </b> 
             </Typography>
             <br />
-            <Typography color="textSecondary" variant="h5" component="h2" align="center">
-              Seats Selected: {reservationDetails.SeatsSelected.join(', ')}
+            <Typography style={{marginBottom:"20px"}}  variant="h5" component="h2" align="center">
+             <b>Seats Selected: <i>{reservationDetails.SeatsSelected.join(', ')}</i> </b>
             </Typography>
             <br />
-            <Typography color="textSecondary" variant="h5" component="h2" align="center">
-              Price: {reservationDetails.price}
+            <Typography style={{marginBottom:"20px"}}  variant="h5" component="h2" align="center">
+             <b>Price:<i style={{marginBottom:"20px"}}>{reservationDetails.price}</i> </b> 
             </Typography>
+            <PayButton reservationDetails={reservationDetails} />
           </CardContent>
-          <PayButton reservationDetails={reservationDetails} />
+          
         </Card>
       </Box>
     </div>

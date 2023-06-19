@@ -1,5 +1,5 @@
 const express = require("express");
-const {getUsers, userRegister, updateUser, userLogin, getBookingsofUser,userGooleLogin,getUser,getTheatre,TheatreDetail,userReservation,reservedSeats,showBooking} = require(
+const {getUsers, userRegister, updateUser, userLogin, getBookingsofUser,userGooleLogin,getUser,getTheatre,TheatreDetail,userReservation,reservedSeats,showBooking,userBooking} = require(
     "../controllers/user_Controller"
 );
 const { uploadOptions } = require("../multer/multer");
@@ -21,6 +21,7 @@ userRouter.post('/register', userRegister)
 userRouter.post('/login', userLogin)
 userRouter.post('/google_login', userGooleLogin)
 userRouter.post('/reservation',userReservation);
+userRouter.post('/userbooking/:id',userBooking)
 
 
 /**PUT ROUTES */
