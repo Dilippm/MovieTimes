@@ -251,26 +251,15 @@ const getTheatre = async (req, res) => {
   };
   /**user reservation */
   const userReservation =async(req,res,next)=>{
-    const token = req.headers.authorization;
-
-   
-    if (!token) {
-      return res.status(401).json({ message: 'User token not found.' });
-    }
-      
-    let userId;
-      
+    
     try {
-  
-      const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
-
-      userId = decodedToken.id;
+      const userId = req.userId;
       const user = await User.findById(userId);
       if (!user) {
         return res.status(404).json({ message: 'User not found.' });
       }
   
-      const { theatreName,movieName,  Time, Date, seatsSelected, price } = req.body;
+      const { theatreName, movieName, Time, Date, seatsSelected, price } = req.body;
       const existingReservation = await Reservation.findOne({
         theatreName,
         movieName,
@@ -278,13 +267,11 @@ const getTheatre = async (req, res) => {
         Date,
         SeatsSelected: { $in: seatsSelected },
       });
-    
+  
       if (existingReservation) {
-       
-        return res.status(400).json({ error: 'Sorry Seats are already reserved'});
+        return res.status(400).json({ error: 'Sorry Seats are already reserved' });
       }
-    
-      
+  
       const reservationData = new Reservation({
         theatreName,
         movieName,
@@ -293,18 +280,13 @@ const getTheatre = async (req, res) => {
         SeatsSelected: seatsSelected,
         price,
       });
-    
-     
+  
       await reservationData.save();
   
-    
       user.reservation.push(reservationData);
-  
-     
       await user.save();
   
-      
-      res.json({ message: 'Reservation stored successfully.' ,reservationData});
+      res.json({ message: 'Reservation stored successfully.', reservationData });
     } catch (error) {
       console.log(error);
       return res.status(400).json({ message: error.message });
@@ -335,48 +317,29 @@ const getTheatre = async (req, res) => {
   };
   /**booking page */
   const showBooking = async(req,res,next)=>{
+    
     try {
-      
-      const id = req.params.id; 
-      const token = req.headers.authorization;
-
- 
-      if (!token) {
-        return res.status(401).json({ message: 'User token not found.' });
-      }
-        
-      let userId;
-      try {
-        const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
-
-      userId = decodedToken.id;
+      const id = req.params.id;
+      const userId = req.userId;
+  
       const user = await User.findById(userId);
-     
       if (!user) {
         return res.status(404).json({ message: 'User not found.' });
       }
-      const reservation = user.reservation.id(id); 
-
+  
+      const reservation = user.reservation.id(id);
       if (!reservation) {
         return res.status(404).json({ message: 'Reservation not found' });
       }
-     
-      
-      res.status(200).json({ reservation });
-      } catch (error) {
-        console.log(error);
-      return res.status(400).json({ message: error.message });
-      }
   
-    
-     
+      res.status(200).json({ reservation });
     } catch (error) {
-      
-      console.log("Error fetching reserved seats:", error);
-      res.status(500).json({ error: "Failed to fetch reserved seats" });
+      console.log(error);
+      return res.status(400).json({ message: error.message });
     }
+  };
 
-  }
+  
   /**saving the booing data to user admin and owner */
   const userBooking = async (req, res, next) => {
     try {
@@ -391,7 +354,7 @@ const getTheatre = async (req, res) => {
 
       const { theatreName, movieName, Date, Time, SeatsSelected, price, _id } =
         req.body.bookingDetails;
-      let reservationId = _id;
+     
       const payment = new Booking({
         theater: theatreName,
         movie: movieName,

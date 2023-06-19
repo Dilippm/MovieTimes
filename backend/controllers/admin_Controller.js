@@ -109,16 +109,16 @@ const updateAdmin = async (req, res, next) => {
   const getUsers = async (req, res, next) => {
     try {
       const adminId = req.params.id;
-      const page = parseInt(req.query.page) || 1; // Get the page parameter from the query, default to 1 if not provided
-      const limit = parseInt(req.query.limit) || 10; // Get the limit parameter from the query, default to 10 if not provided
+      const page = parseInt(req.query.page) || 1; 
+      const limit = parseInt(req.query.limit) || 10; 
   
       const admin = await Admin.findById(adminId)
         .populate({
           path: "users",
           select: "name email phone status",
           options: {
-            skip: (page - 1) * limit, // Calculate the number of documents to skip based on the page and limit
-            limit: limit, // Set the limit for the number of documents to retrieve
+            skip: (page - 1) * limit, 
+            limit: limit, 
           },
         })
         .exec();
@@ -143,54 +143,33 @@ const updateAdmin = async (req, res, next) => {
 /**Block or unblock user */
   const updateuserStatus = async (req, res, next) => {
     
-    const token = req.headers.authorization;
-
-    if (!token) {
-      return res.status(404).json({ message: 'Token not found' });
-    }
-   
-    let adminId;
-  
-    try {
-  
-      const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
-
-      adminId = decodedToken.id;
-    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: error.message });
-    }
-   
+    
+    const adminId = req.adminId;
     const userId = req.params.id;
   
     try {
       const adminUser = await Admin.findOne({ _id: adminId }).populate('users');
-      
+  
       if (!adminUser) {
         return res.status(404).json({ message: 'Invalid admin ID' });
       }
   
       const user = adminUser.users.find((user) => user._id.toString() === userId);
-    
+  
       if (!user) {
         return res.status(404).json({ message: 'Invalid user ID' });
       }
   
-      
-      if (user.status) {
-        user.status = false; 
-      } else if(user.status==false) {
-        user.status = true; 
-      }
-      
+      user.status = !user.status;
+  
       await user.save();
-      
   
       return res.status(200).json({ message: 'User updated successfully', user });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: 'Request failed' });
     }
+
   };
   /**Get Movies */
   const getMovies = async (req, res, next) => {
@@ -224,120 +203,85 @@ const updateAdmin = async (req, res, next) => {
   
   
   /**Add A Movie */
-  const addMovie = async (req, res, next) => {
-    const { title, language, description } = JSON.parse(req.body.admindata);
-    const token = req.headers.authorization;
-  
-    if (!token) {
-      return res.status(404).json({ message: "Token not found" });
+ const addMovie = async (req, res, next) => {
+  const { title, language, description } = JSON.parse(req.body.admindata);
+  const adminId = req.adminId;
+
+  try {
+    let admin = await Admin.findById(adminId);
+    if (!admin) {
+      return res.status(404).json({ message: 'Admin not found' });
     }
+
+    const newMovieData = {
+      title,
+      language,
+      description,
+    };
+
+    if (req.file) {
+    
+      // Generate a URL for the uploaded image
+      const imageUrl = `${BASE_URL}/${req.file.filename}`;
+      // Store the image URL in the movie data
+      newMovieData.postedUrl = imageUrl;
+    }
+
+    const newMovie = new Movie(newMovieData);
+    const savedMovie = await newMovie.save();
+
+    admin.movies.push(savedMovie._id);
+    await admin.save();
+
+    const owners = await Owner.find({});
+    if (!owners || owners.length === 0) {
+      return res.status(404).json({ message: 'No owners found' });
+    }
+    for (let i = 0; i < owners.length; i++) {
+      owners[i].movies.push(savedMovie._id);
+      await owners[i].save();
+    }
+
+    res.status(200).json({ message: 'Movie added successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to add movie' });
+  }
+};
   
-    let adminId;
+  /**update movie status */
+  const updatemovieStatus = async (req, res, next) => {
+    const adminId = req.adminId;
+    const movieId = req.params.id;
+  
     try {
-      const decodedToken = jwt.verify(token.split(" ")[1], jwtSecret);
+      const adminmovie = await Admin.findOne({ _id: adminId }).populate('movies');
   
-      adminId = decodedToken.id;
+      if (!adminmovie) {
+        return res.status(404).json({ message: 'Invalid admin ID' });
+      }
+  
+      const movie = adminmovie.movies.find((movie) => movie._id.toString() === movieId);
+  
+      if (!movie) {
+        return res.status(404).json({ message: 'Invalid movie ID' });
+      }
+  
+      if (movie.status == true) {
+        movie.status = false;
+      } else if (movie.status == false) {
+        movie.status = true;
+      }
+  
+      await movie.save();
+  
+      return res.status(200).json({ message: 'Movie updated successfully', movie });
     } catch (error) {
       console.log(error);
-      res.status(400).json({ message: error.message });
-    }
-  
-    try {
-      let admin = await Admin.findById(adminId);
-      if (!admin) {
-        return res.status(404).json({ message: "Admin not found" });
-      }
-  
-      const newMovieData = {
-        title,
-        language,
-        description,
-      };
-  
-      if (req.file) {
-        console.log("file:", req.file);
-        // Generate a URL for the uploaded image
-        const imageUrl = `${BASE_URL}/${req.file.filename}`;
-        // Store the image URL in the movie data
-        newMovieData.postedUrl = imageUrl;
-      }
-  
-      const newMovie = new Movie(newMovieData);
-      const savedMovie = await newMovie.save();
-  
-
-      admin.movies.push(savedMovie._id);
-      await admin.save();
-  
-     
-      const owners = await Owner.find({});
-      if (!owners || owners.length === 0) {
-        return res.status(404).json({ message: "No owners found" });
-      }
-      for (let i = 0; i < owners.length; i++) {
-        owners[i].movies.push(savedMovie._id);
-        await owners[i].save();
-      }
-  
-      res.status(200).json({ message: "Movie added successfully" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Failed to add movie" });
+      return res.status(500).json({ message: 'Request failed' });
     }
   };
   
-  /**update movie status */
-   const updatemovieStatus= async(req,res,next)=>{
-    const token = req.headers.authorization;
-   
-        if (!token) {
-          return res.status(404).json({ message: 'Token not found' });
-        }
-       
-        let adminId;
-      
-        try {
-      
-          const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
-    
-          adminId = decodedToken.id;
-        } catch (error) {
-          console.log(error);
-          return res.status(400).json({ message: error.message });
-        }
-    
-        const movieId = req.params.id;
-        try {
-          const adminmovie = await Admin.findOne({ _id: adminId }).populate('movies');
-     
-          if (!adminmovie) {
-            return res.status(404).json({ message: 'Invalid admin ID' });
-          }
-      
-          const movie = adminmovie.movies.find((movie) => movie._id.toString() === movieId);
-          
-          if (!movie) {
-            return res.status(404).json({ message: 'Invalid movie ID' });
-          }
-      
-          
-          if (movie.status==true) {
-            movie.status = false; 
-          } else if(movie.status==false) {
-            movie.status = true; 
-          }
-          
-          await movie.save();
-          
-      
-          return res.status(200).json({ message: 'movie updated successfully', movie });
-        } catch (error) {
-          console.log(error);
-          return res.status(500).json({ message: 'Request failed' });
-        }
-
-      
-   }
    /**get All owners */
    const getOwners =async(req,res,next)=>{
    
@@ -364,56 +308,38 @@ const updateAdmin = async (req, res, next) => {
 
    }
   /**Change owner status */
-  const changeOwnerStatus=async(req,res,next)=>{
-    const token = req.headers.authorization;
-
-    if (!token) {
-      return res.status(404).json({ message: 'Token not found' });
-    }
-   
-    let adminId;
-  
-    try {
-  
-      const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
-
-      adminId = decodedToken.id;
-    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: error.message });
-    }
+  const changeOwnerStatus = async (req, res, next) => {
+    const adminId = req.adminId;
     const ownerId = req.params.id;
-   
+  
     try {
       const adminUser = await Admin.findOne({ _id: adminId }).populate('owners');
-      
+  
       if (!adminUser) {
         return res.status(404).json({ message: 'Invalid admin ID' });
       }
   
       const owner = adminUser.owners.find((user) => user._id.toString() === ownerId);
-    
+  
       if (!owner) {
         return res.status(404).json({ message: 'Invalid owner ID' });
       }
   
-      
       if (owner.Isapproved) {
-        owner.Isapproved = false; 
-      } else if(owner.Isapproved==false) {
-        owner.Isapproved = true; 
+        owner.Isapproved = false;
+      } else if (owner.Isapproved == false) {
+        owner.Isapproved = true;
       }
-      
+  
       await owner.save();
   
-  
-      return res.status(200).json({ message: 'User updated successfully', owner });
+      return res.status(200).json({ message: 'Owner updated successfully', owner });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: 'Request failed' });
     }
-
-  }
+  };
+  
 module.exports = {
    adminLogin,
    updateAdmin,

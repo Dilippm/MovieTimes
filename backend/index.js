@@ -2,7 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require('cors');
 const path = require('path');
-
+const config = require('./config');
+const MongoDB_URL =config.MongoDB_URL
 const app = express();
 
 
@@ -35,7 +36,7 @@ app.listen(5000, () => {
 
 /** mongodb connect */
 mongoose
-  .connect("mongodb://127.0.0.1:27017/movietimes", {
+  .connect(`${MongoDB_URL}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
