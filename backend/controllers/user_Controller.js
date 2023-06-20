@@ -68,7 +68,7 @@ const userRegister = async (req, res, next) => {
 
 const userGooleLogin = async (req, res) => {
     const { name, email, password, image } = req.body.user;
-  
+
 
     try {
         const existingUser = await User.findOne({ email });
@@ -76,7 +76,7 @@ const userGooleLogin = async (req, res) => {
             const token = jwt.sign({id:existingUser._id},jwtSecret,{expiresIn:"1d"})
             return res
                 .status(200)
-                .json({message: "Login successfull",id: existingUser._id,token});
+                .json({message: "Login successfull", existingUser,token});
         }
         
   

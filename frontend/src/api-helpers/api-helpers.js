@@ -128,6 +128,7 @@ export const OwnerSignup = async(data)=>{
 /** Get user Profile */
 export const UserProfiles = async()=>{
   const id= localStorage.getItem("userId");
+  console.log("id",id);
   const res = await axios.get(`${BaseURL}user/${id}`);
   if(res.status!==200){
     return console.log("unexpected error");
