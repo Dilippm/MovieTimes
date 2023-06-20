@@ -22,11 +22,7 @@ userRouter.post('/register', userRegister)
 userRouter.post('/login', userLogin)
 userRouter.post('/google_login', userGooleLogin)
 userRouter.post('/reservation', verifyToken, userReservation);
-userRouter.post('/userbooking/:id',userBooking)
-
-
-/**PUT ROUTES */
-
-userRouter.post('/:id',uploadOptions.single("image") ,updateUser)
+userRouter.post('/userbooking/:id',userBooking);
+userRouter.post('/:id',uploadOptions.single("image") ,updateUser);
 
 module.exports = userRouter;

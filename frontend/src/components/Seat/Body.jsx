@@ -6,7 +6,7 @@ const Body = ({ data, onSeatsSelected, selectedShowTiming, selectedDate }) => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [showTimeSeats, setShowTimeSeats] = useState([]);
   const [reservedSeats, setReservedSeats] = useState([]);
-
+  const [bookedSeats, setBookedSeats] = useState([]);
   let date = selectedDate.format('YYYY-MM-DD');
  
 
@@ -26,6 +26,31 @@ const Body = ({ data, onSeatsSelected, selectedShowTiming, selectedDate }) => {
         const reservedSeats = response.data.reservedSeats.flat() || [];
         
         setReservedSeats(reservedSeats);
+      } catch (error) {
+        console.log('Error fetching selected seats:', error);
+      }
+    };
+
+    fetchData();
+  }, [data.movies, data.name, date, selectedShowTiming]);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let id = localStorage.getItem('userId');
+        const bookedSeatsResponse = await axios.get(`${BaseURL}booking/reservedseats/${id}`, {
+          params: {
+            movie: data.movies,
+            theatre: data.name,
+            date,
+            time: selectedShowTiming,
+          },
+        });
+       
+        const bookedSeats = bookedSeatsResponse.data.bookedSeats.flat() || [];
+console.log("seatdbooked",bookedSeats);
+       
+        setBookedSeats(bookedSeats);
       } catch (error) {
         console.log('Error fetching selected seats:', error);
       }
@@ -78,17 +103,20 @@ const Body = ({ data, onSeatsSelected, selectedShowTiming, selectedDate }) => {
         const seat = `${String.fromCharCode(64 + row)}${col}`;
         const isSelected = selectedSeats.includes(seat);
         const isReserved = reservedSeats.includes(seat);
+        const isBooked = bookedSeats.includes(seat);
+        const isDisabled = isReserved || isBooked;
   
         seats.push(
           <div
             key={seat}
             onClick={() => handleSeatClick(seat)}
             style={{
-              backgroundColor: isSelected ? 'green' : isReserved ? 'red' : 'skyblue',
+              backgroundColor: isSelected ? 'green' : isBooked ? 'red' : isReserved ? 'brown' : 'skyblue',
+
               color: isSelected ? 'white' : isReserved ? 'white' : 'black',
               padding: '10px',
               margin: '10px',
-              cursor: isReserved ? 'not-allowed' : 'pointer',
+              cursor: isDisabled ? 'not-allowed' : 'pointer',
               display: 'inline-block',
               border: '1px solid black',
               borderRadius: '20px',

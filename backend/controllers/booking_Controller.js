@@ -66,8 +66,49 @@ const newBookings = async (req, res, next) => {
     }
     return  res.status(200).json({booking})
   }
+  const getspecificBookings=async(req,res,next)=>{
+    try {
+    const { date, theatre, movie, time } = req.query;
+    console.log("req.query",req.query);
+    const bookings = await Bookings.find({
+      date: date,
+      theater: theatre,
+      movie: movie,
+      time: time
+    });
+    console.log("bookings",bookings);
+    const bookedSeats = bookings.flatMap(booking => booking.seatNumber);
+    console.log("bookedsestd",bookedSeats);
+    res.json({ bookedSeats });
+  } catch (error) {
+    console.log('Error fetching specific bookings:', error);
+    res.status(500).json({ error: 'Failed to fetch specific bookings' });
+  }
+
+  }
+  const getuserBookings = async (req, res, next) => {
+    const userId = req.userId;
+  console.log("id",userId);
+    try {
+   
+      const user = await User.findById(userId).populate("bookings").exec();
+  console.log("user",user);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      const bookings = user.bookings;
+      console.log("bookings",bookings);
+      res.json({ bookings });
+    } catch (error) {
+      console.log("Error retrieving user bookings:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  };
   
 module.exports ={
     newBookings,
-    getBookinById
+    getBookinById,
+    getspecificBookings,
+    getuserBookings
 }

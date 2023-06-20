@@ -344,17 +344,35 @@ const getTheatre = async (req, res) => {
   const userBooking = async (req, res, next) => {
     try {
       const userId = req.params.id;
-    
+      const {
+        theatreName,
+        movieName,
+        Date,
+        Time,
+        SeatsSelected,
+        price,
+        _id,
+      } = req.body.bookingDetails;
   
       const user = await User.findById(userId);
-     
+  
       if (!user) {
         return res.status(404).json({ message: 'User not found.' });
       }
-
-      const { theatreName, movieName, Date, Time, SeatsSelected, price, _id } =
-        req.body.bookingDetails;
-     
+  
+      const existingBooking = await Booking.findOne({
+        theater: theatreName,
+        movie: movieName,
+        date: Date,
+        time: Time,
+        seatNumber: SeatsSelected,
+        user: user._id,
+      });
+  
+      if (existingBooking) {
+        return res.status(400).json({ message: 'Booking with same details already exists.' });
+      }
+  
       const payment = new Booking({
         theater: theatreName,
         movie: movieName,
@@ -366,23 +384,25 @@ const getTheatre = async (req, res) => {
       });
   
       const savedBooking = await payment.save();
-      
   
       user.bookings.push(savedBooking._id);
       await user.save();
+  
       const admin = await Admin.findOne();
       admin.bookings.push(savedBooking._id);
-      await admin.save();;
-      const theatre = await Theatre.find({ name: theatreName }).populate('owner');
+      await admin.save();
   
-      
+      const theatre = await Theatre.find({ name: theatreName }).populate('owner');
       const ownerId = theatre[0].owner._id;
   
       const owner = await Owner.findById(ownerId);
-
       owner.bookings.push(savedBooking._id);
       await owner.save();
-    
+  
+      // Remove the reservation from the Reservation collection
+      await Reservation.deleteOne({ _id });
+  
+      res.status(200).json({ message: 'Booking saved successfully.' });
     } catch (error) {
       console.error('Error saving booking details:', error);
       res.status(500).json({ error: 'Error saving booking details.' });

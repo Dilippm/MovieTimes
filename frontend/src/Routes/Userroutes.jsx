@@ -14,6 +14,7 @@ import SeatSelection from '../pages/User/SeatSelection';
 import Bookings from '../pages/User/Bookings'
 import Header from '../components/Header';
 import Successpage from '../components/Payment/Successpage';
+import ShowBookings from '../pages/User/ShowBookings';
 const UserRoutes = () => {
   return (
     <>
@@ -28,6 +29,7 @@ const UserRoutes = () => {
           <Route path='/movieseats/:id' element ={<SeatSelection/>}/>
           <Route path ='/booking/:id' element={<UserProtectedRoutes><Bookings/></UserProtectedRoutes>}/>
           <Route path ='/checkout-success' element ={<UserProtectedRoutes><Successpage/></UserProtectedRoutes>}/>
+          <Route path ='/bookings' element ={<UserProtectedRoutes><ShowBookings/></UserProtectedRoutes>}/>
        
          
         </Routes>

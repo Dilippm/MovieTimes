@@ -553,7 +553,20 @@ export const getDistinctLanguages =async()=>{
   }
 }
 
-
+export const getBookingsForUser = async () => {
+  try {
+    const token = localStorage.getItem("token")
+    const response = await axios.get(`${BaseURL}booking/userbookings`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("respsne",response);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 
 
