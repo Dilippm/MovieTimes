@@ -20,7 +20,7 @@ const GetMovies = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const limit = 2; // Number of movies per page
+  const limit = 2; 
 
   useEffect(() => {
     fetchMovies(currentPage);
@@ -83,13 +83,13 @@ const GetMovies = () => {
   };
 
   const handleAddMovie = () => {
-    fetchMovies(currentPage); // Fetch movies from the current page
-    toast.success('Movie Added Successfully'); // Display the success toast
+    fetchMovies(currentPage); 
+    toast.success('Movie Added Successfully');
   };
 
   const handleEditMovie = () => {
-    fetchMovies(currentPage); // Fetch movies from the current page
-    toast.success('Movie edited Successfully'); // Display the success toast
+    fetchMovies(currentPage); 
+    toast.success('Movie edited Successfully');
   };
 
   const handleViewMovie = (movie) => {

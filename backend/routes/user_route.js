@@ -1,5 +1,5 @@
 const express = require("express");
-const {getUsers, userRegister, updateUser, userLogin, getBookingsofUser,userGooleLogin,getUser,getTheatre,TheatreDetail,userReservation,reservedSeats,showBooking,userBooking} = require(
+const {getUsers, userRegister, updateUser, userLogin, getBookingsofUser,userGooleLogin,getUser,getTheatre,TheatreDetail,userReservation,reservedSeats,showBooking,userBooking,getUserBanner} = require(
     "../controllers/user_Controller"
 );
 const{verifyToken} =require("../Middlewares/UserMiddleware")
@@ -16,6 +16,7 @@ userRouter.get('/movie/:id', getTheatre);
 userRouter.get('/theatres/:id', TheatreDetail);
 userRouter.get('/reservedseats/:id',reservedSeats)
 userRouter.get('/reservations/:id',verifyToken,showBooking)
+userRouter.get('/userbanner/:id',getUserBanner)
 /**POST ROUTES */
 
 userRouter.post('/register', userRegister)

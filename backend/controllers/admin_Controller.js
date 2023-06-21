@@ -4,6 +4,7 @@ const User =require("../models/User")
 const jwt =require("jsonwebtoken");
 const config = require('../config');
 const Owner = require("../models/Owner");
+const Banner =require("../models/Banner")
 const jwtSecret = config.JWT_SECRET;
 const BASE_URL =config.BASE_URL;
 /* admin Login */
@@ -340,6 +341,70 @@ const updateAdmin = async (req, res, next) => {
     }
   };
   
+  /**Add Banner */
+  const addBanner = async (req, res, next) => {
+    try {
+      const { title, description, image } = req.body;
+ 
+      const newBanner = new Banner({
+        title,
+        description,
+        postedUrl:image,
+      });
+  
+      const savedBanner = await newBanner.save();
+  
+    
+  
+      res.status(200).json({ message: 'Banner added successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Failed to add banner' });
+    }
+  };
+  /**GET ALL BAnners */
+  const getBanners = async (req, res, next) => {
+    const adminId = req.params.id;
+  
+    try {
+   
+      const admin = await Admin.findById(adminId);
+      console.log("admin:",admin);
+      if (!admin) {
+        return res.status(404).json({ message: 'Admin not found' });
+      }
+  
+      const banners = await Banner.find();
+      console.log(banners);
+      res.status(200).json(banners);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Failed to fetch banners' });
+    }
+  };
+/**Delete Banner */
+const deleteBanner = async (req, res, next) => {
+  const { id } = req.params;
+  console.log("id", id);
+  try {
+ 
+    const response = await Banner.deleteOne({ _id: id });
+
+ 
+    if (response.deletedCount === 1) {
+      console.log("Banner deleted successfully");
+    
+      res.status(200).json({ message: "Banner deleted successfully" });
+    } else {
+      console.log("Banner not found");
+      res.status(404).json({ message: "Banner not found" });
+    }
+  } catch (error) {
+    console.error("Error deleting banner:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
    adminLogin,
    updateAdmin,
@@ -350,7 +415,10 @@ module.exports = {
    addMovie,
    updatemovieStatus,
    getOwners,
-   changeOwnerStatus
+   changeOwnerStatus,
+   addBanner,
+   getBanners,
+   deleteBanner
 
  
 };

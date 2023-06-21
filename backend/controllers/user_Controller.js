@@ -5,6 +5,7 @@ const Reservation =require('../models/Reservation')
 const Movie=  require("../models/Movies");
 const Booking = require("../models/Bookings")
 const Owner =require("../models/Owner")
+const Banner = require("../models/Banner")
 const bcrypt = require("bcryptjs");
 const config = require('../config');
 const jwtSecret = config.JWT_SECRET;
@@ -409,6 +410,17 @@ const getTheatre = async (req, res) => {
     }
   };
   
+  const getUserBanner = async (req, res, next) => {
+    try {
+      console.log("vannue");
+      const id = req.body.params
+      const response = await Banner.find();
+      console.log(response);
+      res.status(200).json({ response });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch banners' });
+    }
+  };
   
   
 module.exports = {
@@ -424,6 +436,7 @@ module.exports = {
     userReservation,
     reservedSeats,
     showBooking,
-    userBooking
+    userBooking,
+    getUserBanner
     
 };

@@ -562,7 +562,7 @@ export const getBookingsForUser = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("respsne",response);
+   
     return response.data;
   } catch (error) {
     throw error;
@@ -570,4 +570,52 @@ export const getBookingsForUser = async () => {
 };
 
 
+export const getBanners = async () => {
+  try {
+    const id = localStorage.getItem("adminId");
+    const admintoken = localStorage.getItem("admintoken");
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${admintoken}`,
+      },
+      withCredentials: true,
+    };
 
+    const response = await axios.get(`${BaseURL}admin/allbanners/${id}`, config);
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch banners');
+  }
+};
+
+export const addBanner = async (bannerData) => {
+  try {
+    const id = localStorage.getItem("adminId");
+    const admintoken = localStorage.getItem("admintoken");
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${admintoken}`,
+      },
+      withCredentials: true,
+    };
+    const response = await axios.post(`${BaseURL}admin/banners/${id}`, bannerData, config);
+
+  
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to add banner');
+  }
+};
+
+export const getuserBanners =async()=>{
+  try {
+   const id = localStorage.getItem("userId")
+    const response = await axios.get(`${BaseURL}user/userbanner/${id}`);
+    console.log("respsne",response);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}

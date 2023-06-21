@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 
 const verifyAdminToken = (req, res, next) => {
     const token = req.headers.authorization;
-  
+ 
     if (!token) {
       return res.status(401).json({ message: 'User token not found.' });
     }
@@ -13,6 +13,7 @@ const verifyAdminToken = (req, res, next) => {
     try {
       const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
       req.adminId = decodedToken.id;
+    
       next();
     } catch (error) {
       console.log(error);
