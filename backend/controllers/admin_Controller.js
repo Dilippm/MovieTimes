@@ -392,7 +392,7 @@ const deleteBanner = async (req, res, next) => {
 
  
     if (response.deletedCount === 1) {
-      console.log("Banner deleted successfully");
+    
     
       res.status(200).json({ message: "Banner deleted successfully" });
     } else {

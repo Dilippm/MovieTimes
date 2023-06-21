@@ -12,9 +12,10 @@ import UserRegistration from '../pages/User/UserRegister';
 import MoviePage from '../pages/User/MoviePage';
 import SeatSelection from '../pages/User/SeatSelection';
 import Bookings from '../pages/User/Bookings'
-import Header from '../components/Header';
+// import Header from '../components/Header';
 import Successpage from '../components/Payment/Successpage';
 import ShowBookings from '../pages/User/ShowBookings';
+import WalletSuccess from '../components/Payment/WalletSuccess';
 const UserRoutes = () => {
   return (
     <>
@@ -30,6 +31,7 @@ const UserRoutes = () => {
           <Route path ='/booking/:id' element={<UserProtectedRoutes><Bookings/></UserProtectedRoutes>}/>
           <Route path ='/checkout-success' element ={<UserProtectedRoutes><Successpage/></UserProtectedRoutes>}/>
           <Route path ='/bookings' element ={<UserProtectedRoutes><ShowBookings/></UserProtectedRoutes>}/>
+          <Route path ='/wallet-success/:id' element={<UserProtectedRoutes><WalletSuccess/></UserProtectedRoutes>}/>
        
          
         </Routes>

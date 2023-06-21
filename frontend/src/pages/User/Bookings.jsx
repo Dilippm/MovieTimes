@@ -1,24 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Card, CardContent, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Typography } from '@mui/material';
 import Header from '../../components/Header';
 import BaseURL from '../../config';
 import PayButton from '../../components/Payment/PayButton';
-
+import { walletBooking } from '../../api-helpers/api-helpers';
 const Bookings = () => {
+  const navigate = useNavigate()
   const { id } = useParams();
   const [reservationDetails, setReservationDetails] = useState(null);
+  const [wallet,setWallet] =useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchReservationDetails = async () => {
       try {
-        const token = localStorage.getItem('token'); // Replace with your actual token
+        const token = localStorage.getItem('token'); 
         const headers = { Authorization: `Bearer ${token}` };
 
         const response = await axios.get(`${BaseURL}user/reservations/${id}`, { headers });
+       
         setReservationDetails(response.data.reservation);
+        setWallet(response.data.wallet)
 
         setIsLoading(false);
       } catch (error) {
@@ -37,6 +41,20 @@ const Bookings = () => {
   if (!reservationDetails) {
     return <p>Failed to fetch reservation details</p>;
   }
+  const handleBookButton = async () => {
+    try {
+      
+      const booked = await walletBooking(id);
+     
+      if (booked) {
+        navigate(`/wallet-success/${booked.savedBooking._id}`);
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  };
+  
 
   return (
     <div>
@@ -70,7 +88,34 @@ const Bookings = () => {
             <Typography style={{marginBottom:"20px"}}  variant="h5" component="h2" align="center">
              <b>Price:<i style={{marginBottom:"20px"}}>{reservationDetails.price}</i> </b> 
             </Typography>
-            <PayButton reservationDetails={reservationDetails} />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Button
+  variant="contained"
+  style={{
+    marginLeft: '50px',
+    marginTop: '20px',
+    height: '60px',
+    width: '160px',
+    backgroundColor: wallet < reservationDetails.price ? 'grey' : 'purple',
+    fontSize: '18px',
+    color: 'white',
+    cursor: wallet < reservationDetails.price?'not-allowed':'pointer',
+    borderRadius: '20px',
+    transition: 'background-color 0.3s',
+  }}
+  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'purple'}
+  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = wallet < reservationDetails.price ? 'red' : 'purple'}
+  onClick={handleBookButton}
+  disabled={wallet < reservationDetails.price}
+>
+  wallet: ₹{wallet}/-
+</Button>
+
+
+  <PayButton reservationDetails={reservationDetails} />
+</div>
+
+
           </CardContent>
           
         </Card>

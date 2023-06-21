@@ -3,7 +3,7 @@ import axios from 'axios';
 import BaseURL from '../../config';
 import { Typography, Container, Box, IconButton } from '@mui/material';
 import { Download } from '@mui/icons-material';
-import { PDFDownloadLink, Document, Page, Text, View, Image } from '@react-pdf/renderer';
+import { PDFDownloadLink, Document, Page, Text } from '@react-pdf/renderer';
 import Header from '../Header';
 import QRCode from 'qrcode.react';
 

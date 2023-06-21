@@ -613,9 +613,48 @@ export const getuserBanners =async()=>{
   try {
    const id = localStorage.getItem("userId")
     const response = await axios.get(`${BaseURL}user/userbanner/${id}`);
-    console.log("respsne",response);
+   
     return response.data;
   } catch (error) {
     throw error;
   }
 }
+export const cancelBooking =async(id)=>{
+  try {
+    console.log("id",id);
+    const token = localStorage.getItem("token")
+    const config = {
+      headers: {
+      
+        Authorization: `Bearer ${token}`,
+      },
+      withCredentials: true,
+    };
+    const response = await axios.delete(`${BaseURL}booking/cancelbooking/${id}`,config);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+  
+}
+export const walletBooking = async (id) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await axios.post(
+      `${BaseURL}user/walletpay/${id}`,
+      null,
+      config
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

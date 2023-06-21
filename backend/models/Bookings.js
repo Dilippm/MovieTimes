@@ -17,6 +17,10 @@ time:{
     type:String,
     required:true
 },
+amount:{
+    type:String,
+    required:true
+},
 seatNumber:[
     String
 ]

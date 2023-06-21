@@ -88,21 +88,56 @@ const newBookings = async (req, res, next) => {
   }
   const getuserBookings = async (req, res, next) => {
     const userId = req.userId;
-  console.log("id",userId);
+  
     try {
    
       const user = await User.findById(userId).populate("bookings").exec();
-  console.log("user",user);
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
   
       const bookings = user.bookings;
-      console.log("bookings",bookings);
+   
       res.json({ bookings });
     } catch (error) {
       console.log("Error retrieving user bookings:", error);
       res.status(500).json({ message: "Server error" });
+    }
+  };
+  /**cancel a ticket */
+  const cancelBooking = async (req, res, next) => {
+   
+    const userId = req.userId;
+  
+    const bookingId = req.params; 
+
+    try {
+      const user = await User.findById(userId).populate("bookings").exec();
+  
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      const providedBookingId = bookingId.id;
+
+     
+      const booking = user.bookings.find((booking) => booking._id.toString() === providedBookingId);
+
+if (!booking) {
+  return res.status(404).json({ message: "Booking not found" });
+}
+const price = booking.amount;
+user.wallet += price;
+await booking.deleteOne({_id:providedBookingId});
+user.bookings.pull(providedBookingId);
+    
+      await user.save();
+  
+      res.status(200).json({ message: "Booking canceled successfully" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal server error" });
     }
   };
   
@@ -110,5 +145,6 @@ module.exports ={
     newBookings,
     getBookinById,
     getspecificBookings,
-    getuserBookings
+    getuserBookings,
+    cancelBooking
 }
