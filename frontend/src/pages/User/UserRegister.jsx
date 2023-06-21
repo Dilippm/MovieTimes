@@ -57,19 +57,20 @@ const UserRegister = () => {
               password: decoded.sub,
               image: decoded.picture
             };
-          
+       
             try {
               const respo = await axios.post(`${BaseURL}user/google_login`, { user });
           
            
-             
-          
+        
               
             if(respo){
               
               dispatch(userActions.login());
                 // localStorage.setItem("user".respo.data.id);
                  localStorage.setItem("token", respo.data.token);
+                 localStorage.setItem('userId', respo.data.existingUser._id);
+                 localStorage.setItem('name', respo.data.existingUser.name);
                 
                 toast.success(respo.data.message);
                 navigate("/"); 

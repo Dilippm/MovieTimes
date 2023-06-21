@@ -3,7 +3,10 @@ const { uploadOptions } = require("../multer/multer");
 const { addMovie,
     getMovies,
     getMovieById,
-    updateMovieById
+    updateMovieById,
+    getUserMovie,
+    getMoviesByLanguage,
+    getMovieLanguages
    } =require("../controllers/movie_Controller");
 
 const movieRoute = express.Router();
@@ -14,7 +17,9 @@ movieRoute.post('/addmovie',addMovie)
 /** GET Routes */
 movieRoute.get('/movies',getMovies)
 movieRoute.get('/editmovie/:id',getMovieById)
-
+movieRoute.get('/usermovie/:id',getUserMovie)
+movieRoute.get('/moviesbylan',getMoviesByLanguage)
+movieRoute.get('/movieslan',getMovieLanguages)
 /** PUT Routes */
 movieRoute.post('/editedmovies/:id',uploadOptions.single("image"), updateMovieById);
 

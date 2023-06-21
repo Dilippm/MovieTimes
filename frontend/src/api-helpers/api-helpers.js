@@ -3,20 +3,26 @@ import BaseURL from '../config'
 
 
 
+
 /**Owner side get movie */
-export const getAllMovies = async () => {
+export const getAllMovies = async (currentPage, moviesPerPage) => {
   try {
-    const ownerToken = localStorage.getItem("ownertoken"); 
+    const ownerToken = localStorage.getItem("ownertoken");
     const res = await axios.get(`${BaseURL}movie/movies`, {
       headers: {
-        Authorization: `Bearer ${ownerToken}` 
-      }
+        Authorization: `Bearer ${ownerToken}`,
+      },
+      params: {
+        page: currentPage,
+        limit: moviesPerPage,
+      },
     });
-   
+
     if (res.status !== 200) {
       console.log('No Data');
       return null;
     }
+
     const data = res.data;
     return data;
   } catch (err) {
@@ -122,6 +128,7 @@ export const OwnerSignup = async(data)=>{
 /** Get user Profile */
 export const UserProfiles = async()=>{
   const id= localStorage.getItem("userId");
+  console.log("id",id);
   const res = await axios.get(`${BaseURL}user/${id}`);
   if(res.status!==200){
     return console.log("unexpected error");
@@ -297,7 +304,7 @@ export const updateOwnerProfile= async(data,image)=>{
 /**Specific Movie */
   export const getMovieDetails = async (id) => {
     try {
-      console.log("id:",id);
+      
       const token = localStorage.getItem('admintoken')
       
       const response = await axios.get(`${BaseURL}movie/editmovie/${id}`, {
@@ -404,11 +411,250 @@ export const GetTheatres = async () => {
     }
  
     const data = response.data;
-    console.log('theaters:', data.theaters);
+   
     
 
     return data.theaters;
   } catch (error) {
     throw new Error(`Failed to get theaters: ${error.message}`);
+  }
+};
+/**Get Theatre Details */
+export const getTheatreDetails = async(id)=>{
+  try {
+   
+    const token =localStorage.getItem('ownertoken');
+    const response =await axios.get(`${BaseURL}owner/edittheatre/${id}`,{
+      headers:{
+        Authorization: `Bearer ${token}`,
+      }
+    })
+
+    if(response.status==200){
+      return response.data.theatre;
+    }else{
+      throw new Error('Failed to fetch thatre details');
+    }
+  } catch (error) {
+    console.log(error);
+      throw new Error('Failed to fetch theatre details');
+  }
+
+}
+/**Edit theatre */
+export const updateTheatreDetails = async ( theatreId, updatedDetails) => {
+  try {
+  let token = localStorage.getItem("ownertoken")
+
+    // Make the API request to update the theater details
+    const response = await axios.post(`${BaseURL}owner/updatetheatre/${theatreId}`, updatedDetails, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Return the updated theater details if necessary
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to update theater details');
+  }
+};
+/**Get Specific movie to User */
+export const getMovieById = async(id)=>{
+  try {
+    const res = await axios.get(`${BaseURL}movie/usermovie/${id}`);
+
+    if (res.status !== 200) {
+      console.log('No Data');
+      return null;
+    }
+
+    const data = res.data;
+    
+    return data;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+  
+}
+export const getTheatresByMovie = async (id) => {
+  try {
+
+    const response = await axios.get(`${BaseURL}user/movie/${id}`);
+ 
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch theatres');
+  }
+};
+
+
+export const fetchDataByTheatreId = async (id) => {
+  try {
+
+    const response = await axios.get(`${BaseURL}user/theatres/${id}`);
+   
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch theatre data');
+  }
+};
+/**Rserved thereter */
+export const theatreReserve = async (data) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error('Please log in to make a reservation.');
+    }
+    const currentDate = new Date().toISOString().split('T')[0]; 
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); 
+    if (data.Date === currentDate && data.Time < currentTime) {
+      throw new Error('Selected time is in the past. Please choose a valid show timing.');
+    }
+
+    console.log("data:", data.Date, data.Time);
+    const response = await axios.post(`${BaseURL}user/reservation`, data, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    console.log("response api", response);
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    throw new Error('Failed to update theater details');
+  }
+};
+
+/** getmovies by language */
+export const getMoviesByLanguage = async (selectedLanguage, currentPage) => {
+  try {
+    const response = await axios.get(`${BaseURL}movie/moviesbylan`, {
+      params: {
+        language: selectedLanguage,
+        page: currentPage,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getDistinctLanguages =async()=>{
+  try {
+    const response = await axios.get(`${BaseURL}movie/movieslan`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export const getBookingsForUser = async () => {
+  try {
+    const token = localStorage.getItem("token")
+    const response = await axios.get(`${BaseURL}booking/userbookings`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+   
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const getBanners = async () => {
+  try {
+    const id = localStorage.getItem("adminId");
+    const admintoken = localStorage.getItem("admintoken");
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${admintoken}`,
+      },
+      withCredentials: true,
+    };
+
+    const response = await axios.get(`${BaseURL}admin/allbanners/${id}`, config);
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch banners');
+  }
+};
+
+export const addBanner = async (bannerData) => {
+  try {
+    const id = localStorage.getItem("adminId");
+    const admintoken = localStorage.getItem("admintoken");
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${admintoken}`,
+      },
+      withCredentials: true,
+    };
+    const response = await axios.post(`${BaseURL}admin/banners/${id}`, bannerData, config);
+
+  
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to add banner');
+  }
+};
+
+export const getuserBanners =async()=>{
+  try {
+   const id = localStorage.getItem("userId")
+    const response = await axios.get(`${BaseURL}user/userbanner/${id}`);
+   
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+export const cancelBooking =async(id)=>{
+  try {
+    console.log("id",id);
+    const token = localStorage.getItem("token")
+    const config = {
+      headers: {
+      
+        Authorization: `Bearer ${token}`,
+      },
+      withCredentials: true,
+    };
+    const response = await axios.delete(`${BaseURL}booking/cancelbooking/${id}`,config);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+  
+}
+export const walletBooking = async (id) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await axios.post(
+      `${BaseURL}user/walletpay/${id}`,
+      null,
+      config
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error;
   }
 };

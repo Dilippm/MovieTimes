@@ -1,10 +1,16 @@
 const User = require("../models/User");
 const Admin =require("../models/Admin")
+const Theatre =require("../models/Theatre");
+const Reservation =require('../models/Reservation')
+const Movie=  require("../models/Movies");
 const Booking = require("../models/Bookings")
+const Owner =require("../models/Owner")
+const Banner = require("../models/Banner")
 const bcrypt = require("bcryptjs");
 const config = require('../config');
 const jwtSecret = config.JWT_SECRET;
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const BASE_URL =config.BASE_URL;
 /* all user details*/
 const getUsers = async (req, res, next) => {
@@ -64,7 +70,7 @@ const userRegister = async (req, res, next) => {
 
 const userGooleLogin = async (req, res) => {
     const { name, email, password, image } = req.body.user;
-  
+
 
     try {
         const existingUser = await User.findOne({ email });
@@ -72,7 +78,7 @@ const userGooleLogin = async (req, res) => {
             const token = jwt.sign({id:existingUser._id},jwtSecret,{expiresIn:"1d"})
             return res
                 .status(200)
-                .json({message: "Login successfull",id: existingUser._id,token});
+                .json({message: "Login successfull", existingUser,token});
         }
         
   
@@ -183,7 +189,22 @@ const getBookingsofUser =async(req,res,next)=>{
     }
     return res.status(200).json({bookings})
 }
+/**get specific booking */
+const getSpecificBookingsofUser= async(req,res,next)=>{
+  const id = req.params.id;
+  let bookings
+  try {
+    bookings = await Booking.find({ _id: new mongoose.Types.ObjectId(id) });
+  } catch (error) {
+    return console.log(error);
+  }
+  if(!bookings){
+    return res.status(500).json({message:"unable to find bookings "});
 
+}
+return res.status(200).json({bookings})
+  
+}
 
 const getUser= async(req,res,next)=>{
     const {id} = req.params;
@@ -208,6 +229,288 @@ const getUser= async(req,res,next)=>{
         
     }
 }
+/**Get the theaters movie palying */
+const getTheatre = async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      const movie = await Movie.findOne({ _id: id });
+      
+      const theatre = await Theatre.find({ movies: movie.title });
+      
+      if (!theatre || theatre.length === 0) {
+        return res.status(400).json({ message: 'No theatres found' });
+      }
+      
+      const theatreData = theatre.map(({ _id, name }) => ({ id: _id, name }));
+      
+      res.status(200).json({ message: 'Theatres found', theatreData });
+    } catch (error) {
+      console.error('Failed to fetch theatres:', error);
+      res.status(500).json({ error: 'Failed to fetch theatres' });
+    }
+  };
+  
+  const TheatreDetail = async (req, res, next) => {
+    try {
+      const {id} = req.params;
+    
+      const theatre = await Theatre.findOne({ _id: id });
+      if (!theatre) {
+        return res.status(404).json({ message: 'Theatre not found' });
+      }
+    
+      res.json(theatre);
+    } catch (error) {
+      console.error('Failed to fetch theatre details:', error);
+      next(error);
+    }
+  };
+  /**user reservation */
+  const userReservation =async(req,res,next)=>{
+    
+    try {
+      const userId = req.userId;
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found.' });
+      }
+  
+      const { theatreName, movieName, Time, Date, seatsSelected, price } = req.body;
+      const existingReservation = await Reservation.findOne({
+        theatreName,
+        movieName,
+        Time,
+        Date,
+        SeatsSelected: { $in: seatsSelected },
+      });
+  
+      if (existingReservation) {
+        return res.status(400).json({ error: 'Sorry Seats are already reserved' });
+      }
+  
+      const reservationData = new Reservation({
+        theatreName,
+        movieName,
+        Time,
+        Date,
+        SeatsSelected: seatsSelected,
+        price,
+      });
+  
+      await reservationData.save();
+  
+      user.reservation.push(reservationData);
+      await user.save();
+  
+      res.json({ message: 'Reservation stored successfully.', reservationData });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ message: error.message });
+    }
+
+  }
+  /**block the seats */
+  const reservedSeats = async (req, res, next) => {
+    try {
+      const { movie, theatre, date, time } = req.query;
+      
+  
+      const seats = await Reservation.find({
+        movieName: movie,
+        theatreName: theatre,
+        Date: date,
+        Time: time,
+      }).select("SeatsSelected");
+  
+      const reservedSeats = seats.map((reservation) => reservation.SeatsSelected);
+   
+  
+      res.json({ reservedSeats });
+    } catch (error) {
+      console.log("Error fetching reserved seats:", error);
+      res.status(500).json({ error: "Failed to fetch reserved seats" });
+    }
+  };
+  /**booking page */
+  const showBooking = async(req,res,next)=>{
+    
+    try {
+      const id = req.params.id;
+      const userId = req.userId;
+  
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found.' });
+      }
+  const wallet = user.wallet
+
+      const reservation = user.reservation.id(id);
+      if (!reservation) {
+        return res.status(404).json({ message: 'Reservation not found' });
+      }
+  
+      res.status(200).json({ reservation,wallet });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ message: error.message });
+    }
+  };
+
+  
+  /**saving the booing data to user admin and owner */
+  const userBooking = async (req, res, next) => {
+    try {
+      const userId = req.params.id;
+      const {
+        theatreName,
+        movieName,
+        Date,
+        Time,
+        SeatsSelected,
+        price,
+        _id,
+      } = req.body.bookingDetails;
+  
+      const user = await User.findById(userId);
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found.' });
+      }
+  
+      const existingBooking = await Booking.findOne({
+        theater: theatreName,
+        movie: movieName,
+        date: Date,
+        time: Time,
+        seatNumber: SeatsSelected,
+        user: user._id,
+      });
+  
+      if (existingBooking) {
+        return res.status(400).json({ message: 'Booking with same details already exists.' });
+      }
+  
+      const payment = new Booking({
+        theater: theatreName,
+        movie: movieName,
+        date: Date,
+        time: Time,
+        seatNumber: SeatsSelected,
+        amount:price,
+        user: user._id,
+      });
+  
+      const savedBooking = await payment.save();
+  
+      user.bookings.push(savedBooking._id);
+      await user.save();
+  
+      const admin = await Admin.findOne();
+      admin.bookings.push(savedBooking._id);
+      await admin.save();
+  
+      const theatre = await Theatre.find({ name: theatreName }).populate('owner');
+      const ownerId = theatre[0].owner._id;
+  
+      const owner = await Owner.findById(ownerId);
+      owner.bookings.push(savedBooking._id);
+      await owner.save();
+  
+    
+      await Reservation.deleteOne({ _id });
+  
+      res.status(200).json({ message: 'Booking saved successfully.' });
+    } catch (error) {
+      console.error('Error saving booking details:', error);
+      res.status(500).json({ error: 'Error saving booking details.' });
+    }
+  };
+  
+  const getUserBanner = async (req, res, next) => {
+    try {
+     
+      const id = req.body.params
+      const response = await Banner.find();
+      console.log(response);
+      res.status(200).json({ response });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch banners' });
+    }
+  };
+  
+  const walletBooking = async (req, res, next) => {
+    const userId = req.userId;
+    const reservationId = req.params.id;
+  
+    try {
+   
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+    console.log(reservationId);
+      const reservation = await Reservation.findOne({ _id: reservationId });
+    
+
+      if (!reservation) {
+        return res.status(404).json({ message: 'Reservation not found' });
+      }
+      const existingBooking = await Booking.findOne({
+        theater: reservation.theatreName,
+        movie: reservation.movieName,
+        date:reservation.Date,
+        time: reservation.Time,
+        seatNumber: reservation.SeatsSelected,
+       
+      });
+  
+      if (existingBooking) {
+        return res.status(400).json({ message: 'Booking with same details already exists.' });
+      }
+      const payment = new Booking({
+        theater:reservation.theatreName,
+        movie:reservation. movieName,
+        date: reservation.Date,
+        time:reservation.Time,
+        seatNumber: reservation.SeatsSelected,
+        amount:reservation.price,
+        user: user._id,
+      });
+      if (user.wallet < reservation.price || user.wallet <= 0) {
+        return res.status(400).json({ message: "Insufficient funds in the wallet" });
+      }
+      
+      const savedBooking = await payment.save();
+  
+      user.bookings.push(savedBooking._id);
+      user.wallet = user.wallet - reservation.price;
+      await user.save();
+  
+      const admin = await Admin.findOne();
+      admin.bookings.push(savedBooking._id);
+      await admin.save();
+  
+      const theatre = await Theatre.find({ name: reservation.theatreName }).populate('owner');
+      const ownerId = theatre[0].owner._id;
+  
+      const owner = await Owner.findById(ownerId);
+      owner.bookings.push(savedBooking._id);
+      await owner.save();
+  
+    
+      await Reservation.deleteOne({ reservationId });
+  
+      res.status(200).json({ message: 'Booking saved successfully.', savedBooking});
+  
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+  
+  
 module.exports = {
     getUsers,
     userRegister,
@@ -215,5 +518,15 @@ module.exports = {
     userLogin,
     getBookingsofUser,
     userGooleLogin,
-    getUser
+    getUser,
+    getTheatre,
+    TheatreDetail,
+    userReservation,
+    reservedSeats,
+    showBooking,
+    userBooking,
+    getUserBanner,
+    walletBooking,
+    getSpecificBookingsofUser
+    
 };

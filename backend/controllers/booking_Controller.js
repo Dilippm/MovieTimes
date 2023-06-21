@@ -66,8 +66,85 @@ const newBookings = async (req, res, next) => {
     }
     return  res.status(200).json({booking})
   }
+  const getspecificBookings=async(req,res,next)=>{
+    try {
+    const { date, theatre, movie, time } = req.query;
+    console.log("req.query",req.query);
+    const bookings = await Bookings.find({
+      date: date,
+      theater: theatre,
+      movie: movie,
+      time: time
+    });
+    console.log("bookings",bookings);
+    const bookedSeats = bookings.flatMap(booking => booking.seatNumber);
+    console.log("bookedsestd",bookedSeats);
+    res.json({ bookedSeats });
+  } catch (error) {
+    console.log('Error fetching specific bookings:', error);
+    res.status(500).json({ error: 'Failed to fetch specific bookings' });
+  }
+
+  }
+  const getuserBookings = async (req, res, next) => {
+    const userId = req.userId;
+  
+    try {
+   
+      const user = await User.findById(userId).populate("bookings").exec();
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      const bookings = user.bookings;
+   
+      res.json({ bookings });
+    } catch (error) {
+      console.log("Error retrieving user bookings:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  };
+  /**cancel a ticket */
+  const cancelBooking = async (req, res, next) => {
+   
+    const userId = req.userId;
+  
+    const bookingId = req.params; 
+
+    try {
+      const user = await User.findById(userId).populate("bookings").exec();
+  
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      const providedBookingId = bookingId.id;
+
+     
+      const booking = user.bookings.find((booking) => booking._id.toString() === providedBookingId);
+
+if (!booking) {
+  return res.status(404).json({ message: "Booking not found" });
+}
+const price = booking.amount;
+user.wallet += price;
+await booking.deleteOne({_id:providedBookingId});
+user.bookings.pull(providedBookingId);
+    
+      await user.save();
+  
+      res.status(200).json({ message: "Booking canceled successfully" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
   
 module.exports ={
     newBookings,
-    getBookinById
+    getBookinById,
+    getspecificBookings,
+    getuserBookings,
+    cancelBooking
 }

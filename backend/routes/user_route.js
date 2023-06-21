@@ -1,8 +1,24 @@
 const express = require("express");
-const {getUsers, userRegister, updateUser, userLogin, getBookingsofUser,userGooleLogin,getUser} = require(
-    "../controllers/user_Controller"
-);
-const { uploadOptions } = require("../multer/multer");
+const {
+    getUsers,
+    userRegister,
+    updateUser,
+    userLogin,
+    getBookingsofUser,
+    userGooleLogin,
+    getUser,
+    getTheatre,
+    TheatreDetail,
+    userReservation,
+    reservedSeats,
+    showBooking,
+    userBooking,
+    getUserBanner,
+    walletBooking,
+    getSpecificBookingsofUser
+} = require("../controllers/user_Controller");
+const {verifyToken} = require("../Middlewares/UserMiddleware")
+const {uploadOptions} = require("../multer/multer");
 
 const userRouter = express.Router();
 
@@ -10,16 +26,21 @@ const userRouter = express.Router();
 
 userRouter.get("/", getUsers);
 userRouter.get("/booking/:id", getBookingsofUser);
-userRouter.get('/:id',getUser)
+userRouter.get("/specificbooking/:id", getSpecificBookingsofUser);
+userRouter.get('/:id', getUser);
+userRouter.get('/movie/:id', getTheatre);
+userRouter.get('/theatres/:id', TheatreDetail);
+userRouter.get('/reservedseats/:id', reservedSeats)
+userRouter.get('/reservations/:id', verifyToken, showBooking)
+userRouter.get('/userbanner/:id', getUserBanner)
 /**POST ROUTES */
 
 userRouter.post('/register', userRegister)
 userRouter.post('/login', userLogin)
 userRouter.post('/google_login', userGooleLogin)
-
-
-/**PUT ROUTES */
-
-userRouter.post('/:id',uploadOptions.single("image") ,updateUser)
+userRouter.post('/reservation', verifyToken, userReservation);
+userRouter.post('/userbooking/:id', userBooking);
+userRouter.post('/:id', uploadOptions.single("image"), updateUser);
+userRouter.post('/walletpay/:id',verifyToken,walletBooking);
 
 module.exports = userRouter;

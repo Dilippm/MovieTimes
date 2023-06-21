@@ -2,7 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require('cors');
 const path = require('path');
-
+const config = require('./config');
+const MongoDB_URL =config.MongoDB_URL
 const app = express();
 
 
@@ -11,7 +12,7 @@ const ownerRouter =require("./routes/owner_route")
 const adminRouter =require("./routes/admin_route");
 const movieRouter= require("./routes/movie_route")
 const bookingRouter =require("./routes/booking_route")
-
+const router =require("./routes/stripe")
 app.use(express.json());
 // Enable CORS
 app.use(
@@ -27,7 +28,7 @@ app.use("/owner", ownerRouter);
 app.use("/admin",adminRouter);
 app.use("/movie",movieRouter);
 app.use("/booking",bookingRouter);
-
+app.use('/payment',router);
 // server connection
 app.listen(5000, () => {
   console.log(`Connected to localhost port ${5000}`);
@@ -35,7 +36,7 @@ app.listen(5000, () => {
 
 /** mongodb connect */
 mongoose
-  .connect("mongodb://127.0.0.1:27017/movietimes", {
+  .connect(`${MongoDB_URL}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

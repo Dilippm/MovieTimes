@@ -53,7 +53,7 @@ const AdminHeader = () => {
   const navigate = useNavigate();
   const menuItems = [
     { text: 'Dashboard', route: '/admin/home' },
-    { text: 'Banner', route: '/admin' },
+    { text: 'Banner', route: '/admin/banner' },
     { text: 'User', route: '/admin/admin_users' },
     { text: 'Owners', route: '/admin/owners' },
     { text: 'Movie', route: '/admin/admin_movies' },

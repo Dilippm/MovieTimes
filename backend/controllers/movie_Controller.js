@@ -52,20 +52,24 @@ const addMovie = async (req, res, next) => {
   };
 /** Get All Movies added */
 const getMovies = async (req, res, next) => {
-  
-   
-     
-       
-        try {
-          const movies = await Movie.find({ status: false });
-        
-          return res.status(200).json({ movies });
-        } catch (error) {
-          console.log(error);
-          return res.status(500).json({ message: "Request failed" });
-        }
-        
-  };
+  const currentPage = parseInt(req.query.page) || 1;
+  const moviesPerPage = parseInt(req.query.limit) || 3;
+
+  try {
+    const totalMovies = await Movie.countDocuments({ status: false });
+    const totalPages = Math.ceil(totalMovies / moviesPerPage);
+
+    const movies = await Movie.find({ status: false })
+      .skip((currentPage - 1) * moviesPerPage)
+      .limit(moviesPerPage);
+
+    return res.status(200).json({ movies, totalPages });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Request failed" });
+  }
+};
+
 
 
   /** Get specific movie by ID */
@@ -170,13 +174,69 @@ const getMovies = async (req, res, next) => {
     }
   };
   
-  
+  /**Get User Specific movie */
+  const getUserMovie =async(req,res,next)=>{
+    try {
+      const movieId = req.params.id;
+    const movie = await Movie.find({_id:movieId})
 
+    if (!movie) {
+      return res.status(404).json({ message: 'Invalid movie ID' });
+    }
+
+    res.json({ message: 'Movie found', movie });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch the movie' });
+    }
+    
+
+  }
+  const getMoviesByLanguage = async (req, res, next) => {
+    try {
+      const { language, page } = req.query;
+      const pageSize = 10; // Number of movies per page
+      const currentPage = parseInt(page, 10) || 1;
+  
+      const query = {};
+  
+      if (language) {
+        query.language = language;
+      }
+  
+      const totalMovies = await Movie.countDocuments(query);
+      const totalPages = Math.ceil(totalMovies / pageSize);
+  
+      const movies = await Movie.find(query)
+        .skip((currentPage - 1) * pageSize)
+        .limit(pageSize);
+  
+      res.json({
+        movies,
+        totalPages,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+  const getMovieLanguages = async (req, res, next) => {
+    try {
+      const languages = await Movie.distinct('language');
+      res.json({
+        languages,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+  
 module.exports = {
     addMovie,
     getMovies,
     getMovieById,
-    updateMovieById
+    updateMovieById,
+    getUserMovie,
+    getMoviesByLanguage,
+    getMovieLanguages
   
 
 }

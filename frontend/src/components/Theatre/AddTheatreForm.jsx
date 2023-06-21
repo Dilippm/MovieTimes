@@ -21,12 +21,14 @@ const AddTheatreForm = ({ onAddTheatre }) => {
   const [theatreData, setTheatreData] = useState({
     name: '',
     seats: '',
+    price:'',
     timings: [],
     movieName: '',
   });
   const [errors, setErrors] = useState({
     name: '',
     seats: '',
+    price:'',
     timings: '',
     movieName: '',
   });
@@ -85,6 +87,7 @@ const AddTheatreForm = ({ onAddTheatre }) => {
     const newErrors = {
       name: '',
       seats: '',
+      price:'',
       timings: '',
       movieName: '',
     };
@@ -96,6 +99,10 @@ const AddTheatreForm = ({ onAddTheatre }) => {
 
     if (!theatreData.seats) {
       newErrors.seats = 'Seats is required';
+      isValid = false;
+    }
+    if (!theatreData.price) {
+      newErrors.price = 'Price is required';
       isValid = false;
     }
 
@@ -125,12 +132,14 @@ const AddTheatreForm = ({ onAddTheatre }) => {
       setTheatreData({
         name: '',
         seats: '',
+        price:'',
         timings: [],
         movieName: '',
       });
       setErrors({
         name: '',
         seats: '',
+        price:'',
         timings: '',
         movieName: '',
       });
@@ -179,6 +188,20 @@ const AddTheatreForm = ({ onAddTheatre }) => {
             onChange={handleInputChange}
             error={!!errors.seats}
             helperText={errors.seats}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="price"
+            name="price"
+            label="Price"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={theatreData.price}
+            onChange={handleInputChange}
+            error={!!errors.price}
+            helperText={errors.price}
           />
           <InputLabel id="movieNameLabel">Movie Timings</InputLabel>
           {theatreData.timings.map((timing, index) => (

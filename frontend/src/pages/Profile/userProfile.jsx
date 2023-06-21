@@ -19,7 +19,7 @@ const UserProfile = () => {
     const fetchUserProfile = async () => {
       try {
         const res = await UserProfiles();
-        console.log("resdata:",res);
+     
         setState(res);
         setImageUrl(res.user.image);
       } catch (error) {
@@ -74,7 +74,7 @@ const UserProfile = () => {
       <Header />
       <Box width={"100%"} height={"100%"} margin={"auto"} marginTop={3}>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-          <Box sx={{ width: 500, height: 750, backgroundColor: '#eeeeee' }}>
+          <Box sx={{ width: 500, height: 770, backgroundColor: '#eeeeee',border:"1px solid white",  boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)' }}>
             <Typography variant='h4' textAlign='center' marginTop={3}>
               <b>PROFILE</b>
             </Typography>
@@ -123,8 +123,20 @@ const UserProfile = () => {
                   type='number'
                   name='phone'
                 />
+<TextField
+  value={`Wallet: ₹${state.user.wallet}/-`}
+  margin="normal"
+  variant="standard"
+  type="text"
+  name="Wallet"
+  InputProps={{
+    readOnly: true,
+  }}
+/>
 
-                <Button sx={{ mt: 8, borderRadius: 10, bgcolor: '#2b2d42' }} type='submit' fullWidth variant='contained'>
+
+
+                <Button sx={{ mt: 4, borderRadius: 10, bgcolor: '#2b2d42' }} type='submit' fullWidth variant='contained'>
                   <b>Update</b>
                 </Button>
               </Box>
