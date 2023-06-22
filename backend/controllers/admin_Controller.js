@@ -369,13 +369,13 @@ const updateAdmin = async (req, res, next) => {
     try {
    
       const admin = await Admin.findById(adminId);
-      console.log("admin:",admin);
+      
       if (!admin) {
         return res.status(404).json({ message: 'Admin not found' });
       }
   
       const banners = await Banner.find();
-      console.log(banners);
+     
       res.status(200).json(banners);
     } catch (error) {
       console.error(error);
@@ -396,7 +396,7 @@ const deleteBanner = async (req, res, next) => {
     
       res.status(200).json({ message: "Banner deleted successfully" });
     } else {
-      console.log("Banner not found");
+     
       res.status(404).json({ message: "Banner not found" });
     }
   } catch (error) {
@@ -425,7 +425,7 @@ const getAllBookings = async (req, res, next) => {
       return acc;
     }, {});
 
-    console.log("totalRevenueByDate", totalRevenueByDate);
+   
 
     res.status(200).json(totalRevenueByDate);
   } catch (error) {

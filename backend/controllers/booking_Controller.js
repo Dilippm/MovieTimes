@@ -69,16 +69,16 @@ const newBookings = async (req, res, next) => {
   const getspecificBookings=async(req,res,next)=>{
     try {
     const { date, theatre, movie, time } = req.query;
-    console.log("req.query",req.query);
+   
     const bookings = await Bookings.find({
       date: date,
       theater: theatre,
       movie: movie,
       time: time
     });
-    console.log("bookings",bookings);
+    
     const bookedSeats = bookings.flatMap(booking => booking.seatNumber);
-    console.log("bookedsestd",bookedSeats);
+    
     res.json({ bookedSeats });
   } catch (error) {
     console.log('Error fetching specific bookings:', error);

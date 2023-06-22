@@ -326,7 +326,7 @@ const getAllBookings = async(req,res,next)=>{
       return acc;
     }, {});
 
-    console.log("totalRevenueByDate", totalRevenueByDate);
+
 
     res.status(200).json(totalRevenueByDate);
   } catch (error) {

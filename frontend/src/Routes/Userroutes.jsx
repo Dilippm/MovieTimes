@@ -17,6 +17,9 @@ import Successpage from '../components/Payment/Successpage';
 import ShowBookings from '../pages/User/ShowBookings';
 import WalletSuccess from '../components/Payment/WalletSuccess';
 const UserRoutes = () => {
+
+
+ 
   return (
     <>
     

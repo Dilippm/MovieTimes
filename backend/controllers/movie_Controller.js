@@ -157,7 +157,7 @@ const getMovies = async (req, res, next) => {
       movie.language = language;
       movie.description = description;
  
-  console.log(req.file);
+ 
       if (req.file) {
         // Generate a URL for the uploaded image
         const imageUrl = `${BASE_URL}/${req.file.filename}`;

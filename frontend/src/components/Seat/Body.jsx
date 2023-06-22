@@ -77,18 +77,21 @@ console.log("seatdbooked",bookedSeats);
   const columns = Math.ceil(totalseats / rows);
 
   const handleSeatClick = (seat) => {
-    const selectedIndex = selectedSeats.indexOf(seat);
-    let updatedSelectedSeats;
-
-    if (selectedIndex !== -1) {
-      updatedSelectedSeats = selectedSeats.filter((_, index) => index !== selectedIndex);
-    } else {
-      updatedSelectedSeats = [...selectedSeats, seat];
+    const isSelected = selectedSeats.includes(seat);
+    const isReserved = reservedSeats.includes(seat);
+    const isBooked = bookedSeats.includes(seat);
+    const isDisabled = isReserved || isBooked;
+  
+    if (!isDisabled) {
+      const updatedSelectedSeats = isSelected
+        ? selectedSeats.filter((selectedSeat) => selectedSeat !== seat)
+        : [...selectedSeats, seat];
+  
+      setSelectedSeats(updatedSelectedSeats);
+      onSeatsSelected(updatedSelectedSeats);
     }
-
-    setSelectedSeats(updatedSelectedSeats);
-    onSeatsSelected(updatedSelectedSeats);
   };
+  
 
   const renderSeats = () => {
     const seats = [];
