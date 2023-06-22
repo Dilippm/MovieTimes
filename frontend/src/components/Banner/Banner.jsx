@@ -21,37 +21,36 @@ const Banner = () => {
 
   return (
     <Box
-      className="poster-box"
-     
-      width="100%"
-      height="500px"
-      padding={2}
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-   
+  className="poster-box"
+  width="100%"
+  height="500px"
+  padding={2}
+  display="flex"
+  alignItems="center"
+  justifyContent="center"
+  overflowX="hidden"
+>
+  {banners.length > 0 && (
+    <Carousel
+      showThumbs={false}
+      infiniteLoop
+      interval={20000} 
+      autoPlay
+      stopOnHover={false}
     >
-      {banners.length > 0 && (
-        <Carousel
-          showThumbs={false}
-          infiniteLoop
-          interval={20000} 
-          autoPlay
-          stopOnHover={false}
-     
-        >
-          {banners.map((banner) => (
-            <div key={banner.id}>
-              <img
-                src={banner.postedUrl}
-                alt={banner.title}
-                style={{ width: '95vw', height: '550px', objectFit: 'fit', marginRight:"60px" }}
-              />
-            </div>
-          ))}
-        </Carousel>
-      )}
-    </Box>
+      {banners.map((banner) => (
+        <div key={banner.id}>
+          <img
+            src={banner.postedUrl}
+            alt={banner.title}
+            style={{ width: '95vw', height: '550px', objectFit: 'fill', marginRight:"60px" }}
+          />
+        </div>
+      ))}
+    </Carousel>
+  )}
+</Box>
+
   );
 };
 

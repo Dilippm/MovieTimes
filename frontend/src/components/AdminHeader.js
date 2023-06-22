@@ -57,7 +57,7 @@ const AdminHeader = () => {
     { text: 'User', route: '/admin/admin_users' },
     { text: 'Owners', route: '/admin/owners' },
     { text: 'Movie', route: '/admin/admin_movies' },
-    { text: 'Revenue Report', route: '/admin_report' },
+    { text: 'Revenue Report', route: '/admin/admin_report' },
   ];
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();

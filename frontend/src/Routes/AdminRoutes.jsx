@@ -12,6 +12,7 @@ import AddMovie from '../components/Movie/AddMovie';
 import EditMovie from '../components/Movie/EditMovie';
 import OwnerDetails from '../pages/Admin/OwnerDetails';
 import Banner from '../pages/Admin/Banner';
+import Revenue from '../pages/Admin/Revenue';
 
 const AdminRoutes = () => {
   return (
@@ -27,6 +28,7 @@ const AdminRoutes = () => {
           <Route path ='/editmovie/:id'element ={<AdminProtectedRoutes><EditMovie/></AdminProtectedRoutes>}/>
           <Route path ='/owners' element ={<AdminProtectedRoutes><OwnerDetails/></AdminProtectedRoutes>}/>
          <Route path='/banner' element={<AdminProtectedRoutes><Banner/></AdminProtectedRoutes>}/>
+         <Route path='/admin_report' element ={<AdminProtectedRoutes><Revenue/></AdminProtectedRoutes>}/>
         </Routes>
     </>
   )

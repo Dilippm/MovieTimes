@@ -288,7 +288,7 @@ const updateTheatre = async (req, res, next) => {
       owner: ownerId,
     }));
 
-    // Save the updated theater details
+    
     await theatre.save();
 
     return res.status(200).json({ message: 'Theatre updated successfully', theatre });
@@ -305,6 +305,35 @@ const isValidObjectId = (id) => {
   return false;
 };
 
+/**GET REvenue reoprt fot eh movies booked by owner */
+const getAllBookings = async(req,res,next)=>{
+  try {
+    const ownerId = req.ownerId;
+
+    const owner = await Owner.findById(ownerId).populate("bookings");
+    const bookings = owner.bookings;
+
+  
+
+   
+    const totalRevenueByDate = bookings.reduce((acc, booking) => {
+      const key = `${booking.movie}-${booking.theater}-${booking.date}`;
+      if (acc.hasOwnProperty(key)) {
+        acc[key] += +booking.amount; 
+      } else {
+        acc[key] = +booking.amount; 
+      }
+      return acc;
+    }, {});
+
+    console.log("totalRevenueByDate", totalRevenueByDate);
+
+    res.status(200).json(totalRevenueByDate);
+  } catch (error) {
+    console.error("Error fetching all bookings:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
   
   
 module.exports ={
@@ -317,7 +346,8 @@ module.exports ={
     addTheatre,
     getMovies,
     getSpecificTheatre,
-    updateTheatre
+    updateTheatre,
+    getAllBookings
     
 
 

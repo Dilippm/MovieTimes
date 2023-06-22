@@ -658,3 +658,37 @@ export const walletBooking = async (id) => {
     throw error;
   }
 };
+export const getAllBookingsAdmin = async () => {
+  try {
+    const token = localStorage.getItem("admintoken");
+    const id = localStorage.getItem("adminId")
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.get(`${BaseURL}admin/allbookings/${id}`, config);
+    
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching all bookings:", error);
+    throw error;
+  }
+};
+export const getAllBookingsOwner = async()=>{
+  try {
+    const token = localStorage.getItem("ownertoken");
+    const id = localStorage.getItem("ownerId")
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.get(`${BaseURL}owner/allbookings/${id}`, config);
+    
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching all bookings:", error);
+    throw error;
+  }
+}

@@ -60,7 +60,15 @@ const User = () => {
       <Header />
       <Box width={'100%'} height={'100%'} margin={'auto'} marginTop={2}>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70vh' }}>
-          <Box sx={{ width: 500, height: 500, backgroundColor: '#eeeeee' }}>
+        <Box
+      sx={{
+        width: 500,
+        height: 500,
+        backgroundColor: '#eeeeee',
+        border:'1px solid black',
+        boxShadow: '10 0 10px rgba(0, 10, 20, 0.5)',
+      }}
+    >
             <Typography variant="h4" textAlign="center" marginTop={3}>
               <b>LOGIN</b>
             </Typography>
