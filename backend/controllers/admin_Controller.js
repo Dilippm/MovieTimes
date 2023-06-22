@@ -385,7 +385,7 @@ const updateAdmin = async (req, res, next) => {
 /**Delete Banner */
 const deleteBanner = async (req, res, next) => {
   const { id } = req.params;
-  console.log("id", id);
+ 
   try {
  
     const response = await Banner.deleteOne({ _id: id });
@@ -404,6 +404,36 @@ const deleteBanner = async (req, res, next) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+/**GET ALL BOOKINgs for revenue report*/
+const getAllBookings = async (req, res, next) => {
+  try {
+    const adminId = req.adminId;
+
+    const admin = await Admin.findById(adminId).populate("bookings");
+    const bookings = admin.bookings;
+
+  
+
+   
+    const totalRevenueByDate = bookings.reduce((acc, booking) => {
+      const key = `${booking.movie}-${booking.theater}-${booking.date}`;
+      if (acc.hasOwnProperty(key)) {
+        acc[key] += +booking.amount; 
+      } else {
+        acc[key] = +booking.amount; 
+      }
+      return acc;
+    }, {});
+
+    console.log("totalRevenueByDate", totalRevenueByDate);
+
+    res.status(200).json(totalRevenueByDate);
+  } catch (error) {
+    console.error("Error fetching all bookings:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 
 module.exports = {
    adminLogin,
@@ -418,7 +448,8 @@ module.exports = {
    changeOwnerStatus,
    addBanner,
    getBanners,
-   deleteBanner
+   deleteBanner,
+   getAllBookings
 
  
 };

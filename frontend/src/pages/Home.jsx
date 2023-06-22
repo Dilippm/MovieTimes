@@ -43,8 +43,8 @@ const Home = () => {
   return (
     <>
       <Header />
-      <Box width={'100%'} height={'100%'} margin={'auto'} marginTop={3}>
-        <Box className="poster-box" margin={'auto'} width={'100%'} height={'40vh'} padding={2}  marginBottom={"175px"} >
+      <Box width={'100vw'} height={'100%'} margin={'auto'} marginTop={3}>
+        <Box className="poster-box" margin={'auto'} width={'100vw'} height={'40vh'} padding={2}  marginBottom={"175px"} >
          <Banner/>
         </Box>
         <Box padding={5} margin={'auto'} >

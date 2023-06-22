@@ -4,7 +4,7 @@ const { ownerRegister,
    
     ownerLogin,
 getOwner,
-updateOwner,getTheatres, addTheatre,getMovies,getSpecificTheatre,updateTheatre } = require("../controllers/owner_Controller");
+updateOwner,getTheatres, addTheatre,getMovies,getSpecificTheatre,updateTheatre,getAllBookings } = require("../controllers/owner_Controller");
 const verifyOwnerToken = require("../Middlewares/OwnerMiddleware");
 
 const ownerRoute = express.Router();
@@ -21,6 +21,7 @@ ownerRoute.get('/:id',getOwner)
 ownerRoute.get('/movies/:id',getMovies)
 ownerRoute.get('/theatre/:id',getTheatres)
 ownerRoute.get('/edittheatre/:id',verifyOwnerToken,getSpecificTheatre)
+ownerRoute.get('/allbookings/:id',verifyOwnerToken,getAllBookings)
 
 
 module.exports = ownerRoute;

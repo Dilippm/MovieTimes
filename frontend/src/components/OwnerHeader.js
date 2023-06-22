@@ -57,7 +57,7 @@ const OwnerHeader = () => {
     { text: 'User', route: '/admin_user' },
     { text: 'Theater', route: '/owner/owner_theater' },
     { text: 'Movie', route: '/owner/owner_movies' },
-    { text: 'Revenue Report', route: '/admin_report' },
+    { text: 'Revenue Report', route: '/owner/revenue_report' },
   ];
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();

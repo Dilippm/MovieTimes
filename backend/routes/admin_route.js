@@ -1,6 +1,6 @@
 const express = require("express");
 const { uploadOptions } = require("../multer/multer");
-const {adminLogin,getAdmin,updateAdmin,getUsers,updateuserStatus,getMovies,addMovie,updatemovieStatus,getOwners,changeOwnerStatus,addBanner,getBanners,deleteBanner} = require("../controllers/admin_Controller");
+const {adminLogin,getAdmin,updateAdmin,getUsers,updateuserStatus,getMovies,addMovie,updatemovieStatus,getOwners,changeOwnerStatus,addBanner,getBanners,deleteBanner,getAllBookings} = require("../controllers/admin_Controller");
 const verifyAdminToken =require("../Middlewares/AdminMIddleware")
 const adminRoute = express.Router();
 
@@ -18,7 +18,7 @@ adminRoute.get("/users/:id",getUsers)
 adminRoute.get("/movies/:id",getMovies)
 adminRoute.get("/owners/:id",getOwners)
 adminRoute.get('/allbanners/:id',getBanners)
-
+adminRoute.get('/allbookings/:id',verifyAdminToken,getAllBookings)
 /**Delete Route */
 adminRoute.delete('/deltebanner/:id',deleteBanner)
 
