@@ -692,3 +692,40 @@ export const getAllBookingsOwner = async()=>{
     throw error;
   }
 }
+export const adminFetchData =async()=>{
+  try {
+    const token = localStorage.getItem("admintoken");
+    const id = localStorage.getItem("adminId")
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.get(`${BaseURL}admin/dashboardrevenue/${id}`, config);
+    
+    return response.data;
+
+
+  } catch (error) {
+    
+  }
+ 
+}
+export const adminChartFetch = async()=>{
+  try {
+    const token = localStorage.getItem("admintoken");
+    const id = localStorage.getItem("adminId")
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.get(`${BaseURL}admin/dashboardchart/${id}`, config);
+    
+    return response.data;
+
+
+  } catch (error) {
+    
+  }
+}

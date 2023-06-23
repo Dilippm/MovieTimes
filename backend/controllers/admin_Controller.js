@@ -434,6 +434,71 @@ const getAllBookings = async (req, res, next) => {
   }
 };
 
+/**GEt Dashboard revenue */
+const getdashboarddetails = async (req, res, next) => {
+  try {
+    const adminId = req.adminId;
+
+    const admin = await Admin.findById(adminId).populate("bookings");
+    const bookings = admin.bookings;
+
+    let totalAmount = 0;
+    bookings.forEach((booking) => {
+      totalAmount += +booking.amount;
+    });
+
+    let users = await Admin.findById(adminId);
+
+    let totalUsers = users.users.length;
+    let totalOwners = users.owners.length;
+
+    
+
+    res.json({ totalAmount, totalOwners, totalUsers });
+  } catch (error) {
+    console.log(error);
+  }
+};
+/**GET DAshboard Chart */
+const getDashboardChart = async (req, res, next) => {
+  try {
+    const adminId = req.adminId;
+
+    const admin = await Admin.findById(adminId).populate("bookings");
+
+    const bookings = admin.bookings;
+
+    const dailyRevenue = {};
+
+    bookings.forEach((booking) => {
+      const date = booking.date;
+      const amount = +booking.amount; 
+      if (!isNaN(amount)) { 
+        if (dailyRevenue[date]) {
+          dailyRevenue[date] += amount;
+        } else {
+          dailyRevenue[date] = amount;
+        }
+      }
+    });
+    
+    const dailyRevenueArray = Object.entries(dailyRevenue).map(([date, revenue]) => ({
+      date,
+      revenue,
+    }));
+    
+   
+    dailyRevenueArray.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+
+    
+
+    res.json({ dailyRevenueArray });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 
 module.exports = {
    adminLogin,
@@ -449,7 +514,9 @@ module.exports = {
    addBanner,
    getBanners,
    deleteBanner,
-   getAllBookings
+   getAllBookings,
+   getdashboarddetails,
+   getDashboardChart
 
  
 };
