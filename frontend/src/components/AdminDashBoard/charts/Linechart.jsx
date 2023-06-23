@@ -10,7 +10,7 @@ const Linechart = ({ data, width, height }) => (
         height: height,
         margin: 'auto',
        
-        border: '3px solid black',
+        // border: '3px solid black',
         marginBottom: '40px',
         backgroundColor:"whitesmoke",
         color:"blue"

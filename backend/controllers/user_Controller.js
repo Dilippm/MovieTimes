@@ -12,6 +12,8 @@ const jwtSecret = config.JWT_SECRET;
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const BASE_URL =config.BASE_URL;
+const fs = require('fs');
+const path = require('path');
 /* all user details*/
 const getUsers = async (req, res, next) => {
     let users;
@@ -157,6 +159,12 @@ const updateUser = async (req, res, next) => {
 
     // Check if a file was uploaded
     if (req.file) {
+      if (user.image) {
+        const imageRelativePath = user.image.split(`${BASE_URL}/`)[1];
+      
+        const previousImagePath = path.join(__dirname, '../public/images', imageRelativePath);
+        fs.unlinkSync(previousImagePath);
+      }
       // Generate a URL for the uploaded image
       const imageUrl = `${BASE_URL}/${req.file.filename}`;
       // Store the image URL in the user's profile

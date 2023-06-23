@@ -4,6 +4,7 @@ import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import AdminHeader from '../../components/AdminHeader';
 import { adminFetchData, adminChartFetch } from "../../api-helpers/api-helpers"
 import Linechart from '../../components/AdminDashBoard/charts/Linechart';
+import BarChart from '../../components/AdminDashBoard/charts/BarChart';
 
 const AdminHome = () => {
   const [cardData, setCardData] = useState([]);
@@ -58,7 +59,7 @@ console.log("transfor:",transformedChartData);
             >
               <CardContent>
                 <Typography variant="h5" component="div" mt={8}>
-                  <b>Total Revenue: ₹{cardData.totalAmount}/-</b>
+                  <b>Total Revenue: ₹{cardData.total}/-</b>
                 </Typography>
               </CardContent>
             </Card>
@@ -112,14 +113,40 @@ console.log("transfor:",transformedChartData);
               height: '80vh',
               margin: 'auto',
               marginTop: '100px',
+              marginRight:"495px",
               border: '3px solid black',
-              marginBottom: "40px"
+              marginBottom: "40px",
+              backgroundColor:"whitesmoke",
             }}
           >
             <Typography variant="h5" component="div" mt={8} pl={4}>
               <b>Revenue Chart</b>
             </Typography>
             <Linechart data={transformedChartData} width="80%" height="80%" />
+
+          </Box>
+        </Grid>
+        <Grid item xs={12} >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              width: '60vw',
+              height: '80vh',
+              margin: 'auto',
+              marginTop: '100px',
+              marginRight:"495px",
+              border: '3px solid black',
+              marginBottom: "40px",
+              backgroundColor:"whitesmoke"
+            }}
+          >
+            <Typography variant="h5" component="div" mt={8} pl={4}>
+              <b>Movie Chart</b>
+            </Typography>
+          
+            <BarChart width="80%" height="80%"  />
 
           </Box>
         </Grid>

@@ -5,7 +5,8 @@ const Owner = require("../models/Owner")
 const jwt = require("jsonwebtoken");
 const config = require('../config');
 const jwtSecret = config.JWT_SECRET;
-
+const fs = require('fs');
+const path = require('path');
 
 const BASE_URL =config.BASE_URL;
 /** Add New movie */
@@ -159,6 +160,12 @@ const getMovies = async (req, res, next) => {
  
  
       if (req.file) {
+        if (movie.postedUrl) {
+          const imageRelativePath = movie.postedUrl.split(`${BASE_URL}/`)[1];
+        
+          const previousImagePath = path.join(__dirname, '../public/images', imageRelativePath);
+          fs.unlinkSync(previousImagePath);
+        }
         // Generate a URL for the uploaded image
         const imageUrl = `${BASE_URL}/${req.file.filename}`;
         // Store the image URL in the movie data

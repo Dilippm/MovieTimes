@@ -8,8 +8,9 @@ const jwt =require("jsonwebtoken");
 const config = require('../config');
 const jwtSecret = config.JWT_SECRET;
 const mongoose = require('mongoose');
-
-
+const BASE_URL =config.BASE_URL;
+const fs = require('fs');
+const path = require('path');
 /*theater Owner Registration*/ 
 const ownerRegister = async (req, res, next) => {
   const { name, email, password, phone } = req.body;
@@ -125,8 +126,14 @@ const updateOwner = async (req, res, next) => {
   
       // Check if a file was uploaded
       if (req.file) {
+        if (owner.image) {
+          const imageRelativePath = owner.image.split(`${BASE_URL}/`)[1];
+        
+          const previousImagePath = path.join(__dirname, '../public/images', imageRelativePath);
+          fs.unlinkSync(previousImagePath);
+        }
         // Generate a URL for the uploaded image
-        const imageUrl = `http://localhost:5000/public/images/${req.file.filename}`;
+        const imageUrl = `${BASE_URL}/${req.file.filename}`;
         // Store the image URL in the user's profile
         owner.image = imageUrl;
       }
