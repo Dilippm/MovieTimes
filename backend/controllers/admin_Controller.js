@@ -537,7 +537,36 @@ const getMovieChart = async (req, res, next) => {
   }
 };
 
+/**GET Theater List */
+const getTheaterList = async(req,res,next)=>{
+  const adminId = req.adminId;
+  try {
+    const admin = await Admin.findById(adminId).populate("bookings");
 
+    const bookings = admin.bookings;
+
+    const theaterCollection = {};
+    bookings.forEach((booking) => {
+      const theater = booking.theater;
+      const amount = booking.amount;
+      if (theater && amount) {
+        if (!theaterCollection[theater]) {
+          theaterCollection[theater] = 0;
+        }
+        theaterCollection[theater] += +amount;
+      }
+    });
+
+    const theaterCollectionArray = Object.entries(theaterCollection);
+
+
+    return res.status(200).json({ theaterCollection: theaterCollectionArray });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+
+}
 
 module.exports = {
    adminLogin,
@@ -556,7 +585,8 @@ module.exports = {
    getAllBookings,
    getdashboarddetails,
    getDashboardChart,
-   getMovieChart
+   getMovieChart,
+   getTheaterList
 
  
 };

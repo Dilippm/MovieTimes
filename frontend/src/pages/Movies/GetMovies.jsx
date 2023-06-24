@@ -146,6 +146,7 @@ const GetMovies = () => {
             marginLeft={5}
             marginBottom={'50px'}
             height={'150px'}
+            backgroundColor={'rgba(211, 211, 211, 0.3)'} 
           >
             <Box flex={1}>
               <Typography variant="h4">

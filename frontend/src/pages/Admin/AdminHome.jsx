@@ -5,6 +5,8 @@ import AdminHeader from '../../components/AdminHeader';
 import { adminFetchData, adminChartFetch } from "../../api-helpers/api-helpers"
 import Linechart from '../../components/AdminDashBoard/charts/Linechart';
 import BarChart from '../../components/AdminDashBoard/charts/BarChart';
+import MovieCards from '../../components/AdminDashBoard/cards/MovieCards';
+import TheaterCards from '../../components/AdminDashBoard/cards/TheaterCards';
 
 const AdminHome = () => {
   const [cardData, setCardData] = useState([]);
@@ -55,6 +57,10 @@ console.log("transfor:",transformedChartData);
                 boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
                 border: '3px solid #ccc',
                 textAlign: 'center',
+                background: 'linear-gradient(45deg, black, red)',
+                color:"white"
+                
+                
               }}
             >
               <CardContent>
@@ -74,6 +80,8 @@ console.log("transfor:",transformedChartData);
                 boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
                 border: '3px solid #ccc',
                 textAlign: 'center',
+                background: 'linear-gradient(45deg, black, red)',
+                color:"white"
               }}
             >
               <CardContent>
@@ -93,6 +101,8 @@ console.log("transfor:",transformedChartData);
                 boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
                 border: '3px solid #ccc',
                 textAlign: 'center',
+                background: 'linear-gradient(45deg, black, red)',
+                color:"white"
               }}
             >
               <CardContent>
@@ -103,29 +113,64 @@ console.log("transfor:",transformedChartData);
             </Card>
           </Box>
         </Grid>
-        <Grid item xs={12} >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              width: '60vw',
-              height: '80vh',
-              margin: 'auto',
-              marginTop: '100px',
-              marginRight:"495px",
-              border: '3px solid black',
-              marginBottom: "40px",
-              backgroundColor:"whitesmoke",
-            }}
-          >
-            <Typography variant="h5" component="div" mt={8} pl={4}>
-              <b>Revenue Chart</b>
-            </Typography>
-            <Linechart data={transformedChartData} width="80%" height="80%" />
+        <Grid item xs={8}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        width: '60vw',
+        height: '80vh',
+        margin: 'auto',
+        marginTop: '100px',
+        marginRight: '465px',
+        marginLeft:"30px",
+        border: '3px solid black',
+        marginBottom: '40px',
+        backgroundColor: 'whitesmoke',
+      }}
+    >
+      <Typography variant="h5" component="div" mt={8} pl={4}>
+        <b>Revenue Chart</b>
+      </Typography>
+      <Linechart data={transformedChartData} width="80%" height="80%" />
+    </Box>
+  </Grid>
+  <Grid item xs={4}>
+  <Box
+    sx={{
+   
+      height: '80vh',
+      margin: 'auto',
+      marginTop: '100px',
+      marginRight: '30px',
+      display: 'grid',
+      gridTemplateRows: '1fr 1fr', 
+    }}
+  >
+    <Box
+      sx={{
+        border: '2px solid black', 
+        background: 'linear-gradient(45deg, black, red)',
+        color:"white",
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
+        marginBottom:"10px"
+      }}
+    >
+      <MovieCards/>
+    </Box>
+    <Box
+      sx={{
+        border: '3px solid black', 
+        background: 'linear-gradient(45deg, black, red)',
+        color:"white",
+      }}
+    >
+     <TheaterCards/>
+    </Box>
+  </Box>
+</Grid>
 
-          </Box>
-        </Grid>
         <Grid item xs={12} >
           <Box
             sx={{
@@ -140,6 +185,7 @@ console.log("transfor:",transformedChartData);
               border: '3px solid black',
               marginBottom: "40px",
               backgroundColor:"whitesmoke"
+             
             }}
           >
             <Typography variant="h5" component="div" mt={8} pl={4}>

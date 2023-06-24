@@ -74,13 +74,21 @@ const AdminProfile = () => {
     <>
       <AdminHeader/>
       <Box width={"100%"} height={"100%"} margin={"auto"} marginTop={3}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-          <Box sx={{ width: 500, height: 750, backgroundColor: '#eeeeee' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70vh' }}>
+        <Box
+      sx={{
+        width: 500,
+        height: 800,
+        backgroundColor: '#eeeeee',
+        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.8)',
+        border: '3px solid rgba(0, 0, 0, 0.8)',
+      }}
+    >
             <Typography variant='h4' textAlign='center' marginTop={3}>
               <b>PROFILE</b>
             </Typography>
             <form onSubmit={handleSubmit}>
-              <Box padding={6} display='flex' justifyContent='center' flexDirection='column' width={400} margin='auto'>
+              <Box padding={6} display='flex' justifyContent='center' flexDirection='column' width={400} margin='auto'  >
               {imageUrl ? (
   <label htmlFor="imageInput">
     <img src={imageUrl} alt="Profile" style={{ width: '50%', height: '50%', marginTop: '10px', margin: 'auto', cursor: 'pointer', marginLeft: '90px' }} />
@@ -125,7 +133,7 @@ const AdminProfile = () => {
                   name='phone'
                 />
 
-                <Button sx={{ mt: 8, borderRadius: 10, bgcolor: '#2b2d42' }} type='submit' fullWidth variant='contained'>
+                <Button sx={{ mt: 4, borderRadius: 10, bgcolor: '#800360' }} type='submit' fullWidth variant='contained'>
                   <b>Update</b>
                 </Button>
               </Box>

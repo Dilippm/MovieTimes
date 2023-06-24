@@ -17,7 +17,9 @@ const {
     getAllBookings,
     getdashboarddetails,
     getDashboardChart,
-    getMovieChart
+    getMovieChart,
+    getTheaterList
+   
 } = require("../controllers/admin_Controller");
 const verifyAdminToken = require("../Middlewares/AdminMIddleware")
 const adminRoute = express.Router();
@@ -45,6 +47,8 @@ adminRoute.get('/allbookings/:id', verifyAdminToken, getAllBookings)
 adminRoute.get('/dashboardrevenue/:id', verifyAdminToken, getdashboarddetails)
 adminRoute.get('/dashboardchart/:id', verifyAdminToken, getDashboardChart)
 adminRoute.get('/movieschart/:id',verifyAdminToken,getMovieChart)
+adminRoute.get('/theaterschart/:id',verifyAdminToken,getTheaterList)
+
 /**Delete Route */
 adminRoute.delete('/deltebanner/:id', deleteBanner)
 

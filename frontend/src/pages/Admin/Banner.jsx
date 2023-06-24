@@ -84,7 +84,7 @@ const Banner = () => {
       <Header />
 
       <Box>
-        <Typography variant="h3" padding={2} textAlign="center" bgcolor="#900C3F" color="white">
+        <Typography variant="h3" padding={2} mt={4} textAlign="center" bgcolor="#900C3F" color="white">
           <b>All Banners</b>
         </Typography>
         
@@ -102,6 +102,8 @@ const Banner = () => {
             marginLeft={5}
             marginBottom={'50px'}
             height={'150px'}
+            color={"black"}
+            backgroundColor={'rgba(211, 211, 211, 0.3)'} 
           >
             <Box flex={1}>
               <Typography variant="h4">
