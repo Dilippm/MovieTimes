@@ -341,8 +341,125 @@ const getAllBookings = async(req,res,next)=>{
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+  /***GET OwnerDashborad cards */
+  const getRevenue = async (req, res, next) => {
+    try {
+      const ownerId = req.ownerId;
+  
+      const owner = await Owner.findById(ownerId).populate("bookings");
+      const bookings = owner.bookings;
+      let totalAmount = 0;
+      bookings.forEach((booking) => {
+        totalAmount += +booking.amount;
+      });
+      let total = totalAmount * (80 / 100);
+      let users = await Owner.findById(ownerId);
+  
+      let totalTheaters = users.theatres.length;
+      let totalBookings = users.bookings.length;
+      res.json({ total, totalTheaters, totalBookings });
+    } catch (error) {
+   
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+  const getRevenueChart = async(req,res,next)=>{
+    try {
+      const ownerId = req.ownerId;
+  
+      const owner = await Owner.findById(ownerId).populate("bookings");
+  
+      const bookings = owner.bookings;
+  
+      const dailyRevenue = {};
+  
+      bookings.forEach((booking) => {
+        const date = booking.date;
+        const amount = +booking.amount; 
+        if (!isNaN(amount)) { 
+          if (dailyRevenue[date]) {
+            dailyRevenue[date] += amount;
+          } else {
+            dailyRevenue[date] = amount;
+          }
+        }
+      });
+      
+      const dailyRevenueArray = Object.entries(dailyRevenue).map(([date, revenue]) => ({
+        date,
+        revenue,
+      }));
+      
+     
+      dailyRevenueArray.sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+  
+      
+  
+      res.json({ dailyRevenueArray });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const getTheaterChart = async(req,res,next)=>{
+    const ownerId = req.ownerId;
+
+    try {
+      const owner = await Owner.findById(ownerId).populate("bookings");
+  
+      const bookings = owner.bookings;
+  
+      const theaterCollection = {};
+      bookings.forEach((booking) => {
+        const theater = booking.theater;
+        const amount = booking.amount;
+        if (theater && amount) {
+          if (!theaterCollection[theater]) {
+            theaterCollection[theater] = 0;
+          }
+          theaterCollection[theater] += +amount;
+        }
+      });
+  
+      const theaterCollectionArray = Object.entries(theaterCollection);
   
   
+      return res.status(200).json({ theaterCollection: theaterCollectionArray });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+  const getMovieChart =async(req,res,next)=>{
+    const ownerId = req.ownerId;
+
+    try {
+      const owner = await Owner.findById(ownerId).populate("bookings");
+  
+      const bookings = owner.bookings;
+  
+      const movieCollection = {};
+      bookings.forEach((booking) => {
+        const movie = booking.movie;
+        const amount = booking.amount;
+        if (movie && amount) {
+          if (!movieCollection[movie]) {
+            movieCollection[movie] = 0;
+          }
+          movieCollection[movie] += +amount;
+        }
+      });
+  
+      const movieCollectionArray = Object.entries(movieCollection);
+  
+  
+      return res.status(200).json({ movieCollection: movieCollectionArray });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  }
 module.exports ={
     ownerRegister,
     getUsers,
@@ -354,7 +471,11 @@ module.exports ={
     getMovies,
     getSpecificTheatre,
     updateTheatre,
-    getAllBookings
+    getAllBookings,
+    getRevenue,
+    getRevenueChart,
+    getTheaterChart,
+    getMovieChart
     
 
 

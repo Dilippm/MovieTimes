@@ -31,7 +31,7 @@ const AdminHome = () => {
       const chart = await adminChartFetch();
      
       setChartData(chart.dailyRevenueArray);
-      console.log(chartData);
+   
     } catch (error) {
       console.log(error);
     }
@@ -42,7 +42,7 @@ const AdminHome = () => {
       data: chartData.map((item, index) => ({ x: item.date, y: item.revenue })),
     },
   ]
-console.log("transfor:",transformedChartData);
+
   return (
     <>
       <AdminHeader />

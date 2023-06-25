@@ -4,7 +4,7 @@ const { ownerRegister,
    
     ownerLogin,
 getOwner,
-updateOwner,getTheatres, addTheatre,getMovies,getSpecificTheatre,updateTheatre,getAllBookings } = require("../controllers/owner_Controller");
+updateOwner,getTheatres, addTheatre,getMovies,getSpecificTheatre,updateTheatre,getAllBookings,getRevenue,getRevenueChart,getTheaterChart,getMovieChart } = require("../controllers/owner_Controller");
 const verifyOwnerToken = require("../Middlewares/OwnerMiddleware");
 
 const ownerRoute = express.Router();
@@ -22,6 +22,9 @@ ownerRoute.get('/movies/:id',getMovies)
 ownerRoute.get('/theatre/:id',getTheatres)
 ownerRoute.get('/edittheatre/:id',verifyOwnerToken,getSpecificTheatre)
 ownerRoute.get('/allbookings/:id',verifyOwnerToken,getAllBookings)
-
+ownerRoute.get('/dashboardrevenue/:id',verifyOwnerToken,getRevenue)
+ownerRoute.get('/dashboardchart/:id',verifyOwnerToken,getRevenueChart)
+ownerRoute.get('/theaterchart/:id',verifyOwnerToken,getTheaterChart)
+ownerRoute.get('/movieschart/:id',verifyOwnerToken,getMovieChart)
 
 module.exports = ownerRoute;
