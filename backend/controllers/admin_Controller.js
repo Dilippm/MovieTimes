@@ -7,6 +7,8 @@ const Owner = require("../models/Owner");
 const Banner =require("../models/Banner")
 const jwtSecret = config.JWT_SECRET;
 const BASE_URL =config.BASE_URL;
+const fs = require('fs');
+const path = require('path');
 /* admin Login */
 const adminLogin = async (req, res, next) => {
     const { email, password } = req.body;
@@ -64,6 +66,12 @@ const updateAdmin = async (req, res, next) => {
   
       // Check if a file was uploaded
       if (req.file) {
+        if (admin.image) {
+          const imageRelativePath = admin.image.split(`${BASE_URL}/`)[1];
+        
+          const previousImagePath = path.join(__dirname, '../public/images', imageRelativePath);
+          fs.unlinkSync(previousImagePath);
+        }
         // Generate a URL for the uploaded image
         const imageUrl = `${BASE_URL}/${req.file.filename}`;
         // Store the image URL in the user's profile
@@ -446,7 +454,7 @@ const getdashboarddetails = async (req, res, next) => {
     bookings.forEach((booking) => {
       totalAmount += +booking.amount;
     });
-
+       let total = totalAmount*(20/100)
     let users = await Admin.findById(adminId);
 
     let totalUsers = users.users.length;
@@ -454,7 +462,7 @@ const getdashboarddetails = async (req, res, next) => {
 
     
 
-    res.json({ totalAmount, totalOwners, totalUsers });
+    res.json({ total, totalOwners, totalUsers });
   } catch (error) {
     console.log(error);
   }
@@ -498,7 +506,67 @@ const getDashboardChart = async (req, res, next) => {
     console.log(error);
   }
 };
+/**GEt Movie chart */
+const getMovieChart = async (req, res, next) => {
+  const adminId = req.adminId;
 
+  try {
+    const admin = await Admin.findById(adminId).populate("bookings");
+
+    const bookings = admin.bookings;
+
+    const movieCollection = {};
+    bookings.forEach((booking) => {
+      const movie = booking.movie;
+      const amount = booking.amount;
+      if (movie && amount) {
+        if (!movieCollection[movie]) {
+          movieCollection[movie] = 0;
+        }
+        movieCollection[movie] += +amount;
+      }
+    });
+
+    const movieCollectionArray = Object.entries(movieCollection);
+
+
+    return res.status(200).json({ movieCollection: movieCollectionArray });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+/**GET Theater List */
+const getTheaterList = async(req,res,next)=>{
+  const adminId = req.adminId;
+  try {
+    const admin = await Admin.findById(adminId).populate("bookings");
+
+    const bookings = admin.bookings;
+
+    const theaterCollection = {};
+    bookings.forEach((booking) => {
+      const theater = booking.theater;
+      const amount = booking.amount;
+      if (theater && amount) {
+        if (!theaterCollection[theater]) {
+          theaterCollection[theater] = 0;
+        }
+        theaterCollection[theater] += +amount;
+      }
+    });
+
+    const theaterCollectionArray = Object.entries(theaterCollection);
+
+
+    return res.status(200).json({ theaterCollection: theaterCollectionArray });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+
+}
 
 module.exports = {
    adminLogin,
@@ -516,7 +584,9 @@ module.exports = {
    deleteBanner,
    getAllBookings,
    getdashboarddetails,
-   getDashboardChart
+   getDashboardChart,
+   getMovieChart,
+   getTheaterList
 
  
 };

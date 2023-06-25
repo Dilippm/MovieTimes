@@ -100,7 +100,7 @@ const MovieForm = ({ onAddMovie }) => {
 
   return (
     <div>
-      <Button variant="outlined" onClick={handleClickOpen} style={{ border: '1px solid black', color: 'black' }}>
+      <Button variant="contained" onClick={handleClickOpen} style={{ border: '1px solid black', color: 'white',backgroundColor:"black" }}>
         <b>ADD Movie</b>
       </Button>
       <Dialog open={open} onClose={handleClose}>

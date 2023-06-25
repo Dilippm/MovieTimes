@@ -386,7 +386,7 @@ export const editMovie = async (movieId, movieData,file) => {
         'Authorization': `Bearer ${token}`,
       },
     });
-    if (response.status!=200) {
+    if (response.status!==200) {
       throw new Error('Failed to add theatre');
     }
     const data = await response.json();
@@ -430,7 +430,7 @@ export const getTheatreDetails = async(id)=>{
       }
     })
 
-    if(response.status==200){
+    if(response.status===200){
       return response.data.theatre;
     }else{
       throw new Error('Failed to fetch thatre details');
@@ -721,6 +721,44 @@ export const adminChartFetch = async()=>{
       },
     };
     const response = await axios.get(`${BaseURL}admin/dashboardchart/${id}`, config);
+    
+    return response.data;
+
+
+  } catch (error) {
+    
+  }
+}
+
+export const ownerFetchData =async()=>{
+  try {
+    const token = localStorage.getItem("ownertoken");
+    const id = localStorage.getItem("ownerId")
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.get(`${BaseURL}owner/dashboardrevenue/${id}`, config);
+    
+    return response.data;
+
+
+  } catch (error) {
+    
+  }
+ 
+}
+export const ownerChartFetch = async()=>{
+  try {
+    const token = localStorage.getItem("ownertoken");
+    const id = localStorage.getItem("ownerId")
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.get(`${BaseURL}owner/dashboardchart/${id}`, config);
     
     return response.data;
 

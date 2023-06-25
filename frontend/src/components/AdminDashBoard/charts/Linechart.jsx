@@ -10,7 +10,6 @@ const Linechart = ({ data, width, height }) => (
         height: height,
         margin: 'auto',
        
-        border: '3px solid black',
         marginBottom: '40px',
         backgroundColor:"whitesmoke",
         color:"blue"
@@ -57,7 +56,7 @@ const Linechart = ({ data, width, height }) => (
     pointBorderColor={{ theme: 'labels.text.fill' }}
     pointLabelYOffset={-12}
     useMesh={true}
-    colors={{ scheme: 'set1' }} 
+    colors={{ scheme: 'purpleRed_green' }}
     legends={[
       {
         anchor: 'bottom-right',

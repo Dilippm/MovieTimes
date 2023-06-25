@@ -105,6 +105,7 @@ const OwnerDetails = () => {
             marginTop={2}
             marginBottom={'50px'}
             height={'150px'}
+            backgroundColor={'rgba(211, 211, 211, 0.3)'} 
           >
             <Typography variant="h4">
               <b>Name</b>

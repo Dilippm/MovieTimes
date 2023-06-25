@@ -8,7 +8,7 @@ const ViewMovie = ({ open, handleClose, movie }) => {
       <DialogTitle>
         <b>{movie && movie.title}</b>
       </DialogTitle>
-      <img src={movie && movie.postedUrl} alt='movie' />
+      <img src={movie && movie.postedUrl} alt='movie' height={"250px"} width={"250px"} />
       <DialogContent>
         {movie && (
           <Box>

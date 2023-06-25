@@ -86,7 +86,7 @@ const AddBanner = ({ onAddBanner }) => {
 
   return (
     <div>
-      <Button variant="outlined" onClick={handleClickOpen} style={{ border: '1px solid black', color: 'black' }}>
+      <Button variant="contained" onClick={handleClickOpen} style={{ border: '2px solid black', color: 'white',backgroundColor:"black" }}>
         <b>Add Banner</b>
       </Button>
       <Dialog open={open} onClose={handleClose}>

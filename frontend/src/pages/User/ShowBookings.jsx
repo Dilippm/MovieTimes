@@ -22,8 +22,8 @@ const ShowBookings = () => {
 
     const handleCancelBooking = async (bookingId) => {
         try {
-            await cancelBooking(bookingId); // Assuming you have an API function to cancel the booking
-            // Remove the canceled booking from the state
+            await cancelBooking(bookingId); 
+            
             const updatedBookings = bookings.filter((booking) => booking._id !== bookingId);
             setBookings(updatedBookings);
         } catch (error) {

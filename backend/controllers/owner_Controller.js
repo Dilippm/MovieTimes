@@ -8,8 +8,9 @@ const jwt =require("jsonwebtoken");
 const config = require('../config');
 const jwtSecret = config.JWT_SECRET;
 const mongoose = require('mongoose');
-
-
+const BASE_URL =config.BASE_URL;
+const fs = require('fs');
+const path = require('path');
 /*theater Owner Registration*/ 
 const ownerRegister = async (req, res, next) => {
   const { name, email, password, phone } = req.body;
@@ -125,8 +126,14 @@ const updateOwner = async (req, res, next) => {
   
       // Check if a file was uploaded
       if (req.file) {
+        if (owner.image) {
+          const imageRelativePath = owner.image.split(`${BASE_URL}/`)[1];
+        
+          const previousImagePath = path.join(__dirname, '../public/images', imageRelativePath);
+          fs.unlinkSync(previousImagePath);
+        }
         // Generate a URL for the uploaded image
-        const imageUrl = `http://localhost:5000/public/images/${req.file.filename}`;
+        const imageUrl = `${BASE_URL}/${req.file.filename}`;
         // Store the image URL in the user's profile
         owner.image = imageUrl;
       }
@@ -334,8 +341,125 @@ const getAllBookings = async(req,res,next)=>{
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+  /***GET OwnerDashborad cards */
+  const getRevenue = async (req, res, next) => {
+    try {
+      const ownerId = req.ownerId;
+  
+      const owner = await Owner.findById(ownerId).populate("bookings");
+      const bookings = owner.bookings;
+      let totalAmount = 0;
+      bookings.forEach((booking) => {
+        totalAmount += +booking.amount;
+      });
+      let total = totalAmount * (80 / 100);
+      let users = await Owner.findById(ownerId);
+  
+      let totalTheaters = users.theatres.length;
+      let totalBookings = users.bookings.length;
+      res.json({ total, totalTheaters, totalBookings });
+    } catch (error) {
+   
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+  const getRevenueChart = async(req,res,next)=>{
+    try {
+      const ownerId = req.ownerId;
+  
+      const owner = await Owner.findById(ownerId).populate("bookings");
+  
+      const bookings = owner.bookings;
+  
+      const dailyRevenue = {};
+  
+      bookings.forEach((booking) => {
+        const date = booking.date;
+        const amount = +booking.amount; 
+        if (!isNaN(amount)) { 
+          if (dailyRevenue[date]) {
+            dailyRevenue[date] += amount;
+          } else {
+            dailyRevenue[date] = amount;
+          }
+        }
+      });
+      
+      const dailyRevenueArray = Object.entries(dailyRevenue).map(([date, revenue]) => ({
+        date,
+        revenue,
+      }));
+      
+     
+      dailyRevenueArray.sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+  
+      
+  
+      res.json({ dailyRevenueArray });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const getTheaterChart = async(req,res,next)=>{
+    const ownerId = req.ownerId;
+
+    try {
+      const owner = await Owner.findById(ownerId).populate("bookings");
+  
+      const bookings = owner.bookings;
+  
+      const theaterCollection = {};
+      bookings.forEach((booking) => {
+        const theater = booking.theater;
+        const amount = booking.amount;
+        if (theater && amount) {
+          if (!theaterCollection[theater]) {
+            theaterCollection[theater] = 0;
+          }
+          theaterCollection[theater] += +amount;
+        }
+      });
+  
+      const theaterCollectionArray = Object.entries(theaterCollection);
   
   
+      return res.status(200).json({ theaterCollection: theaterCollectionArray });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+  const getMovieChart =async(req,res,next)=>{
+    const ownerId = req.ownerId;
+
+    try {
+      const owner = await Owner.findById(ownerId).populate("bookings");
+  
+      const bookings = owner.bookings;
+  
+      const movieCollection = {};
+      bookings.forEach((booking) => {
+        const movie = booking.movie;
+        const amount = booking.amount;
+        if (movie && amount) {
+          if (!movieCollection[movie]) {
+            movieCollection[movie] = 0;
+          }
+          movieCollection[movie] += +amount;
+        }
+      });
+  
+      const movieCollectionArray = Object.entries(movieCollection);
+  
+  
+      return res.status(200).json({ movieCollection: movieCollectionArray });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  }
 module.exports ={
     ownerRegister,
     getUsers,
@@ -347,7 +471,11 @@ module.exports ={
     getMovies,
     getSpecificTheatre,
     updateTheatre,
-    getAllBookings
+    getAllBookings,
+    getRevenue,
+    getRevenueChart,
+    getTheaterChart,
+    getMovieChart
     
 
 
