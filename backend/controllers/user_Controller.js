@@ -40,7 +40,7 @@ const userRegister = async (req, res, next) => {
     const newPassword = bcrypt.hashSync(password);
     let user;
     try {
-        const existingUser = await User.findOne({ email }); // Check if user with the same email already exists
+        const existingUser = await User.findOne({ email }); 
         if (existingUser) {
             return res.status(409).json({ error: "Owner already exists" });
           }
@@ -432,13 +432,14 @@ const getTheatre = async (req, res) => {
      
       const id = req.body.params
       const response = await Banner.find();
-      console.log(response);
+      
+      
       res.status(200).json({ response });
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch banners' });
     }
   };
-  
+  /**Wallet Booking */
   const walletBooking = async (req, res, next) => {
     const userId = req.userId;
     const reservationId = req.params.id;
@@ -450,7 +451,8 @@ const getTheatre = async (req, res) => {
         return res.status(404).json({ message: 'User not found' });
       }
   
-    console.log(reservationId);
+  
+      
       const reservation = await Reservation.findOne({ _id: reservationId });
     
 
