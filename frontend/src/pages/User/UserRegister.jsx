@@ -13,7 +13,7 @@ import jwt_decode from 'jwt-decode'
 import {useDispatch} from "react-redux"
 import {userActions} from "../../store"
 import 'react-toastify/dist/ReactToastify.css';
-
+import styles from "./styles.module.css";
 
 const UserRegister = () => {
     const dispatch= useDispatch();
@@ -21,7 +21,8 @@ const UserRegister = () => {
     const [inputs, setInputs] = useState(
         {name: '', email: '', password: '', phone: ''}
     );
-  
+    const [msg, setMsg] = useState("");
+   
     const handleChange = (e) => {
         setInputs((prevState) => ({
           ...prevState,
@@ -34,8 +35,9 @@ const UserRegister = () => {
           const resData = await sendUserRegister(inputs); 
           if (resData) {
             // Login success
+            setMsg(resData.message);
             toast.success(resData.message);
-            navigate('/login');
+            //navigate('/login');
           } 
         } catch (err) {
           console.log(err);
@@ -160,6 +162,8 @@ const UserRegister = () => {
                         variant='standard'
                         type='number'
                         name='phone'/>
+                       
+						{msg && <div className={styles.success_msg}>{msg}</div>}
                     <Button
                         sx={{
                             mt: 4,

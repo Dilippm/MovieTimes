@@ -160,7 +160,7 @@ const SeatSelection = () => {
             marginTop: "150px",
             marginRight: '150px',
             width: '25%',
-            height: '500px',
+            height: '700px',
             border: '1px solid black',
             backgroundColor: '#e9e9e9',
             color: '#000',
@@ -182,7 +182,8 @@ const SeatSelection = () => {
             {' '}
             <b> Movie: <i style={{ color: '#3f4652' }}>{data.movies}</i></b>
           </Typography>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Box>
+          <LocalizationProvider dateAdapter={AdapterDayjs} >
             <DemoContainer components={['DatePicker']}>
               <DatePicker
                 value={selectedDate}
@@ -190,15 +191,19 @@ const SeatSelection = () => {
                 maxDate={tomorrow}
                 disablePast
                 views={['year', 'month', 'day']}
+              
               />
             </DemoContainer>
           </LocalizationProvider>
-          <Typography variant="h4">
+
+          </Box>
+          
+          <Typography variant="h4" marginTop="20px">
             {' '}
             <b>Seats Selected:</b>{' '}
-            <i style={{ color: '#3f4652', fontWeight: 'bolder', fontSize: "30px" }}>{selectedSeats.join(', ')}</i>{' '}
+            <i style={{ color: '#3f4652', fontWeight: 'bolder', fontSize: "30px"}}>{selectedSeats.join(', ')}</i>{' '}
           </Typography>
-          <Typography variant="h4">
+          <Typography variant="h4"  marginTop="20px">
             {' '}
             <b>Show Timing:</b>{' '}
             <i style={{ color: '#3f4652', fontWeight: 'bolder' }}>{selectedShowTiming}</i>{' '}

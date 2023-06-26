@@ -119,12 +119,13 @@ console.log("seatdbooked",bookedSeats);
               color: isSelected ? 'white' : isReserved ? 'white' : 'black',
               padding: '10px',
               margin: '10px',
+            
               cursor: isDisabled ? 'not-allowed' : 'pointer',
               display: 'inline-block',
               border: '1px solid black',
-              borderRadius: '20px',
-              width: '40px',
-              height: '40px',
+              // borderRadius: '20px',
+              width: '60px',
+              height: '60px',
               textAlign: 'center',
               fontSize: '16px',
             }}

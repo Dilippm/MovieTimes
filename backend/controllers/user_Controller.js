@@ -12,6 +12,9 @@ const jwtSecret = config.JWT_SECRET;
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const BASE_URL =config.BASE_URL;
+const Token= require("../models/Token");
+const sendEmail = require("../utils/sendEmail");
+const crypto =require("crypto")
 const fs = require('fs');
 const path = require('path');
 /* all user details*/
@@ -33,6 +36,7 @@ const getUsers = async (req, res, next) => {
 };
 /*User signup*/
 const userRegister = async (req, res, next) => {
+
     const {name, email, password, phone} = req.body;
     if (!name && name.trim() === "" && !email && email.trim() === "" && !password && password.trim() === "" && !phone && phone.trim() === "") {
         return res
@@ -54,6 +58,13 @@ const userRegister = async (req, res, next) => {
         admin.users.push(user);
         admin = await admin.populate("users");
         await admin.save();
+        const token= await new Token({
+          userId: user._id,
+          token:crypto.randomBytes(32).toString("hex")
+
+        }).save();
+        const url = `${process.env.BASE_URL}${user._id}/verify/${token.token}`;
+        await sendEmail(user.email,"Verify Email",url);
 
     } catch (error) {
         return console.log(error);
@@ -65,8 +76,28 @@ const userRegister = async (req, res, next) => {
     }
     return res
         .status(200)
-        .json({message: "Registered successfully", id:user._id});
+        .json({message: "Please verify email send to your account ", id:user._id});
 
+}
+/**User verification */
+const getVerified =async(req,res,next)=>{
+  try {
+ 
+    const user = await User.findOne({_id:req.params.id})
+    if(!user) return res.status(400).send({message:"invalid link"});
+    const token =await Token.findOne({
+      userId:user._id,
+      token:req.params.token
+    })
+
+    if(!token) return res.status(400).send({message:"invalid link"});
+    await User.updateOne({_id:user._id},{$set:{verified:true}});
+    await token.deleteOne({_id:token._id});
+    return res.status(200).send({message:"Email Verfied Successfully"});
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({message:"Internal Server Error"});
+  }
 }
 /**user googlelogin */
 
@@ -132,7 +163,20 @@ const userLogin = async (req, res, next) => {
         .status(400)
         .json({error: "Sorry! blocked by Admin..."})
     }
-   
+   if(!user.verified){
+    let token = await Token.findOne({userId:user._id});
+    if(!token){
+      const token= await new Token({
+        userId: user._id,
+        token:crypto.randomBytes(32).toString("hex")
+
+      }).save();
+      const url = `${process.env.BASE_URL}users/${user._id}/verify/${token.token}`;
+      await sendEmail(user.email,"Verify Email",url);
+    }
+    return res.status(400).send({message:"An Email sent to ypur acccount please verify"});
+
+   }
     
     const token = jwt.sign({id:user._id},jwtSecret,{expiresIn:"1d"})
     return res
@@ -537,6 +581,7 @@ module.exports = {
     userBooking,
     getUserBanner,
     walletBooking,
-    getSpecificBookingsofUser
+    getSpecificBookingsofUser,
+    getVerified
     
 };

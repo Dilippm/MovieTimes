@@ -15,7 +15,8 @@ const {
     userBooking,
     getUserBanner,
     walletBooking,
-    getSpecificBookingsofUser
+    getSpecificBookingsofUser,
+    getVerified
 } = require("../controllers/user_Controller");
 const {verifyToken} = require("../Middlewares/UserMiddleware")
 const {uploadOptions} = require("../multer/multer");
@@ -25,6 +26,7 @@ const userRouter = express.Router();
 /**GET ROUTES */
 
 userRouter.get("/", getUsers);
+userRouter.get("/:id/verify/:token",getVerified)
 userRouter.get("/booking/:id", getBookingsofUser);
 userRouter.get("/specificbooking/:id", getSpecificBookingsofUser);
 userRouter.get('/:id', getUser);
