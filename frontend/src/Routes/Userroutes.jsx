@@ -16,6 +16,7 @@ import Bookings from '../pages/User/Bookings'
 import Successpage from '../components/Payment/Successpage';
 import ShowBookings from '../pages/User/ShowBookings';
 import WalletSuccess from '../components/Payment/WalletSuccess';
+import EmailVerify from '../components/EmailVerify.jsx';
 const UserRoutes = () => {
 
 
@@ -28,6 +29,7 @@ const UserRoutes = () => {
           <Route exact path="/movies" element={<Movies />} />
           <Route exact path="/login" element={<UserPublicRoutes><User /></UserPublicRoutes>} />
           <Route exact path="/register" element={<UserPublicRoutes><UserRegistration /></UserPublicRoutes>} />
+          <Route exact path= "/:id/verify/:token" element={<UserPublicRoutes><EmailVerify/></UserPublicRoutes>}/> 
           <Route path="/profile" element={<UserProtectedRoutes><UserProfile /></UserProtectedRoutes>} />
           <Route path ='/viewmovie/:id' element ={<MoviePage/>}/>
           <Route path='/movieseats/:id' element ={<SeatSelection/>}/>
