@@ -43,7 +43,7 @@ const Banner = () => {
           <img
             src={banner.postedUrl}
             alt={banner.title}
-            style={{ width: '95vw', height: '550px', objectFit: 'fill', marginRight:"60px" }}
+            style={{ width: '95vw', height: '550px', objectFit: 'fill', marginRight:"15px" }}
           />
         </div>
       ))}

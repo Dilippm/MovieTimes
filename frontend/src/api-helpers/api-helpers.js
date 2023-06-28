@@ -545,6 +545,7 @@ export const getMoviesByLanguage = async (selectedLanguage, currentPage) => {
   }
 };
 
+
 export const getDistinctLanguages =async()=>{
   try {
     const response = await axios.get(`${BaseURL}movie/movieslan`);
@@ -553,7 +554,7 @@ export const getDistinctLanguages =async()=>{
     throw new Error(error.message);
   }
 }
-
+/** user bookings */
 export const getBookingsForUser = async () => {
   try {
     const token = localStorage.getItem("token")
@@ -569,7 +570,7 @@ export const getBookingsForUser = async () => {
   }
 };
 
-
+/**Admin side banner  */
 export const getBanners = async () => {
   try {
     const id = localStorage.getItem("adminId");
@@ -588,7 +589,7 @@ export const getBanners = async () => {
     throw new Error('Failed to fetch banners');
   }
 };
-
+/***Add banner  */
 export const addBanner = async (bannerData) => {
   try {
     const id = localStorage.getItem("adminId");
@@ -608,7 +609,7 @@ export const addBanner = async (bannerData) => {
     throw new Error('Failed to add banner');
   }
 };
-
+/**render banner to user */
 export const getuserBanners =async()=>{
   try {
    const id = localStorage.getItem("userId")
@@ -619,6 +620,7 @@ export const getuserBanners =async()=>{
     throw error;
   }
 }
+/**cancle booking */
 export const cancelBooking =async(id)=>{
   try {
     console.log("id",id);
@@ -637,6 +639,7 @@ export const cancelBooking =async(id)=>{
   }
   
 }
+/**wallet booking */
 export const walletBooking = async (id) => {
   const token = localStorage.getItem("token");
 
@@ -658,6 +661,7 @@ export const walletBooking = async (id) => {
     throw error;
   }
 };
+/**get all booking for admin */
 export const getAllBookingsAdmin = async () => {
   try {
     const token = localStorage.getItem("admintoken");
@@ -675,6 +679,7 @@ export const getAllBookingsAdmin = async () => {
     throw error;
   }
 };
+/**get booking to owner */
 export const getAllBookingsOwner = async()=>{
   try {
     const token = localStorage.getItem("ownertoken");
@@ -692,6 +697,7 @@ export const getAllBookingsOwner = async()=>{
     throw error;
   }
 }
+/* admindadhboard cards */
 export const adminFetchData =async()=>{
   try {
     const token = localStorage.getItem("admintoken");
@@ -711,6 +717,7 @@ export const adminFetchData =async()=>{
   }
  
 }
+/**admin dahsboard chart */
 export const adminChartFetch = async()=>{
   try {
     const token = localStorage.getItem("admintoken");
@@ -729,7 +736,7 @@ export const adminChartFetch = async()=>{
     
   }
 }
-
+/* ownerdadhboard cards */
 export const ownerFetchData =async()=>{
   try {
     const token = localStorage.getItem("ownertoken");
@@ -749,6 +756,7 @@ export const ownerFetchData =async()=>{
   }
  
 }
+/**admin dahsboard chart */
 export const ownerChartFetch = async()=>{
   try {
     const token = localStorage.getItem("ownertoken");

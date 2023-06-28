@@ -86,7 +86,7 @@ const AdminHome = () => {
             >
               <CardContent>
                 <Typography variant="h5" component="div" mt={8}>
-                  <b>Total Users: {cardData.totalUsers}</b>
+                  <b>Total Bookings: {cardData.totalUsers}</b>
                 </Typography>
               </CardContent>
             </Card>

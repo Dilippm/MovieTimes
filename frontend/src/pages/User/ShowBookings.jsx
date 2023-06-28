@@ -13,12 +13,17 @@ const ShowBookings = () => {
 
     const fetchBookings = async () => {
         try {
-            const response = await getBookingsForUser();
-            setBookings(response.bookings);
+          const response = await getBookingsForUser();
+          const sortedBookings = response.bookings.sort((a, b) => {
+           
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          });
+          setBookings(sortedBookings);
         } catch (error) {
-            console.log(error);
+          console.log(error);
         }
-    };
+      };
+      
 
     const handleCancelBooking = async (bookingId) => {
         try {
@@ -65,7 +70,7 @@ const ShowBookings = () => {
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={3}>
-                                    <Typography variant="body1" sx={{ fontSize: "30px", marginLeft: "60px" }}>
+                                    <Typography variant="body1" sx={{ fontSize: "28px", marginLeft: "60px" }}>
                                         <b>ShowTime:</b>  {booking.time}
                                     </Typography>
                                     <Typography variant="body1" sx={{ fontSize: "30px", marginLeft: "60px" }} mt={2}>

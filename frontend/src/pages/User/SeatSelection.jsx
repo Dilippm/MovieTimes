@@ -142,7 +142,7 @@ const SeatSelection = () => {
           <h1 style={{ marginLeft: '400px' }}>Screen This way</h1>
           <br />
           <br />
-          <div style={{ marginLeft: '10px', marginBottom: "30px" }}>
+          <div style={{  marginBottom: "30px" }}>
             <Body data={data} selectedShowTiming={selectedShowTiming} selectedDate={selectedDate} onSeatsSelected={handleSeatsSelected} />
           </div>
           <hr style={{ boxShadow: '10px 20px 0px rgba(10, 0, 20, 0.7)', marginBottom: "30px" }}></hr>
@@ -151,7 +151,7 @@ const SeatSelection = () => {
           style={{
             width: '2px',
             backgroundColor: '#000',
-            marginRight: '200px',
+            marginRight: '150px',
             boxShadow: '10px 20px 0px rgba(10, 0, 20, 0.7)'
           }}
         ></div>

@@ -53,7 +53,7 @@ const OwnerHeader = () => {
   const navigate = useNavigate();
   const menuItems = [
     { text: 'Dashboard', route: '/owner/home' },
-    { text: 'Banner', route: '/admin' },
+   
     { text: 'User', route: '/admin_user' },
     { text: 'Theater', route: '/owner/owner_theater' },
     { text: 'Movie', route: '/owner/owner_movies' },
@@ -107,7 +107,7 @@ const OwnerHeader = () => {
   indicatorColor="secondary"
   aria-label="secondary tabs example"
   sx={{
-    marginLeft: 'auto', // Align Tabs to the right
+    marginLeft: 'auto', 
   }}
 >
   <Tab

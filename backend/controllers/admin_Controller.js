@@ -39,7 +39,7 @@ const adminLogin = async (req, res, next) => {
             .json({ error: "Incorrect email or password" });
     }
 
-    const token = jwt.sign({ id: admin._id }, jwtSecret, { expiresIn: "1d" });
+    const token = jwt.sign({ id: admin._id }, jwtSecret, { expiresIn: "1day" });
     return res
         .status(200)
         .json({ message: "Login successful", token,id:admin.id,name:admin.name,image:admin.image });

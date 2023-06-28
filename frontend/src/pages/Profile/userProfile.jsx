@@ -77,12 +77,12 @@ const UserProfile = () => {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: '80vh'
+                    height: '90vh'
                 }}>
                 <Box
                     sx={{
                         width: 500,
-                        height: 770,
+                        height: 710,
                         backgroundColor: '#eeeeee',
                         border: "1px solid white",
                         boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)'

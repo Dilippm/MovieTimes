@@ -28,6 +28,7 @@ const newBookings = async (req, res, next) => {
       newBooking = new Bookings({
         movie,
         date: new Date(`${date}`),
+        
         seatNumber,
         user,
       });
@@ -35,7 +36,7 @@ const newBookings = async (req, res, next) => {
       await newBooking.save();
   
       const userbooking = await User.findById(user).populate("bookings");
-      userbooking.bookings.push(newBooking);
+      userbooking.bookings.unshift(newBooking);
       await userbooking.save();
   
       const moviebooking = await Movie.findById(movie).populate("bookings");
