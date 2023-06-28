@@ -34,6 +34,42 @@ const getUsers = async (req, res, next) => {
         .status(200)
         .json({users});
 };
+/**Get Theater Details */
+const getTheaterDetails =async(req,res,next)=>{
+try {
+  const theatre = await Theatre.find();
+      
+  if (!theatre || theatre.length === 0) {
+    return res.status(400).json({ message: 'No theatres found' });
+  }
+  
+
+  
+  res.status(200).json({ message: 'Theatres found', theatre });
+} catch (error) {
+  console.error('Failed to fetch theatres:', error);
+  res.status(500).json({ error: 'Failed to fetch theatres' });
+}
+
+}
+const getcomments = async(req,res,next)=>{
+  console.log("vannue");
+  const id = req.params.id;
+  console.log(id);
+  try {
+    const theatre = await Theatre.find({_id:id});
+console.log("theatre",theatre);
+    if (!theatre || theatre.length === 0) {
+      return res.status(400).json({ message: 'No theatres found' });
+    }
+    // const ratings = theatre.ratings
+   
+    res.status(200).json({ message: 'Theatres found', theatre });
+  } catch (error) {
+    console.error('Failed to fetch theatres:', error);
+    res.status(500).json({ error: 'Failed to fetch theatres' });
+  }
+}
 /*User signup*/
 const userRegister = async (req, res, next) => {
 
@@ -564,9 +600,54 @@ const getTheatre = async (req, res) => {
     }
   };
   
+  /** theater Rating add */
+ 
+
+  const theaterRating = async (req, res, next) => {
+    try {
+      const userId = req.userId;
+      const theaterId = req.params.id;
+      const comment = req.body.comment;
+      const rating = req.body.rating;
+      const file = req.file; 
+  
+      const theater = await Theatre.findById(theaterId);
+      if (!theater) {
+        return res.status(404).json({ message: 'Theater not found' });
+      }
+  
+      const ratingData = {
+        user: userId,
+        comment: comment,
+        rating: rating
+      };
+  
+      // Check if file is present and add image field
+      if (file) {
+        const imageUrl = `${BASE_URL}/${file.filename}`;
+        ratingData.image = imageUrl;
+      }
+  
+      theater.ratings.push(ratingData);
+  
+      const totalRatings = theater.ratings.length;
+     
+      const sumRatings = theater.ratings.reduce((sum, rating) => sum + rating.rating, 0);
+      theater.totalRating = sumRatings / totalRatings;
+  
+      await theater.save();
+  
+      res.status(200).json({ message: 'Rating submitted successfully' });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+  
   
 module.exports = {
     getUsers,
+    getTheaterDetails,
     userRegister,
     updateUser,
     userLogin,
@@ -582,6 +663,8 @@ module.exports = {
     getUserBanner,
     walletBooking,
     getSpecificBookingsofUser,
-    getVerified
+    getVerified,
+    theaterRating,
+    getcomments
     
 };

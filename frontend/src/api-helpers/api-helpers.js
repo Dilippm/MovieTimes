@@ -775,3 +775,14 @@ export const ownerChartFetch = async()=>{
     
   }
 }
+
+/**User theater detials  */
+export const getTheaters =async()=>{
+  try {
+    const response = await axios.get(`${BaseURL}user/gettheaterdetails`);
+  
+    return response.data;
+  } catch (error) {
+    
+  }
+}

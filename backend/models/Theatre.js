@@ -13,9 +13,9 @@ const theatreSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  price:{
-    type:String,
-    required:true
+  price: {
+    type: String,
+    required: true
   },
   owner: {
     type: mongoose.Types.ObjectId,
@@ -25,6 +25,31 @@ const theatreSchema = new mongoose.Schema({
     {
       startTime: {
         type: String,
+        required: true
+      }
+    }
+  ],
+  totalRating: {
+    type: Number,
+    default: 0
+  },
+  ratings: [
+    {
+      user: {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+        required: true
+      },
+      comment: {
+        type: String,
+        required: true
+      },
+      image: {
+        type: String,
+        
+      },
+      rating: {
+        type: Number,
         required: true
       }
     }

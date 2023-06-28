@@ -54,6 +54,12 @@ const Header = () => {
               label="Movies"
               sx={{ fontSize: '20px', '&:hover': { color: 'yellow' }, margin: '10px' }}
             />
+             <Tab
+              component={Link}
+              to="/theaters"
+              label="Theaters"
+              sx={{ fontSize: '20px', '&:hover': { color: 'yellow' }, margin: '10px' }}
+            />
             <Tab
               component={Link}
               to="/bookings"
