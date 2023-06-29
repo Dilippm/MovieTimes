@@ -59,8 +59,8 @@ const TheaterPage = () => {
                                 
                                 </Grid>
 
-                                <Grid item xs={3}>
-                                <AddRating theaterId={theater._id} />
+                                <Grid item xs={3} sx={{ marginTop:"30px"}}>
+                                <AddRating theaterId={theater._id}  />
                                 <GetRatings theaterId={theater._id}/>
                             </Grid>
                             </Grid>

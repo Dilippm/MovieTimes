@@ -1,6 +1,7 @@
 const Admin = require("../models/Admin");
 const Movie =require("../models/Movies")
 const User =require("../models/User")
+const Bookings = require("../models/Bookings")
 const jwt =require("jsonwebtoken");
 const config = require('../config');
 const Owner = require("../models/Owner");
@@ -568,6 +569,25 @@ const getTheaterList = async(req,res,next)=>{
 
 }
 
+/**Get All bookings  */
+const getAllUserBookings = async (req, res, next) => {
+
+  const adminId = req.adminId;
+  try {
+    const admin = await Admin.findById(adminId)
+    if(!admin){
+      return res.status(404).json({ message: 'Invalid admin ID' });
+    }
+    const bookings = await Bookings.find().populate("user")
+
+
+    res.status(200).json({ bookings });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 module.exports = {
    adminLogin,
    updateAdmin,
@@ -586,7 +606,8 @@ module.exports = {
    getdashboarddetails,
    getDashboardChart,
    getMovieChart,
-   getTheaterList
+   getTheaterList,
+   getAllUserBookings
 
  
 };

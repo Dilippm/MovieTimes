@@ -18,7 +18,8 @@ const {
     getdashboarddetails,
     getDashboardChart,
     getMovieChart,
-    getTheaterList
+    getTheaterList,
+    getAllUserBookings
    
 } = require("../controllers/admin_Controller");
 const verifyAdminToken = require("../Middlewares/AdminMIddleware")
@@ -48,6 +49,7 @@ adminRoute.get('/dashboardrevenue/:id', verifyAdminToken, getdashboarddetails)
 adminRoute.get('/dashboardchart/:id', verifyAdminToken, getDashboardChart)
 adminRoute.get('/movieschart/:id',verifyAdminToken,getMovieChart)
 adminRoute.get('/theaterschart/:id',verifyAdminToken,getTheaterList)
+adminRoute.get('/alluserbookings/:id',verifyAdminToken,getAllUserBookings)
 
 /**Delete Route */
 adminRoute.delete('/deltebanner/:id', deleteBanner)

@@ -254,10 +254,25 @@ export const updateOwnerProfile= async(data,image)=>{
     }
   
     const resData = res.data;
-    console.log("resData:", resData);
+   
     return resData;
   };
+  /**get All user Owner */
+  export const getusersOwner = async(page,limit)=>{
+    const id = localStorage.getItem("ownerId");
+    
+    const res = await axios.get(`${BaseURL}owner/users/${id}`, {
+      params: { page, limit }, 
+    });
   
+    if (res.status !== 200) {
+      throw new Error("Unexpected error");
+    }
+  
+    const resData = res.data;
+    console.log("resData:", resData);
+    return resData;
+  }
   /* get movies*/
  export const getMovies = async (page, limit) => {
   const id = localStorage.getItem('adminId');
@@ -713,7 +728,8 @@ export const adminFetchData =async()=>{
 
 
   } catch (error) {
-    
+    console.error("Error fetching all bookings:", error);
+    throw error;
   }
  
 }
@@ -733,7 +749,8 @@ export const adminChartFetch = async()=>{
 
 
   } catch (error) {
-    
+    console.error("Error fetching all bookings:", error);
+    throw error;
   }
 }
 /* ownerdadhboard cards */
@@ -756,7 +773,7 @@ export const ownerFetchData =async()=>{
   }
  
 }
-/**admin dahsboard chart */
+/**owner dahsboard chart */
 export const ownerChartFetch = async()=>{
   try {
     const token = localStorage.getItem("ownertoken");
@@ -772,7 +789,8 @@ export const ownerChartFetch = async()=>{
 
 
   } catch (error) {
-    
+    console.error("Error fetching all bookings:", error);
+    throw error;
   }
 }
 
@@ -783,6 +801,48 @@ export const getTheaters =async()=>{
   
     return response.data;
   } catch (error) {
+    console.error("Error fetching all bookings:", error);
+    throw error;
+  }
+}
+/*** Booking Details for Admin */
+export const getBookingsForAdmin = async()=>{
+ 
+  try {
+    const token = localStorage.getItem("admintoken");
+    const id = localStorage.getItem("adminId")
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.get(`${BaseURL}admin/alluserbookings/${id}`, config);
     
+    return response.data;
+
+
+  } catch (error) {
+    console.error("Error fetching all bookings:", error);
+    throw error;
+  }
+}
+/**Booking Details for Owner */
+export const getBookingsForOwner =async()=>{
+  try {
+    const token = localStorage.getItem("ownertoken");
+    const id = localStorage.getItem("ownerId")
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.get(`${BaseURL}owner/alluserbookings/${id}`, config);
+    
+    return response.data;
+
+
+  } catch (error) {
+    console.error("Error fetching all bookings:", error);
+    throw error;
   }
 }

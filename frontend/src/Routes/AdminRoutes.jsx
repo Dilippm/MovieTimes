@@ -13,6 +13,7 @@ import EditMovie from '../components/Movie/EditMovie';
 import OwnerDetails from '../pages/Admin/OwnerDetails';
 import Banner from '../pages/Admin/Banner';
 import Revenue from '../pages/Admin/Revenue';
+import Bookings from '../pages/Admin/Bookings';
 
 const AdminRoutes = () => {
   return (
@@ -28,6 +29,7 @@ const AdminRoutes = () => {
           <Route path ='/editmovie/:id'element ={<AdminProtectedRoutes><EditMovie/></AdminProtectedRoutes>}/>
           <Route path ='/owners' element ={<AdminProtectedRoutes><OwnerDetails/></AdminProtectedRoutes>}/>
          <Route path='/banner' element={<AdminProtectedRoutes><Banner/></AdminProtectedRoutes>}/>
+         <Route path='/bookings' element={<AdminProtectedRoutes><Bookings/></AdminProtectedRoutes>}/>
          <Route path='/admin_report' element ={<AdminProtectedRoutes><Revenue/></AdminProtectedRoutes>}/>
         </Routes>
     </>

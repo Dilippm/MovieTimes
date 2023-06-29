@@ -205,6 +205,43 @@ const getTheatres = async (req, res, next) => {
     res.status(500).json({ message: 'Failed to get theaters' });
   }
 };
+/** GEt All Users */
+const getAllUsers = async (req, res, next) => {
+  try {
+    const ownerId = req.params.id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const owner = await Owner.findById(ownerId)
+      .populate({
+        path: "bookings",
+        populate: { path: "user" },
+        options: {
+          skip: (page - 1) * limit,
+          limit: limit,
+        },
+      })
+      .exec();
+
+    if (!owner) {
+      return res.status(404).json({ message: "Owner not found" });
+    }
+
+    const users = owner.bookings.map(booking => booking.user);
+    
+    const totalCount = await User.find().countDocuments();
+
+    res.json({
+      message: "Users found",
+      users,
+      totalUsers: totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+    });
+  } catch (error) {
+  
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
+};
 
 
   /**Add Theatre  */
@@ -460,6 +497,22 @@ const getAllBookings = async(req,res,next)=>{
       return res.status(500).json({ message: "Something went wrong" });
     }
   }
+  const getuserbookings = async(req,res,next)=>{
+    const ownerId = req.ownerId;
+    try {
+      const owner = await Owner.findById(ownerId).populate({
+        path: "bookings",
+        populate: { path: "user" }
+      });
+  
+      const bookings = owner.bookings;
+    
+      return res.status(200).json({ bookings });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  }
 module.exports ={
     ownerRegister,
     getUsers,
@@ -475,7 +528,9 @@ module.exports ={
     getRevenue,
     getRevenueChart,
     getTheaterChart,
-    getMovieChart
+    getMovieChart,
+    getuserbookings,
+    getAllUsers
     
 
 

@@ -54,9 +54,10 @@ const OwnerHeader = () => {
   const menuItems = [
     { text: 'Dashboard', route: '/owner/home' },
    
-    { text: 'User', route: '/admin_user' },
+    { text: 'User', route: '/owner/owner_user' },
     { text: 'Theater', route: '/owner/owner_theater' },
     { text: 'Movie', route: '/owner/owner_movies' },
+    { text: 'Bookings', route: '/owner/bookings' },
     { text: 'Revenue Report', route: '/owner/revenue_report' },
   ];
   const [open, setOpen] = useState(false);

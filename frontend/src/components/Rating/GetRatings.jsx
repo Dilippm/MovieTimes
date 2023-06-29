@@ -42,7 +42,7 @@ const GetRatings = ({ theaterId }) => {
   return (
     <div>
       <Button variant="contained" color="secondary" onClick={handleOpen}>
-        View Comments
+       <b> View Comments</b>
       </Button>
       <Dialog open={open} onClose={handleClose} PaperProps={{ style: { width: '100vw' } }} >
         <DialogTitle>All Ratings</DialogTitle>

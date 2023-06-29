@@ -63,7 +63,7 @@ const AddRating = ({ theaterId }) => {
 
   return (
     <div>
-      <Button variant="contained" color="primary" onClick={handleOpen}>Add</Button>
+      <Button variant="contained" color="primary" onClick={handleOpen} sx={{marginBottom:"20px"}}> <b>Add</b> </Button>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Add Comment</DialogTitle>
         <DialogContent>
