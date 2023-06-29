@@ -11,6 +11,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
+import moment from 'moment';
 
 const SeatSelection = () => {
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ const SeatSelection = () => {
 
   const handleShowTimingClick = (startTime) => {
     setSelectedSeats([]);
+    
     setSelectedShowTiming(startTime);
   };
 
@@ -68,6 +70,11 @@ const SeatSelection = () => {
       toast.error('Please select at least one seat.');
       return;
     }
+ 
+    
+    
+    
+
     const theatreName = data.name;
     const movieName = data.movies;
     const Date = selectedDate.format('YYYY-MM-DD');
@@ -115,14 +122,28 @@ const SeatSelection = () => {
           <b>Show Timings:</b>
         </Typography>
         {data.showTimings.map((showTiming, index) => (
-          <Button
-            sx={{ marginLeft: '50px', border: '1px solid brown', width: '100px', height: '75px', color: "white", backgroundColor: "black", '&:hover': { backgroundColor: '#9e0b38' } }}
-            key={index}
-            variant="contained"
-            onClick={() => handleShowTimingClick(showTiming.startTime)}
-          >
-            <b>{showTiming.startTime}</b>
-          </Button>
+         <Button
+         sx={{
+           marginLeft: '50px',
+           border: '1px solid brown',
+           width: '100px',
+           height: '75px',
+           color: 'white',
+           backgroundColor: 'black',
+           '&:hover': { backgroundColor: '#9e0b38' },
+          
+         }}
+         key={index}
+         variant="contained"
+         onClick={() => handleShowTimingClick(showTiming.startTime)}
+         disabled={
+           selectedDate.isSame(moment(), 'day') &&
+           moment(showTiming.startTime, 'hh:mm A').isBefore(moment(), 'minute')
+         }
+       >
+         <b>{showTiming.startTime}</b>
+       </Button>
+       
         ))}
       </Box>
 

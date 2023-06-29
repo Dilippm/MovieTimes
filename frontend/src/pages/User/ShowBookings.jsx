@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Container, Card, CardContent, Grid, Button } from '@mui/material';
+import { Typography, Container, Card, CardContent, Grid, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 import Header from '../../components/Header';
 import { getBookingsForUser, cancelBooking } from '../../api-helpers/api-helpers';
 
 const ShowBookings = () => {
     const [bookings, setBookings] = useState([]);
+    const [cancelConfirmationOpen, setCancelConfirmationOpen] = useState(false);
+    const [selectedBookingId, setSelectedBookingId] = useState('');
 
     useEffect(() => {
         fetchBookings();
@@ -13,27 +15,34 @@ const ShowBookings = () => {
 
     const fetchBookings = async () => {
         try {
-          const response = await getBookingsForUser();
-          const sortedBookings = response.bookings.sort((a, b) => {
-           
-            return new Date(b.createdAt) - new Date(a.createdAt);
-          });
-          setBookings(sortedBookings);
+            const response = await getBookingsForUser();
+            const sortedBookings = response.bookings.sort((a, b) => {
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+            setBookings(sortedBookings);
         } catch (error) {
-          console.log(error);
+            console.log(error);
         }
-      };
-      
+    };
 
     const handleCancelBooking = async (bookingId) => {
+        setSelectedBookingId(bookingId);
+        setCancelConfirmationOpen(true);
+    };
+
+    const confirmCancelBooking = async () => {
         try {
-            await cancelBooking(bookingId); 
-            
-            const updatedBookings = bookings.filter((booking) => booking._id !== bookingId);
+            await cancelBooking(selectedBookingId);
+            const updatedBookings = bookings.filter((booking) => booking._id !== selectedBookingId);
             setBookings(updatedBookings);
         } catch (error) {
             console.log(error);
         }
+        setCancelConfirmationOpen(false);
+    };
+
+    const closeCancelConfirmation = () => {
+        setCancelConfirmationOpen(false);
     };
 
     const isBookingCancelable = (bookingDate) => {
@@ -89,6 +98,20 @@ const ShowBookings = () => {
                     </Card>
                 ))}
             </Container>
+
+            {/* Cancel Confirmation Dialog */}
+            <Dialog open={cancelConfirmationOpen} onClose={closeCancelConfirmation}>
+                <DialogTitle>Cancel Booking</DialogTitle>
+                <DialogContent>
+                    <Typography>Are you sure you want to cancel this booking?</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={closeCancelConfirmation} sx={{ backgroundColor: "blue", color: "whitesmoke" }}>No</Button>
+                    <Button onClick={confirmCancelBooking} autoFocus sx={{ backgroundColor: "red", color: "whitesmoke" }}>
+                        Yes
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </>
     );
 };

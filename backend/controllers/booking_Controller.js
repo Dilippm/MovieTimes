@@ -129,7 +129,7 @@ if (!booking) {
   return res.status(404).json({ message: "Booking not found" });
 }
 const price = booking.amount;
-user.wallet += price;
+user.wallet += +price;
 await booking.deleteOne({_id:providedBookingId});
 user.bookings.pull(providedBookingId);
     
