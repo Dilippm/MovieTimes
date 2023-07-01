@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
-
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import AdminHeader from '../../components/AdminHeader';
 import { adminFetchData, adminChartFetch } from "../../api-helpers/api-helpers"
 import Linechart from '../../components/AdminDashBoard/charts/Linechart';
@@ -9,13 +11,27 @@ import MovieCards from '../../components/AdminDashBoard/cards/MovieCards';
 import TheaterCards from '../../components/AdminDashBoard/cards/TheaterCards';
 
 const AdminHome = () => {
+  const navigate = useNavigate();
   const [cardData, setCardData] = useState([]);
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
     fetchDataFromBackend();
     fetchChartDataFromBackend();
-  }, []);
+  });
+
+  const tokenExpirationMiddleware = (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("admintoken");
+      localStorage.removeItem("adminId");
+      localStorage.removeItem("adminimage");
+      localStorage.removeItem("adminname");
+      toast.error("Token expired. Redirecting to login page...");
+      navigate("/admin/admin");
+    } else {
+      throw error;
+    }
+  };
 
   const fetchDataFromBackend = async () => {
     try {
@@ -23,30 +39,31 @@ const AdminHome = () => {
       setCardData(data);
     } catch (error) {
       console.log(error);
+      tokenExpirationMiddleware(error);
     }
   };
 
   const fetchChartDataFromBackend = async () => {
     try {
       const chart = await adminChartFetch();
-     
       setChartData(chart.dailyRevenueArray);
-   
     } catch (error) {
       console.log(error);
+      // tokenExpirationMiddleware(error);
     }
   };
+
   const transformedChartData = [
     {
       id: 'Revenue',
       data: chartData.map((item, index) => ({ x: item.date, y: item.revenue })),
     },
-  ]
+  ];
 
   return (
     <>
       <AdminHeader />
-
+      <ToastContainer />
       <Grid container spacing={2}>
         <Grid item xs={12} sm={4}>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -86,7 +103,7 @@ const AdminHome = () => {
             >
               <CardContent>
                 <Typography variant="h5" component="div" mt={8}>
-                  <b>Total Users: {cardData.totalUsers}</b>
+                  <b>Total Bookings: {cardData.totalUsers}</b>
                 </Typography>
               </CardContent>
             </Card>

@@ -13,6 +13,8 @@ import Movies from "../pages/Owner/Movies"
 import OwnerHeader from '../components/OwnerHeader';
 import EditTheatre from '../pages/Owner/EditTheatre';
 import OwnerRevenue from '../pages/Owner/OwnerRevenue';
+import Bookings from '../pages/Owner/Bookings';
+import UserDetails from '../pages/Owner/UserDetails';
 const OwnerRoutes =()=>{
     return (
         <>
@@ -27,7 +29,8 @@ const OwnerRoutes =()=>{
           <Route path="/owner_movies" element={<OwnerProtectedRoutes><Movies/></OwnerProtectedRoutes>} />
           <Route path ='/edit_theatre/:id' element={<OwnerProtectedRoutes><EditTheatre/></OwnerProtectedRoutes>}/>
           <Route path='/revenue_report' element={<OwnerProtectedRoutes><OwnerRevenue/></OwnerProtectedRoutes>}/>
-            
+          <Route path='/bookings' element ={<OwnerProtectedRoutes><Bookings/></OwnerProtectedRoutes>}/>
+          <Route path='/owner_user' element ={<OwnerProtectedRoutes><UserDetails/></OwnerProtectedRoutes>}/>
             </Routes>
         </>
       )

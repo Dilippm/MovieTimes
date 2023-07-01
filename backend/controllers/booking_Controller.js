@@ -28,6 +28,7 @@ const newBookings = async (req, res, next) => {
       newBooking = new Bookings({
         movie,
         date: new Date(`${date}`),
+        
         seatNumber,
         user,
       });
@@ -35,7 +36,7 @@ const newBookings = async (req, res, next) => {
       await newBooking.save();
   
       const userbooking = await User.findById(user).populate("bookings");
-      userbooking.bookings.push(newBooking);
+      userbooking.bookings.unshift(newBooking);
       await userbooking.save();
   
       const moviebooking = await Movie.findById(movie).populate("bookings");
@@ -81,7 +82,8 @@ const newBookings = async (req, res, next) => {
     
     res.json({ bookedSeats });
   } catch (error) {
-    console.log('Error fetching specific bookings:', error);
+   
+    
     res.status(500).json({ error: 'Failed to fetch specific bookings' });
   }
 
@@ -101,7 +103,8 @@ const newBookings = async (req, res, next) => {
    
       res.json({ bookings });
     } catch (error) {
-      console.log("Error retrieving user bookings:", error);
+     
+      
       res.status(500).json({ message: "Server error" });
     }
   };
@@ -128,7 +131,7 @@ if (!booking) {
   return res.status(404).json({ message: "Booking not found" });
 }
 const price = booking.amount;
-user.wallet += price;
+user.wallet += +price;
 await booking.deleteOne({_id:providedBookingId});
 user.bookings.pull(providedBookingId);
     
@@ -136,7 +139,8 @@ user.bookings.pull(providedBookingId);
   
       res.status(200).json({ message: "Booking canceled successfully" });
     } catch (error) {
-      console.log(error);
+    
+      
       res.status(500).json({ message: "Internal server error" });
     }
   };

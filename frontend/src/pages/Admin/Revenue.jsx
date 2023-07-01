@@ -12,8 +12,11 @@ import { CSVLink } from 'react-csv';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import PDFDocument from './PDFDocument'; 
 import { Pagination } from '@mui/material';
-
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Revenue = () => {
+  const navigate = useNavigate();
   const [bookingDetails, setBookingDetails] = useState({});
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedEndDate, setSelectedEndDate] = useState(null);
@@ -22,6 +25,18 @@ const Revenue = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(2); 
 
+  const tokenExpirationMiddleware = (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("admintoken");
+      localStorage.removeItem("adminId");
+      localStorage.removeItem("adminimage");
+      localStorage.removeItem("adminname");
+      toast.error("Token expired. Redirecting to login page...");
+      navigate("/admin/admin");
+    } else {
+      throw error;
+    }
+  };
   useEffect(() => {
  
     const fetchBookingDetails = async () => {
@@ -31,6 +46,7 @@ const Revenue = () => {
         setBookingDetails(response);
       } catch (error) {
         console.error('Error fetching booking details:', error);
+        tokenExpirationMiddleware(error);
       }
     };
 

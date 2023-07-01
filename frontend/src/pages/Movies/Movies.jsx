@@ -101,7 +101,7 @@ const Movies = () => {
         <Typography variant="h4" padding={2} textAlign={'center'} bgcolor={'#900C3F'} color={'white'}>
           <b>All Movies</b>
         </Typography>
-        <Box display="flex" flexDirection="row" alignItems="center" width={'30%'} margin={'auto'}  marginTop={'20px'}>
+        <Box display="flex" flexDirection="row" alignItems="center" width={'30%'} margin={'auto'}  marginTop={'20px'} >
   <TextField
     label="Search"
     variant="outlined"
@@ -109,6 +109,7 @@ const Movies = () => {
     onChange={handleSearchChange}
     fullWidth
     margin="normal"
+    style={{border:"3px solid white"}}
   />
   <TextField
   
@@ -117,7 +118,7 @@ const Movies = () => {
     variant="outlined"
     value={selectedLanguage}
     onChange={handleLanguageChange}
-    style={{ width: '250px',paddingLeft:"10px" }}
+    style={{ width: '250px',paddingLeft:"10px",border:"3px solid white" }}
     margin="normal"
   >
     <MenuItem value="">All</MenuItem>

@@ -155,7 +155,7 @@ const AddTheatreForm = ({ onAddTheatre }) => {
 
   return (
     <div>
-      <Button variant="outlined" onClick={handleClickOpen} style={{ border: '1px solid black', color: 'black' }}>
+      <Button variant="outlined" onClick={handleClickOpen} style={{ border: '3px solid white', color: 'white' }}>
         <b>Add Theatre</b>
       </Button>
       <Dialog open={open} onClose={handleClose}>

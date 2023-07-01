@@ -34,7 +34,9 @@ const ownerRegister = async (req, res, next) => {
     
     return res.status(200).json({ message: "Registered successfully", owner });
   } catch (error) {
-    console.log(error);
+   
+    
+    
     return res.status(500).json({ error: "Unexpected error occurred" });
   }
 };
@@ -79,7 +81,7 @@ const ownerLogin = async (req,res,next)=>{
             .status(400)
             .json({error: "email or password wrong"})
     }
-    const token = jwt.sign({id:owner._id},jwtSecret,{expiresIn:"1d"})
+    const token = jwt.sign({id:owner._id},jwtSecret,{expiresIn:"1day"})
     
     return res
         .status(200)
@@ -101,7 +103,8 @@ const getOwner = async (req, res, next) => {
 
     return res.status(200).json({ message: 'Owner found successfully', owner });
   } catch (error) {
-    console.log(error);
+  
+    
     return res.status(500).json({ message: 'Something went wrong' });
   }
 };
@@ -144,7 +147,8 @@ const updateOwner = async (req, res, next) => {
       return res.status(200).json({ message: "Updated successfully", owner });
     } catch (error) {
       
-      console.log(error);
+     
+      
       return res.status(500).json({ message: "Something went wrong" });
     }
   };
@@ -183,7 +187,8 @@ const getTheatres = async (req, res, next) => {
     const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
     ownerId = decodedToken.id;
   } catch (error) {
-    console.log(error);
+   
+    
     return res.status(400).json({ message: error.message });
   }
 
@@ -203,6 +208,43 @@ const getTheatres = async (req, res, next) => {
   } catch (error) {
     console.error('Failed to get theaters:', error);
     res.status(500).json({ message: 'Failed to get theaters' });
+  }
+};
+/** GEt All Users */
+const getAllUsers = async (req, res, next) => {
+  try {
+    const ownerId = req.params.id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const owner = await Owner.findById(ownerId)
+      .populate({
+        path: "bookings",
+        populate: { path: "user" },
+        options: {
+          skip: (page - 1) * limit,
+          limit: limit,
+        },
+      })
+      .exec();
+
+    if (!owner) {
+      return res.status(404).json({ message: "Owner not found" });
+    }
+
+    const users = owner.bookings.map(booking => booking.user);
+    
+    const totalCount = await User.find().countDocuments();
+
+    res.json({
+      message: "Users found",
+      users,
+      totalUsers: totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+    });
+  } catch (error) {
+  
+    res.status(500).json({ message: "Failed to fetch users" });
   }
 };
 
@@ -259,7 +301,8 @@ const getTheatres = async (req, res, next) => {
 
     return res.status(200).json({ message: 'Theatre found successfully', theatre });
   } catch (error) {
-    console.log(error);
+   
+    
     return res.status(500).json({ message: 'Request failed' });
   }
 };
@@ -300,7 +343,8 @@ const updateTheatre = async (req, res, next) => {
 
     return res.status(200).json({ message: 'Theatre updated successfully', theatre });
   } catch (error) {
-    console.log(error);
+   
+    
     return res.status(500).json({ message: 'Request failed' });
   }
 };
@@ -399,7 +443,8 @@ const getAllBookings = async(req,res,next)=>{
   
       res.json({ dailyRevenueArray });
     } catch (error) {
-      console.log(error);
+      
+      
     }
   }
   const getTheaterChart = async(req,res,next)=>{
@@ -427,7 +472,8 @@ const getAllBookings = async(req,res,next)=>{
   
       return res.status(200).json({ theaterCollection: theaterCollectionArray });
     } catch (error) {
-      console.log(error);
+     
+      
       return res.status(500).json({ message: "Something went wrong" });
     }
   }
@@ -456,7 +502,25 @@ const getAllBookings = async(req,res,next)=>{
   
       return res.status(200).json({ movieCollection: movieCollectionArray });
     } catch (error) {
-      console.log(error);
+      
+      
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+  const getuserbookings = async(req,res,next)=>{
+    const ownerId = req.ownerId;
+    try {
+      const owner = await Owner.findById(ownerId).populate({
+        path: "bookings",
+        populate: { path: "user" }
+      });
+  
+      const bookings = owner.bookings;
+    
+      return res.status(200).json({ bookings });
+    } catch (error) {
+      
+      
       return res.status(500).json({ message: "Something went wrong" });
     }
   }
@@ -475,7 +539,9 @@ module.exports ={
     getRevenue,
     getRevenueChart,
     getTheaterChart,
-    getMovieChart
+    getMovieChart,
+    getuserbookings,
+    getAllUsers
     
 
 

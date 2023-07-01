@@ -42,17 +42,29 @@ const Theater = () => {
         const data = await GetTheatres();
         setTheatre(data);
       } catch (error) {
+        tokenExpirationMiddleware(error);
         console.log(error);
       }
     };
 
     fetchData();
   }, []);
-
+  const tokenExpirationMiddleware = (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("ownertoken");
+      localStorage.removeItem("ownerId");
+      localStorage.removeItem("ownerimage");
+      localStorage.removeItem("ownername");
+      toast.error("Token expired. Redirecting to login page...");
+      navigate("/owner/login");
+    } else {
+      throw error;
+    }
+  };
   const handleAddTheatre = async (theatreData) => {
     try {
       const response = await AddTheatre(theatreData);
-      console.log('Theatre added successfully:', response);
+      
       setTheatre([...theatre, response]);
       toast.success('Theatre Added Successfully');
     } catch (error) {
@@ -62,14 +74,14 @@ const Theater = () => {
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
-    setCurrentPage(1); // Reset current page when search query changes
+    setCurrentPage(1); 
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  // Apply search filtering and pagination
+ 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentTheatres = theatre
@@ -92,13 +104,14 @@ const Theater = () => {
         <Box marginTop={4} marginLeft={3}>
           <AddTheatreForm onAddTheatre={handleAddTheatre} />
         </Box>
-        <Box width={'40%'} margin={'auto'}>
+        <Box width={'40%'} margin={'auto'} border={"3px solid white"} >
           <TextField
             label="Search"
             variant="outlined"
             value={searchQuery}
             onChange={handleSearchChange}
             fullWidth
+         
           />
         </Box>
         <Box width={'80%'} margin={'auto'}>
@@ -194,7 +207,7 @@ const Theater = () => {
   <Box display="flex" justifyContent="center" marginTop={4}>
     <Button
       style={{ marginRight: '5px' }}
-      variant="outlined"
+      variant="contained"
       disabled={currentPage === 1}
       onClick={() => handlePageChange(currentPage - 1)}
     >
@@ -203,7 +216,7 @@ const Theater = () => {
     <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
     <Button
       style={{ marginLeft: '5px' }}
-      variant="outlined"
+      variant="contained"
       disabled={currentPage === totalPages}
       onClick={() => handlePageChange(currentPage + 1)}
     >

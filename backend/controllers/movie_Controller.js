@@ -47,7 +47,9 @@ const addMovie = async (req, res, next) => {
   
       return res.status(200).json({ message: "Movie added successfully", movie, adminUser });
     } catch (error) {
-      console.log(error);
+   
+      
+
       return res.status(500).json({ message: "Request failed" });
     }
   };
@@ -66,7 +68,8 @@ const getMovies = async (req, res, next) => {
 
     return res.status(200).json({ movies, totalPages });
   } catch (error) {
-    console.log(error);
+   
+    
     return res.status(500).json({ message: "Request failed" });
   }
 };
@@ -88,7 +91,8 @@ const getMovies = async (req, res, next) => {
       const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
       adminId = decodedToken.id;
     } catch (error) {
-      console.log(error);
+    
+      
       return res.status(400).json({ message: error.message });
     }
  
@@ -176,7 +180,8 @@ const getMovies = async (req, res, next) => {
   
       return res.status(200).json({ message: "Movie updated successfully", movie });
     } catch (error) {
-      console.log(error);
+      
+      
       return res.status(500).json({ message: "Request failed" });
     }
   };

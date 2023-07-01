@@ -29,7 +29,7 @@ const AdminLogin = () => {
   e.preventDefault();
   try {
     const resData = await adminLogin(inputs); 
-    console.log("admindata:",resData);
+   
     if (resData) {
       dispatch(adminActions.login())
       localStorage.setItem("adminId",resData.id,resData.token)
@@ -37,7 +37,7 @@ const AdminLogin = () => {
       localStorage.setItem("adminimage",resData.image)
       // Login success
       toast.success(resData.message);
-      navigate('/admin_home');
+      navigate('/admin/home');
     } 
   } catch (err) {
     console.log(err);

@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const isValid = FILE_TYPE_MAP[file.mimetype];
     let uploadError = new Error("invalid image type");
-    console.log('here');
+  
     if (isValid) {
       uploadError = null;
     }

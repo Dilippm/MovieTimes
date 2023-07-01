@@ -12,7 +12,7 @@ const MovieItems = ({ title  , language, postedUrl, id }) => {
     navigate(`/viewmovie/${id}`);
   };
     return (
-      <Card className='poster-box' sx={{ width: 300, height: 370, borderRadius: 5, ":hover": { boxShadow: "10px 10px 20px #ccc" }, margin: 5, backgroundImage: `url(${postedUrl})`, backgroundSize: 'cover',  }}>
+      <Card className='poster-box' sx={{ width: 300, height: 370, borderRadius: 5, ":hover": { boxShadow: "10px 10px 20px #ccc" }, margin: 5, backgroundImage: `url(${postedUrl})`, backgroundSize: 'cover',border:"3px solid white"  }}>
         <CardActionArea>
           <CardContent sx={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', zIndex: 10,marginTop: '200px' }}>
             <div>

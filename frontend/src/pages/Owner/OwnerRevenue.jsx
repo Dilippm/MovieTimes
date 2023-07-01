@@ -12,8 +12,11 @@ import { CSVLink } from 'react-csv';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import PDFDocument from '../Admin/PDFDocument'; 
 import { Pagination } from '@mui/material';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 const OwnerRevenue = () => {
+  const navigate = useNavigate();
   const [bookingDetails, setBookingDetails] = useState({});
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedEndDate, setSelectedEndDate] = useState(null);
@@ -21,7 +24,7 @@ const OwnerRevenue = () => {
   const [filteredDetails, setFilteredDetails] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(2); 
-
+ 
   useEffect(() => {
  
     const fetchBookingDetails = async () => {
@@ -30,13 +33,25 @@ const OwnerRevenue = () => {
        
         setBookingDetails(response);
       } catch (error) {
+        tokenExpirationMiddleware(error);
         console.error('Error fetching booking details:', error);
       }
     };
 
     fetchBookingDetails();
   }, []);
-
+  const tokenExpirationMiddleware = (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("ownertoken");
+      localStorage.removeItem("ownerId");
+      localStorage.removeItem("ownerimage");
+      localStorage.removeItem("ownername");
+      toast.error("Token expired. Redirecting to login page...");
+      navigate("/owner/login");
+    } else {
+      throw error;
+    }
+  };
   useEffect(() => {
     let bookingArray = Object.entries(bookingDetails);
   
@@ -107,6 +122,7 @@ const OwnerRevenue = () => {
 
   return (
     <>
+    <ToastContainer />
       <Typography variant="h3" padding={2} textAlign="center" bgcolor="#900C3F" color="white" marginTop={7}>
         <b>Revenue Report</b>
       </Typography>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Button, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -9,6 +10,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import BaseURL from '../../config';
 const Banner = () => {
+  const navigate = useNavigate();
   const [banner, setBanner] = useState([]);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [selectedBannerId, setSelectedBannerId] = useState('');
@@ -21,7 +23,19 @@ const Banner = () => {
   useEffect(() => {
     fetchBanners();
   }, []);
- 
+  const tokenExpirationMiddleware = (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("admintoken");
+      localStorage.removeItem("adminId");
+      localStorage.removeItem("adminimage");
+      localStorage.removeItem("adminname");
+      toast.error("Token expired. Redirecting to login page...");
+      navigate("/admin/admin");
+    } else {
+      throw error;
+    }
+  };
+
   const fetchBanners = () => {
     getBanners()
       .then((data) => {
@@ -29,7 +43,10 @@ const Banner = () => {
         setBanner(data);
     
       })
-      .catch((err) => console.log(err));
+      .catch((err) =>{
+        console.log(err);
+        tokenExpirationMiddleware(err);
+      });
   };
  
 

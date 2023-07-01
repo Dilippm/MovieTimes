@@ -18,7 +18,8 @@ const {
     getdashboarddetails,
     getDashboardChart,
     getMovieChart,
-    getTheaterList
+    getTheaterList,
+    getAllUserBookings
    
 } = require("../controllers/admin_Controller");
 const verifyAdminToken = require("../Middlewares/AdminMIddleware")
@@ -36,18 +37,19 @@ adminRoute.post(
 );
 adminRoute.post("/moviestatus/:id", verifyAdminToken, updatemovieStatus)
 adminRoute.post("/owners/:id", verifyAdminToken, changeOwnerStatus)
-adminRoute.post('/banners/:id', verifyAdminToken, addBanner)
+adminRoute.post('/banners/:id', verifyAdminToken,addBanner)
 /**GET Routes */
 adminRoute.get('/:id', getAdmin)
-adminRoute.get("/users/:id", getUsers)
-adminRoute.get("/movies/:id", getMovies)
-adminRoute.get("/owners/:id", getOwners)
-adminRoute.get('/allbanners/:id', getBanners)
+adminRoute.get("/users/:id",verifyAdminToken, getUsers)
+adminRoute.get("/movies/:id",verifyAdminToken, getMovies)
+adminRoute.get("/owners/:id",verifyAdminToken, getOwners)
+adminRoute.get('/allbanners/:id', verifyAdminToken,getBanners)
 adminRoute.get('/allbookings/:id', verifyAdminToken, getAllBookings)
 adminRoute.get('/dashboardrevenue/:id', verifyAdminToken, getdashboarddetails)
 adminRoute.get('/dashboardchart/:id', verifyAdminToken, getDashboardChart)
 adminRoute.get('/movieschart/:id',verifyAdminToken,getMovieChart)
 adminRoute.get('/theaterschart/:id',verifyAdminToken,getTheaterList)
+adminRoute.get('/alluserbookings/:id',verifyAdminToken,getAllUserBookings)
 
 /**Delete Route */
 adminRoute.delete('/deltebanner/:id', deleteBanner)

@@ -57,6 +57,7 @@ const AdminHeader = () => {
     { text: 'User', route: '/admin/admin_users' },
     { text: 'Owners', route: '/admin/owners' },
     { text: 'Movie', route: '/admin/admin_movies' },
+    { text: 'Bookings', route: '/admin/bookings' },
     { text: 'Revenue Report', route: '/admin/admin_report' },
   ];
   const [open, setOpen] = useState(false);
@@ -109,7 +110,7 @@ let adminImage =localStorage.getItem("adminimage");
   indicatorColor="secondary"
   aria-label="secondary tabs example"
   sx={{
-    marginLeft: 'auto', // Align Tabs to the right
+    marginLeft: 'auto', 
   }}
 >
   <Tab
@@ -132,7 +133,7 @@ let adminImage =localStorage.getItem("adminimage");
     '& .MuiDrawer-paper': {
       width: drawerWidth,
       boxSizing: 'border-box',
-      overflow: 'hidden', // Hide scrollbars
+      overflow: 'hidden', 
     },
   }}
   variant="persistent"
@@ -144,8 +145,8 @@ let adminImage =localStorage.getItem("adminimage");
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
-         {/* Profile Picture */}
-         <ListItem disablePadding sx={{ marginBottom: '50px', marginLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+      
+         <ListItem disablePadding sx={{ marginBottom: '10px', marginLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
   <Avatar alt="Profile Picture" src={adminImage} sx={{ width: '80px', height: '80px', marginBottom: '10px' }} />
   <ListItemText primary={adminName} primaryTypographyProps={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }} />
 </ListItem>
@@ -153,7 +154,7 @@ let adminImage =localStorage.getItem("adminimage");
         <List
           sx={{
             width: '100%',
-            marginTop: '20px',
+            marginTop: '10px',
             backgroundColor: 'black',
             display: 'flex',
             flexDirection: 'column',
@@ -165,7 +166,7 @@ let adminImage =localStorage.getItem("adminimage");
 
 
           {menuItems.map((item, index) => (
-            <ListItem key={index} disablePadding sx={{ marginBottom: '30px', marginLeft: '60px' }}>
+            <ListItem key={index} disablePadding sx={{ marginBottom: '20px', marginLeft: '60px' }}>
               <ListItemButton
                 component={Link}
                 to={item.route}

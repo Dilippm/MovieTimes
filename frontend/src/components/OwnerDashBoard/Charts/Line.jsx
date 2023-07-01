@@ -15,7 +15,7 @@ export default function LineDemo() {
               const labels = chartDataArray.dailyRevenueArray.map(data => data.date);
               console.log(labels);
               const revenueData = chartDataArray.dailyRevenueArray.map(data => data.revenue);
-console.log("revenue",revenueData);
+
               const data = {
                 labels: labels,
                 datasets: [

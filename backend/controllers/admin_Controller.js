@@ -1,6 +1,7 @@
 const Admin = require("../models/Admin");
 const Movie =require("../models/Movies")
 const User =require("../models/User")
+const Bookings = require("../models/Bookings")
 const jwt =require("jsonwebtoken");
 const config = require('../config');
 const Owner = require("../models/Owner");
@@ -20,7 +21,8 @@ const adminLogin = async (req, res, next) => {
     try {
         admin = await Admin.findOne({ email });
     } catch (error) {
-        console.log(error);
+        
+      
         return res
             .status(500)
             .json({ error: "Internal server error" });
@@ -39,7 +41,7 @@ const adminLogin = async (req, res, next) => {
             .json({ error: "Incorrect email or password" });
     }
 
-    const token = jwt.sign({ id: admin._id }, jwtSecret, { expiresIn: "1d" });
+    const token = jwt.sign({ id: admin._id }, jwtSecret, { expiresIn: "1day" });
     return res
         .status(200)
         .json({ message: "Login successful", token,id:admin.id,name:admin.name,image:admin.image });
@@ -84,7 +86,7 @@ const updateAdmin = async (req, res, next) => {
       return res.status(200).json({ message: "Updated successfully", admin });
     } catch (error) {
       
-      console.log(error);
+      
       return res.status(500).json({ message: "Something went wrong" });
     }
   };
@@ -106,7 +108,8 @@ const updateAdmin = async (req, res, next) => {
         .json({message: "user found successfully", admin});
 
     } catch (error) {
-        console.log(error);
+      
+      
         return res
             .status(500)
             .json({message: "Something went wrong"});
@@ -175,7 +178,8 @@ const updateAdmin = async (req, res, next) => {
   
       return res.status(200).json({ message: 'User updated successfully', user });
     } catch (error) {
-      console.log(error);
+    
+      
       return res.status(500).json({ message: 'Request failed' });
     }
 
@@ -286,7 +290,8 @@ const updateAdmin = async (req, res, next) => {
   
       return res.status(200).json({ message: 'Movie updated successfully', movie });
     } catch (error) {
-      console.log(error);
+      
+      
       return res.status(500).json({ message: 'Request failed' });
     }
   };
@@ -311,7 +316,8 @@ const updateAdmin = async (req, res, next) => {
       res.json({ message: "owners found", owners });;
       
     } catch (error) {
-      console.log(error);
+    
+      
       return res.status(400).json({message:error.message});
     }
 
@@ -344,7 +350,8 @@ const updateAdmin = async (req, res, next) => {
   
       return res.status(200).json({ message: 'Owner updated successfully', owner });
     } catch (error) {
-      console.log(error);
+     
+      
       return res.status(500).json({ message: 'Request failed' });
     }
   };
@@ -464,7 +471,8 @@ const getdashboarddetails = async (req, res, next) => {
 
     res.json({ total, totalOwners, totalUsers });
   } catch (error) {
-    console.log(error);
+    
+    
   }
 };
 /**GET DAshboard Chart */
@@ -503,7 +511,8 @@ const getDashboardChart = async (req, res, next) => {
 
     res.json({ dailyRevenueArray });
   } catch (error) {
-    console.log(error);
+   
+    
   }
 };
 /**GEt Movie chart */
@@ -532,7 +541,8 @@ const getMovieChart = async (req, res, next) => {
 
     return res.status(200).json({ movieCollection: movieCollectionArray });
   } catch (error) {
-    console.log(error);
+   
+    
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
@@ -562,11 +572,32 @@ const getTheaterList = async(req,res,next)=>{
 
     return res.status(200).json({ theaterCollection: theaterCollectionArray });
   } catch (error) {
-    console.log(error);
+   
+    
     return res.status(500).json({ message: "Something went wrong" });
   }
 
 }
+
+/**Get All bookings  */
+const getAllUserBookings = async (req, res, next) => {
+
+  const adminId = req.adminId;
+  try {
+    const admin = await Admin.findById(adminId)
+    if(!admin){
+      return res.status(404).json({ message: 'Invalid admin ID' });
+    }
+    const bookings = await Bookings.find().populate("user")
+
+
+    res.status(200).json({ bookings });
+  } catch (error) {
+    
+    
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
 
 module.exports = {
    adminLogin,
@@ -586,7 +617,8 @@ module.exports = {
    getdashboarddetails,
    getDashboardChart,
    getMovieChart,
-   getTheaterList
+   getTheaterList,
+   getAllUserBookings
 
  
 };
