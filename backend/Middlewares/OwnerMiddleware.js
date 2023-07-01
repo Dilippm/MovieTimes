@@ -15,7 +15,11 @@ const verifyOwnerToken = (req, res, next) => {
       req.ownerId = decodedToken.id;
       next();
     } catch (error) {
-      console.log(error);
+      if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ message: 'Owner token expired.' }); 
+      }
+     
+      
       return res.status(400).json({ message: error.message });
     }
   };

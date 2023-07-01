@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Container, Card, CardContent, Grid } from '@mui/material';
 import { getBookingsForOwner } from '../../api-helpers/api-helpers';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 const Bookings = () => {
+    const navigate = useNavigate();
     const [bookings, setBookings] = useState([]);
 
     useEffect(() => {
         fetchBookings();
     }, []);
-
+    const tokenExpirationMiddleware = (error) => {
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem("ownertoken");
+          localStorage.removeItem("ownerId");
+          localStorage.removeItem("ownerimage");
+          localStorage.removeItem("ownername");
+          toast.error("Token expired. Redirecting to login page...");
+          navigate("/owner/login");
+        } else {
+          throw error;
+        }
+      };
     const fetchBookings = async () => {
         try {
           const response = await getBookingsForOwner();
@@ -18,12 +33,14 @@ const Bookings = () => {
           });
           setBookings(sortedBookings);
         } catch (error) {
+            tokenExpirationMiddleware(error);
           console.log(error);
         }
       };
       
   return (
     <>
+      <ToastContainer />
  
     <Container maxWidth="80%">
         <Typography variant="h3" component="h1" gutterBottom sx={{ margin: "30px", marginTop: "50px", marginLeft: "850px" }}>

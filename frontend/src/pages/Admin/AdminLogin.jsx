@@ -37,7 +37,7 @@ const AdminLogin = () => {
       localStorage.setItem("adminimage",resData.image)
       // Login success
       toast.success(resData.message);
-      navigate('/admin_home');
+      navigate('/admin/home');
     } 
   } catch (err) {
     console.log(err);

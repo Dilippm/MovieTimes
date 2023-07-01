@@ -82,7 +82,8 @@ const newBookings = async (req, res, next) => {
     
     res.json({ bookedSeats });
   } catch (error) {
-    console.log('Error fetching specific bookings:', error);
+   
+    
     res.status(500).json({ error: 'Failed to fetch specific bookings' });
   }
 
@@ -102,7 +103,8 @@ const newBookings = async (req, res, next) => {
    
       res.json({ bookings });
     } catch (error) {
-      console.log("Error retrieving user bookings:", error);
+     
+      
       res.status(500).json({ message: "Server error" });
     }
   };
@@ -137,7 +139,8 @@ user.bookings.pull(providedBookingId);
   
       res.status(200).json({ message: "Booking canceled successfully" });
     } catch (error) {
-      console.log(error);
+    
+      
       res.status(500).json({ message: "Internal server error" });
     }
   };

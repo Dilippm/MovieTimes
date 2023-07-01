@@ -34,7 +34,9 @@ const ownerRegister = async (req, res, next) => {
     
     return res.status(200).json({ message: "Registered successfully", owner });
   } catch (error) {
-    console.log(error);
+   
+    
+    
     return res.status(500).json({ error: "Unexpected error occurred" });
   }
 };
@@ -79,7 +81,7 @@ const ownerLogin = async (req,res,next)=>{
             .status(400)
             .json({error: "email or password wrong"})
     }
-    const token = jwt.sign({id:owner._id},jwtSecret,{expiresIn:"1d"})
+    const token = jwt.sign({id:owner._id},jwtSecret,{expiresIn:"1day"})
     
     return res
         .status(200)
@@ -101,7 +103,8 @@ const getOwner = async (req, res, next) => {
 
     return res.status(200).json({ message: 'Owner found successfully', owner });
   } catch (error) {
-    console.log(error);
+  
+    
     return res.status(500).json({ message: 'Something went wrong' });
   }
 };
@@ -144,7 +147,8 @@ const updateOwner = async (req, res, next) => {
       return res.status(200).json({ message: "Updated successfully", owner });
     } catch (error) {
       
-      console.log(error);
+     
+      
       return res.status(500).json({ message: "Something went wrong" });
     }
   };
@@ -183,7 +187,8 @@ const getTheatres = async (req, res, next) => {
     const decodedToken = jwt.verify(token.split(' ')[1], jwtSecret);
     ownerId = decodedToken.id;
   } catch (error) {
-    console.log(error);
+   
+    
     return res.status(400).json({ message: error.message });
   }
 
@@ -296,7 +301,8 @@ const getAllUsers = async (req, res, next) => {
 
     return res.status(200).json({ message: 'Theatre found successfully', theatre });
   } catch (error) {
-    console.log(error);
+   
+    
     return res.status(500).json({ message: 'Request failed' });
   }
 };
@@ -337,7 +343,8 @@ const updateTheatre = async (req, res, next) => {
 
     return res.status(200).json({ message: 'Theatre updated successfully', theatre });
   } catch (error) {
-    console.log(error);
+   
+    
     return res.status(500).json({ message: 'Request failed' });
   }
 };
@@ -436,7 +443,8 @@ const getAllBookings = async(req,res,next)=>{
   
       res.json({ dailyRevenueArray });
     } catch (error) {
-      console.log(error);
+      
+      
     }
   }
   const getTheaterChart = async(req,res,next)=>{
@@ -464,7 +472,8 @@ const getAllBookings = async(req,res,next)=>{
   
       return res.status(200).json({ theaterCollection: theaterCollectionArray });
     } catch (error) {
-      console.log(error);
+     
+      
       return res.status(500).json({ message: "Something went wrong" });
     }
   }
@@ -493,7 +502,8 @@ const getAllBookings = async(req,res,next)=>{
   
       return res.status(200).json({ movieCollection: movieCollectionArray });
     } catch (error) {
-      console.log(error);
+      
+      
       return res.status(500).json({ message: "Something went wrong" });
     }
   }
@@ -509,7 +519,8 @@ const getAllBookings = async(req,res,next)=>{
     
       return res.status(200).json({ bookings });
     } catch (error) {
-      console.log(error);
+      
+      
       return res.status(500).json({ message: "Something went wrong" });
     }
   }

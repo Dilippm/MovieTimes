@@ -1,26 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import { ownerFetchData } from "../../api-helpers/api-helpers"
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 const Cards = () => {
+  const navigate = useNavigate();
   const [cardData, setCardData] = useState([]);
 
   useEffect(() => {
     fetchDataFromBackend();
   }, []);
-
+  const tokenExpirationMiddleware = (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("ownertoken");
+      localStorage.removeItem("ownerId");
+      localStorage.removeItem("ownerimage");
+      localStorage.removeItem("ownername");
+      toast.error("Token expired. Redirecting to login page...");
+      navigate("/owner/login");
+    } else {
+      throw error;
+    }
+  };
   const fetchDataFromBackend = async () => {
     try {
       const data = await ownerFetchData();
+      console.log(data);
       setCardData(data);
      
     } catch (error) {
+      tokenExpirationMiddleware(error);
       console.log(error);
     }
   };
 
   return (
     <Grid container spacing={2} justifyContent="center">
+       <ToastContainer />
       <Grid item xs={12} sm={4}>
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Card

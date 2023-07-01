@@ -19,14 +19,16 @@ export const getAllMovies = async (currentPage, moviesPerPage) => {
     });
 
     if (res.status !== 200) {
-      console.log('No Data');
+      
+      
       return null;
     }
 
     const data = res.data;
     return data;
   } catch (err) {
-    console.log(err);
+   
+    
     return null;
   }
 };
@@ -42,7 +44,8 @@ export const sendUserAuthRequest = async (data) => {
     const resData = res.data;
     return resData;
   } catch (err) {
-    console.log(err);
+  
+    
     throw err
   }
 };
@@ -59,7 +62,8 @@ export const sendUserRegister = async(data)=>{
     const resData = res.data;
     return resData;
   } catch (err) {
-    console.log(err);
+    
+    
     throw err
   }
 }
@@ -77,7 +81,8 @@ export const adminLogin = async (data) => {
     localStorage.setItem("admintoken",resData.token)
     return resData;
   } catch (err) {
-    console.log(err);
+   
+    
     throw err
     
   }
@@ -98,7 +103,8 @@ export const ownerLogin = async(data)=>{
     
     return resData;
   } catch (err) {
-    console.log(err);
+    
+    
     throw err
    
   }
@@ -120,7 +126,8 @@ export const OwnerSignup = async(data)=>{
   
     return resData;
   } catch (err) {
-    console.log(err);
+   
+    
     throw err
   }
 }
@@ -128,7 +135,8 @@ export const OwnerSignup = async(data)=>{
 /** Get user Profile */
 export const UserProfiles = async()=>{
   const id= localStorage.getItem("userId");
-  console.log("id",id);
+
+  
   const res = await axios.get(`${BaseURL}user/${id}`);
   if(res.status!==200){
     return console.log("unexpected error");
@@ -136,7 +144,8 @@ export const UserProfiles = async()=>{
 
 
   const resData = res.data;
-  console.log("resData:",resData);
+  
+  
   return resData
 }
 /**update user profile */
@@ -159,7 +168,8 @@ try {
     return resData;
   
 } catch (error) {
-  console.log(error);
+
+  
     throw error
   
 }
@@ -174,7 +184,7 @@ export const AdminProfiles = async()=>{
 
 
   const resData = res.data;
-  console.log("resData:",resData);
+
   return resData
 }
 /**update admin profile */
@@ -197,7 +207,8 @@ export const updateAdminProfile= async(data,image)=>{
       return resData;
     
   } catch (error) {
-    console.log(error);
+   
+    
       throw error
     
   }
@@ -213,7 +224,8 @@ export const OwnerProfiles = async()=>{
 
 
   const resData = res.data;
-  console.log("resData:",resData);
+
+  
   return resData
 }
 /**update owner profile */
@@ -236,7 +248,8 @@ export const updateOwnerProfile= async(data,image)=>{
       return resData;
     
   } catch (error) {
-    console.log(error);
+   
+    
       throw error
     
   }
@@ -258,21 +271,30 @@ export const updateOwnerProfile= async(data,image)=>{
     return resData;
   };
   /**get All user Owner */
-  export const getusersOwner = async(page,limit)=>{
-    const id = localStorage.getItem("ownerId");
-    
-    const res = await axios.get(`${BaseURL}owner/users/${id}`, {
-      params: { page, limit }, 
-    });
+  export const getusersOwner = async (page, limit) => {
+    try {
+      const id = localStorage.getItem("ownerId");
+      const token = localStorage.getItem('ownertoken');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const res = await axios.get(`${BaseURL}owner/users/${id}`,config, {
+        params: { page, limit },
+      });
   
-    if (res.status !== 200) {
-      throw new Error("Unexpected error");
+      const resData = res.data;
+  
+      return resData;
+    } catch (error) {
+      // Handle error
+      
+      
+      throw error;
     }
+  };
   
-    const resData = res.data;
-    console.log("resData:", resData);
-    return resData;
-  }
   /* get movies*/
  export const getMovies = async (page, limit) => {
   const id = localStorage.getItem('adminId');
@@ -286,7 +308,8 @@ export const updateOwnerProfile= async(data,image)=>{
     throw new Error('Unexpected error');
   }
   const resData = res.data;
-  console.log('resData:', resData);
+ 
+  
   return resData;
 };
 
@@ -311,7 +334,8 @@ export const updateOwnerProfile= async(data,image)=>{
       const resData = res.data;
       return resData;
     } catch (error) {
-      console.log(error);
+      
+      
       throw error;
     }
   };
@@ -334,14 +358,17 @@ export const updateOwnerProfile= async(data,image)=>{
         throw new Error('Failed to fetch movie details');
       }
     } catch (error) {
-      console.log(error);
+  
+      
+
       throw new Error('Failed to fetch movie details');
     }
   };
   /**Edit Movie */
 export const editMovie = async (movieId, movieData,file) => {
   try {
-   console.log("files",file);
+
+    
     const admintoken = localStorage.getItem('admintoken');
     const formData = new FormData();
       formData.append('image', file);
@@ -368,13 +395,21 @@ export const editMovie = async (movieId, movieData,file) => {
 /**GET All Owners */
  export const getOwnerDetail = async()=>{
   let id = localStorage.getItem("adminId");
-  
-  const res = await axios.get(`${BaseURL}admin/owners/${id}`);
+  const admintoken = localStorage.getItem('admintoken');
+  const config = {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${admintoken}`,
+    },
+    withCredentials: true,
+  };
+  const res = await axios.get(`${BaseURL}admin/owners/${id}`,config);
 
   if(res.status!==200){
     return console.log("unexpected error");
   }
-  console.log("ownerdata:",res.data);
+ 
+  
   const resData = res.data;
   return resData
  }
@@ -415,15 +450,16 @@ export const GetTheatres = async () => {
   try {
     const token = localStorage.getItem('ownertoken');
     const id = localStorage.getItem('ownerId');
+     
     const response = await axios.get(`${BaseURL}owner/theatre/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    if (response.status !== 200) {
-      throw new Error('Failed to get theaters');
-    }
+    // if (response.status !== 200) {
+    //   throw new Error('Failed to get theaters');
+    // }
  
     const data = response.data;
    
@@ -431,7 +467,8 @@ export const GetTheatres = async () => {
 
     return data.theaters;
   } catch (error) {
-    throw new Error(`Failed to get theaters: ${error.message}`);
+    console.error("Error fetching all bookings:", error);
+    throw error;
   }
 };
 /**Get Theatre Details */
@@ -451,7 +488,9 @@ export const getTheatreDetails = async(id)=>{
       throw new Error('Failed to fetch thatre details');
     }
   } catch (error) {
-    console.log(error);
+    
+    
+
       throw new Error('Failed to fetch theatre details');
   }
 
@@ -481,7 +520,8 @@ export const getMovieById = async(id)=>{
     const res = await axios.get(`${BaseURL}movie/usermovie/${id}`);
 
     if (res.status !== 200) {
-      console.log('No Data');
+      
+      
       return null;
     }
 
@@ -489,7 +529,8 @@ export const getMovieById = async(id)=>{
     
     return data;
   } catch (err) {
-    console.log(err);
+    
+    
     return null;
   }
   
@@ -529,14 +570,16 @@ export const theatreReserve = async (data) => {
       throw new Error('Selected time is in the past. Please choose a valid show timing.');
     }
 
-    console.log("data:", data.Date, data.Time);
+   
+    
     const response = await axios.post(`${BaseURL}user/reservation`, data, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
     });
-    console.log("response api", response);
+  
+    
     if (response.status === 200) {
       return response.data;
     }
@@ -601,7 +644,8 @@ export const getBanners = async () => {
     const response = await axios.get(`${BaseURL}admin/allbanners/${id}`, config);
     return response.data;
   } catch (error) {
-    throw new Error('Failed to fetch banners');
+    console.error("Error fetching all bookings:", error);
+    throw error;
   }
 };
 /***Add banner  */
@@ -638,7 +682,8 @@ export const getuserBanners =async()=>{
 /**cancle booking */
 export const cancelBooking =async(id)=>{
   try {
-    console.log("id",id);
+   
+    
     const token = localStorage.getItem("token")
     const config = {
       headers: {
@@ -723,7 +768,7 @@ export const adminFetchData =async()=>{
       },
     };
     const response = await axios.get(`${BaseURL}admin/dashboardrevenue/${id}`, config);
-    
+   
     return response.data;
 
 
@@ -764,12 +809,14 @@ export const ownerFetchData =async()=>{
       },
     };
     const response = await axios.get(`${BaseURL}owner/dashboardrevenue/${id}`, config);
+  
     
     return response.data;
 
 
   } catch (error) {
-    
+    console.error("Error fetching all bookings:", error);
+    throw error;
   }
  
 }

@@ -5,8 +5,11 @@ import BaseURL from '../../config';
 import Header from '../../components/AdminHeader';
 import { getUsers } from '../../api-helpers/api-helpers';
 import TextField from '@mui/material/TextField';
-
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const UserDetails = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -18,7 +21,18 @@ const UserDetails = () => {
   useEffect(() => {
     fetchUsers(currentPage);
   }, [currentPage]);
-
+  const tokenExpirationMiddleware = (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("admintoken");
+      localStorage.removeItem("adminId");
+      localStorage.removeItem("adminimage");
+      localStorage.removeItem("adminname");
+      toast.error("Token expired. Redirecting to login page...");
+      navigate("/admin/admin");
+    } else {
+      throw error;
+    }
+  };
   const fetchUsers = (page) => {
     getUsers(page, limit)
       .then((data) => {
@@ -26,7 +40,11 @@ const UserDetails = () => {
         setFilteredUsers(data.users);
         setTotalPages(data.totalPages);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        tokenExpirationMiddleware(err);
+      });
+
   };
 
   const changeUserStatus = async (index) => {
@@ -82,6 +100,7 @@ const UserDetails = () => {
   return (
     <>
       <Header />
+      <ToastContainer />
       <Box width="100%" height="100%" margin="auto"></Box>
       <Box margin="auto" marginTop={1}>
         <Typography

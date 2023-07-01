@@ -42,17 +42,29 @@ const Theater = () => {
         const data = await GetTheatres();
         setTheatre(data);
       } catch (error) {
+        tokenExpirationMiddleware(error);
         console.log(error);
       }
     };
 
     fetchData();
   }, []);
-
+  const tokenExpirationMiddleware = (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("ownertoken");
+      localStorage.removeItem("ownerId");
+      localStorage.removeItem("ownerimage");
+      localStorage.removeItem("ownername");
+      toast.error("Token expired. Redirecting to login page...");
+      navigate("/owner/login");
+    } else {
+      throw error;
+    }
+  };
   const handleAddTheatre = async (theatreData) => {
     try {
       const response = await AddTheatre(theatreData);
-      console.log('Theatre added successfully:', response);
+      
       setTheatre([...theatre, response]);
       toast.success('Theatre Added Successfully');
     } catch (error) {

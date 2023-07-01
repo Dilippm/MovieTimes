@@ -47,26 +47,26 @@ try {
   
   res.status(200).json({ message: 'Theatres found', theatre });
 } catch (error) {
-  console.error('Failed to fetch theatres:', error);
+  
   res.status(500).json({ error: 'Failed to fetch theatres' });
 }
 
 }
 const getcomments = async(req,res,next)=>{
-  console.log("vannue");
+ 
   const id = req.params.id;
-  console.log(id);
+ 
   try {
     const theatre = await Theatre.find({_id:id});
-console.log("theatre",theatre);
+
     if (!theatre || theatre.length === 0) {
       return res.status(400).json({ message: 'No theatres found' });
     }
-    // const ratings = theatre.ratings
+  
    
     res.status(200).json({ message: 'Theatres found', theatre });
   } catch (error) {
-    console.error('Failed to fetch theatres:', error);
+  
     res.status(500).json({ error: 'Failed to fetch theatres' });
   }
 }
@@ -131,7 +131,7 @@ const getVerified =async(req,res,next)=>{
     await token.deleteOne({_id:token._id});
     return res.status(200).send({message:"Email Verfied Successfully"});
   } catch (error) {
-    console.log(error);
+  
     res.status(500).send({message:"Internal Server Error"});
   }
 }
@@ -166,7 +166,8 @@ const userGooleLogin = async (req, res) => {
         .status(200)
         .json({message: "Login successfull",id: user._id,token});
     } catch (error) {
-      console.log(error);
+     
+
       return res.status(500).json({ error: "Unexpected error occurred" });
     }
   };
@@ -214,7 +215,7 @@ const userLogin = async (req, res, next) => {
 
    }
     
-    const token = jwt.sign({id:user._id},jwtSecret,{expiresIn:"1d"})
+    const token = jwt.sign({id:user._id},jwtSecret,{expiresIn:"1day"})
     return res
         .status(200)
         .json({message: "Login successfull",user,token});
@@ -257,7 +258,7 @@ const updateUser = async (req, res, next) => {
     return res.status(200).json({ message: "Updated successfully", user });
   } catch (error) {
    
-    console.log(error);
+   
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
@@ -310,7 +311,7 @@ const getUser= async(req,res,next)=>{
         .json({message: "user found successfully", user});
 
     } catch (error) {
-        console.log(error);
+     
         return res
             .status(500)
             .json({message: "Something went wrong"});
@@ -393,7 +394,7 @@ const getTheatre = async (req, res) => {
   
       res.json({ message: 'Reservation stored successfully.', reservationData });
     } catch (error) {
-      console.log(error);
+   
       return res.status(400).json({ message: error.message });
     }
 
@@ -416,7 +417,7 @@ const getTheatre = async (req, res) => {
   
       res.json({ reservedSeats });
     } catch (error) {
-      console.log("Error fetching reserved seats:", error);
+     
       res.status(500).json({ error: "Failed to fetch reserved seats" });
     }
   };
@@ -440,7 +441,7 @@ const getTheatre = async (req, res) => {
   
       res.status(200).json({ reservation,wallet });
     } catch (error) {
-      console.log(error);
+     
       return res.status(400).json({ message: error.message });
     }
   };
@@ -595,7 +596,7 @@ const getTheatre = async (req, res) => {
       res.status(200).json({ message: 'Booking saved successfully.', savedBooking});
   
     } catch (error) {
-      console.log(error);
+   
       res.status(500).json({ message: 'Internal server error' });
     }
   };
@@ -639,7 +640,7 @@ const getTheatre = async (req, res) => {
   
       res.status(200).json({ message: 'Rating submitted successfully' });
     } catch (error) {
-      console.log(error);
+     
       res.status(500).json({ message: 'Internal server error' });
     }
   };

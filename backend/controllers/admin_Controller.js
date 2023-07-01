@@ -21,7 +21,8 @@ const adminLogin = async (req, res, next) => {
     try {
         admin = await Admin.findOne({ email });
     } catch (error) {
-        console.log(error);
+        
+      
         return res
             .status(500)
             .json({ error: "Internal server error" });
@@ -85,7 +86,7 @@ const updateAdmin = async (req, res, next) => {
       return res.status(200).json({ message: "Updated successfully", admin });
     } catch (error) {
       
-      console.log(error);
+      
       return res.status(500).json({ message: "Something went wrong" });
     }
   };
@@ -107,7 +108,8 @@ const updateAdmin = async (req, res, next) => {
         .json({message: "user found successfully", admin});
 
     } catch (error) {
-        console.log(error);
+      
+      
         return res
             .status(500)
             .json({message: "Something went wrong"});
@@ -176,7 +178,8 @@ const updateAdmin = async (req, res, next) => {
   
       return res.status(200).json({ message: 'User updated successfully', user });
     } catch (error) {
-      console.log(error);
+    
+      
       return res.status(500).json({ message: 'Request failed' });
     }
 
@@ -287,7 +290,8 @@ const updateAdmin = async (req, res, next) => {
   
       return res.status(200).json({ message: 'Movie updated successfully', movie });
     } catch (error) {
-      console.log(error);
+      
+      
       return res.status(500).json({ message: 'Request failed' });
     }
   };
@@ -312,7 +316,8 @@ const updateAdmin = async (req, res, next) => {
       res.json({ message: "owners found", owners });;
       
     } catch (error) {
-      console.log(error);
+    
+      
       return res.status(400).json({message:error.message});
     }
 
@@ -345,7 +350,8 @@ const updateAdmin = async (req, res, next) => {
   
       return res.status(200).json({ message: 'Owner updated successfully', owner });
     } catch (error) {
-      console.log(error);
+     
+      
       return res.status(500).json({ message: 'Request failed' });
     }
   };
@@ -465,7 +471,8 @@ const getdashboarddetails = async (req, res, next) => {
 
     res.json({ total, totalOwners, totalUsers });
   } catch (error) {
-    console.log(error);
+    
+    
   }
 };
 /**GET DAshboard Chart */
@@ -504,7 +511,8 @@ const getDashboardChart = async (req, res, next) => {
 
     res.json({ dailyRevenueArray });
   } catch (error) {
-    console.log(error);
+   
+    
   }
 };
 /**GEt Movie chart */
@@ -533,7 +541,8 @@ const getMovieChart = async (req, res, next) => {
 
     return res.status(200).json({ movieCollection: movieCollectionArray });
   } catch (error) {
-    console.log(error);
+   
+    
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
@@ -563,7 +572,8 @@ const getTheaterList = async(req,res,next)=>{
 
     return res.status(200).json({ theaterCollection: theaterCollectionArray });
   } catch (error) {
-    console.log(error);
+   
+    
     return res.status(500).json({ message: "Something went wrong" });
   }
 
@@ -583,7 +593,8 @@ const getAllUserBookings = async (req, res, next) => {
 
     res.status(200).json({ bookings });
   } catch (error) {
-    console.log(error);
+    
+    
     return res.status(500).json({ message: "Something went wrong" });
   }
 };

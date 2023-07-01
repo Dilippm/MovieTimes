@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 import Header from '../../components/AdminHeader';
 import { getusersOwner } from '../../api-helpers/api-helpers';
 import TextField from '@mui/material/TextField';
 
 const UserDetails = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -25,10 +28,24 @@ const UserDetails = () => {
         setFilteredUsers(data.users);
         setTotalPages(data.totalPages);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        tokenExpirationMiddleware(err);
+        console.log(err)
+      });
   };
 
- 
+  const tokenExpirationMiddleware = (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("ownertoken");
+      localStorage.removeItem("ownerId");
+      localStorage.removeItem("ownerimage");
+      localStorage.removeItem("ownername");
+      toast.error("Token expired. Redirecting to login page...");
+      navigate("/owner/login");
+    } else {
+      throw error;
+    }
+  };
 
   useEffect(() => {
     const filtered = users.filter((user) => {
@@ -51,6 +68,8 @@ const UserDetails = () => {
 
   return (
     <>
+    <ToastContainer />
+ 
       <Header />
       <Box width="100%" height="100%" margin="auto"></Box>
       <Box margin="auto" marginTop={1}>
