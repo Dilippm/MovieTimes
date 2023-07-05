@@ -5,6 +5,7 @@ const {
     userRegister,
     updateUser,
     userLogin,
+   
     getBookingsofUser,
     userGooleLogin,
     getUser,
@@ -30,6 +31,7 @@ const userRouter = express.Router();
 
 userRouter.get("/", getUsers);
 userRouter.get('/gettheaterdetails',getTheaterDetails)
+
 userRouter.get('/ratings/:id',getcomments)
 userRouter.get("/:id/verify/:token",getVerified)
 userRouter.get("/booking/:id", getBookingsofUser);

@@ -4,21 +4,57 @@ import { getMovieById } from '../../api-helpers/api-helpers';
 import Header from '../../components/Header';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { Box } from '@mui/material';
+import { Box ,Button} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Movietheatre from '../../components/Theatre/Movietheatre';
 
+
+import axios from 'axios';
+
+const fetchTrailerVideoId = async (movieTitle, apiKey) => {
+  try {
+    const response = await axios.get(
+      'https://www.googleapis.com/youtube/v3/search',
+      {
+        params: {
+          part: 'snippet',
+          q: `${movieTitle} trailer`,
+          maxResults: 1,
+          key:apiKey,
+        },
+      }
+    );
+
+    const videoId = response.data.items[0]?.id?.videoId || null;
+
+    return videoId;
+  } catch (error) {
+    console.error('Failed to fetch trailer video ID:', error);
+    return null;
+  }
+};
+
 const MoviePage = () => {
+
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
+  const [showTrailer, setShowTrailer] = useState(false);
+
+  const [trailerVideoId, setTrailerVideoId] = useState(null); 
 
   useEffect(() => {
-    // Fetch movie details using the ID
+    const youtubeApi = process.env.REACT_APP_YOUTUBE_API;
     const fetchMovieDetails = async () => {
       try {
         const movieDetails = await getMovieById(id);
         const movieSpecific = movieDetails.movie;
         setMovie(movieSpecific[0]);
+
+        const videoId = await fetchTrailerVideoId(
+          movieSpecific[0].title,
+          youtubeApi
+        );
+        setTrailerVideoId(videoId);
       } catch (error) {
         console.error('Failed to fetch movie details:', error);
       }
@@ -38,7 +74,15 @@ const MoviePage = () => {
     borderRadius: '5px',
     border: '1px solid black',
   });
-
+  const handleToggleTrailer = () => {
+    setShowTrailer(!showTrailer);
+  };
+  const handleIframeClick = () => {
+    if (showTrailer) {
+      setShowTrailer(false);
+      console.log("showtrailer:",showTrailer);
+    }
+  };
   return (
     <div style={{ backgroundColor: '#d6d6d6' }}>
       <Header />
@@ -138,8 +182,27 @@ const MoviePage = () => {
               >
                 <b>{movie.description}</b>
               </Typography>
+              {trailerVideoId && (
+          <>
+            {showTrailer ? (
+              <div onClick={handleIframeClick}>
+                <iframe
+                  width="100%"
+                  height="315"
+                  style={{border:"3px solid green"}}
+                  src={`https://www.youtube.com/embed/${trailerVideoId}`}
+                
+                  allowFullScreen
+                ></iframe>
+              </div>
+            ) : (
+              <Button variant='contained' onClick={handleToggleTrailer} sx={{backgroundColor:"red",color:"white"}}>Show Trailer</Button>
+            )}
+          </>
+        )}
             </Grid>
           </Grid>
+         
         </Box>
       </Box>
     </div>

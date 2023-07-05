@@ -122,10 +122,10 @@ console.log("seatdbooked",bookedSeats);
             
               cursor: isDisabled ? 'not-allowed' : 'pointer',
               display: 'inline-block',
-              border: '1px solid black',
-              // borderRadius: '20px',
-              width: '60px',
-              height: '60px',
+              border: isSelected ? '1px solid green' : isBooked ? '1 px solid red' : isReserved ? 'brown' : ' 1px solid black',
+             
+              width: '50px',
+              height: '40px',
               textAlign: 'center',
               fontSize: '16px',
             }}

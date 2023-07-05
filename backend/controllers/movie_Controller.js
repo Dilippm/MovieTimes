@@ -2,6 +2,7 @@
 const Movie = require("../models/Movies")
 const Admin =require("../models/Admin")
 const Owner = require("../models/Owner")
+const Theater =require("../models/Theatre")
 const jwt = require("jsonwebtoken");
 const config = require('../config');
 const jwtSecret = config.JWT_SECRET;
@@ -74,7 +75,21 @@ const getMovies = async (req, res, next) => {
   }
 };
 
+/**Get Upcomming Movies */
+const getUpCommingMovies =async(req,res,next)=>{
+  try {
+    
+    const theaters = await Theater.find();
+    const movieTitles = theaters.map((theater) => theater.movies);
+    const unmatchedMovies = await Movie.find({ title: { $nin: movieTitles } });
 
+    res.status(200).json(unmatchedMovies);
+    
+   
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch the movies' });
+  }
+}
 
   /** Get specific movie by ID */
   const getMovieById = async (req, res, next) => {
@@ -125,11 +140,10 @@ const getMovies = async (req, res, next) => {
 
   /**update movie by id */
   const updateMovieById = async (req, res, next) => {
-   
-    const { title, language, description } = JSON.parse(req.body.admindata)
-   
+    const { title, language, description } = JSON.parse(req.body.admindata);
+  
     const extractedToken = req.headers.authorization.split(" ")[1];
-    
+  
     if (!extractedToken || extractedToken.trim() === "") {
       return res.status(404).json({ message: "Token not found" });
     }
@@ -146,42 +160,25 @@ const getMovies = async (req, res, next) => {
     const movieId = req.params.id;
   
     try {
-      const adminUser = await Admin.findOne({ movies: movieId }).populate("movies");
+      const updateFields = {
+        title,
+        language,
+        description,
+      };
   
-      if (!adminUser) {
-        return res.status(404).json({ message: "Invalid movie ID" });
-      }
-  
-      const movie = adminUser.movies.find((movie) => movie._id.toString() === movieId);
-  
-      if (!movie) {
-        return res.status(404).json({ message: "Invalid movie ID" });
-      }
-  
-      movie.title = title;
-      movie.language = language;
-      movie.description = description;
- 
- 
       if (req.file) {
-        if (movie.postedUrl) {
-          const imageRelativePath = movie.postedUrl.split(`${BASE_URL}/`)[1];
-        
-          const previousImagePath = path.join(__dirname, '../public/images', imageRelativePath);
-          fs.unlinkSync(previousImagePath);
-        }
-        // Generate a URL for the uploaded image
         const imageUrl = `${BASE_URL}/${req.file.filename}`;
-        // Store the image URL in the movie data
-        movie.postedUrl = imageUrl;
+        updateFields.postedUrl = imageUrl;
       }
   
-      await movie.save();
+      const updatedMovie = await Movie.updateOne({ _id: movieId }, { $set: updateFields });
   
-      return res.status(200).json({ message: "Movie updated successfully", movie });
+      if (updatedMovie.nModified === 0) {
+        return res.status(404).json({ message: "Invalid movie ID" });
+      }
+  
+      return res.status(200).json({ message: "Movie updated successfully" });
     } catch (error) {
-      
-      
       return res.status(500).json({ message: "Request failed" });
     }
   };
@@ -244,6 +241,7 @@ const getMovies = async (req, res, next) => {
 module.exports = {
     addMovie,
     getMovies,
+    getUpCommingMovies,
     getMovieById,
     updateMovieById,
     getUserMovie,

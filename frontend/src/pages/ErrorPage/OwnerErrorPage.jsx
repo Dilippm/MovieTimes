@@ -2,11 +2,11 @@ import React from 'react';
 import { Box, Button, Container } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-export default function Error() {
+export default function OwnerErrorPage() {
     const navigate = useNavigate();
 
     const handleBackHome = () => {
-      navigate('/');
+      navigate('/owner/home');
     };
   return (
     <Box

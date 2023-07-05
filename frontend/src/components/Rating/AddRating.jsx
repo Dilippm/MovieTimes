@@ -56,8 +56,16 @@ const AddRating = ({ theaterId }) => {
       setSelectedFile(null);
 
       handleClose();
-    } catch (error) {
-      console.error('Error submitting rating:', error);
+    }catch (error) {
+      
+      if (error.response && error.response.status === 400) {
+       
+      
+        toast.error(error.response.data.message)
+      } else {
+        console.error('Error submitting rating:', error);
+     
+      }
     }
   };
 

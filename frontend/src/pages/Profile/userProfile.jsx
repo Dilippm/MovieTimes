@@ -13,7 +13,18 @@ const UserProfile = () => {
     const [imageUrl, setImageUrl] = useState(null);
 
     const navigate = useNavigate();
-
+    const validatePhone = (phone) => {
+        const phoneRegex = /^\d{10}$/;
+        return phoneRegex.test(phone);
+      };
+      const validateEmail = (email) => {
+      
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+       
+        return emailPattern.test(email);
+      };
+      
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
@@ -31,11 +42,24 @@ const UserProfile = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        const isValidPhone = validatePhone(state.user.phone);
+        const isValidEmail = validateEmail(state.user.email);
 
+        if (!isValidPhone) {
+            toast.error("Phone number must have 10 digits");
+            return;
+        }
+    
+        if (!isValidEmail) {
+            toast.error("Please enter a valid email address");
+            return;
+        }
         try {
             const resData = await updateUserProfile(state.user, imageFile);
             if (resData) {
                 toast.success("Profile updated successfully");
+               
+
                 navigate('/profile');
             }
         } catch (error) {
@@ -71,7 +95,8 @@ const UserProfile = () => {
     };
 
     return (
-        <> < Header /> <Box width={"100%"} height={"100%"} margin={"auto"} marginTop={3}>
+        <> < Header /> 
+        <Box width={"100%"} height={"100%"} margin={"auto"} marginTop={3}>
             <Box
                 sx={{
                     display: 'flex',
@@ -82,9 +107,9 @@ const UserProfile = () => {
                 <Box
                     sx={{
                         width: 500,
-                        height: 710,
+                        height: 750,
                         backgroundColor: '#eeeeee',
-                        border: "1px solid white",
+                        border: "5px solid white",
                         boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)'
                     }}>
                     <Typography variant='h4' textAlign='center' marginTop={3}>

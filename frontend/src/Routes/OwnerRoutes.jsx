@@ -15,6 +15,7 @@ import EditTheatre from '../pages/Owner/EditTheatre';
 import OwnerRevenue from '../pages/Owner/OwnerRevenue';
 import Bookings from '../pages/Owner/Bookings';
 import UserDetails from '../pages/Owner/UserDetails';
+import OwnerErrorPage from '../pages/ErrorPage/OwnerErrorPage'
 const OwnerRoutes =()=>{
     return (
         <>
@@ -31,6 +32,7 @@ const OwnerRoutes =()=>{
           <Route path='/revenue_report' element={<OwnerProtectedRoutes><OwnerRevenue/></OwnerProtectedRoutes>}/>
           <Route path='/bookings' element ={<OwnerProtectedRoutes><Bookings/></OwnerProtectedRoutes>}/>
           <Route path='/owner_user' element ={<OwnerProtectedRoutes><UserDetails/></OwnerProtectedRoutes>}/>
+          <Route path="*" element={<OwnerErrorPage/>} />
             </Routes>
         </>
       )

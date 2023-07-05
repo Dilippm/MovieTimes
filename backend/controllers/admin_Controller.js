@@ -49,48 +49,34 @@ const adminLogin = async (req, res, next) => {
 
 /** admin update */
 const updateAdmin = async (req, res, next) => {
-    const { id } = req.params;
-  
-    const { name, email, phone } = JSON.parse(req.body.admindata);
-  
-    try {
-      // Find the user by id
-      let admin = await Admin.findById(id);
-  
-      if (!admin) {
-        return res.status(404).json({ message: "Admin not found" });
-      }
-  
-      // Update the user properties
-      admin.name = name;
-      admin.email = email;
-      admin.phone = phone;
-  
-      // Check if a file was uploaded
-      if (req.file) {
-        if (admin.image) {
-          const imageRelativePath = admin.image.split(`${BASE_URL}/`)[1];
-        
-          const previousImagePath = path.join(__dirname, '../public/images', imageRelativePath);
-          fs.unlinkSync(previousImagePath);
-        }
-        // Generate a URL for the uploaded image
-        const imageUrl = `${BASE_URL}/${req.file.filename}`;
-        // Store the image URL in the user's profile
-        admin.image = imageUrl;
-      }
-  
-      // Save the updated user
-      admin = await admin.save();
-  
-      return res.status(200).json({ message: "Updated successfully", admin });
-    } catch (error) {
-      
-      
-      return res.status(500).json({ message: "Something went wrong" });
+  const { id } = req.params;
+
+  const { name, email, phone } = JSON.parse(req.body.admindata);
+
+  try {
+    const updatedAdmin = await Admin.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          name,
+          email,
+          phone,
+          ...(req.file && { image: `${BASE_URL}/${req.file.filename}` }),
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedAdmin) {
+      return res.status(404).json({ message: "Admin not found" });
     }
-  };
-  
+
+    return res.status(200).json({ message: "Updated successfully", admin: updatedAdmin });
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
   /**Admin Get */
   const getAdmin= async(req,res,next)=>{
     const {id} = req.params;
@@ -191,21 +177,24 @@ const updateAdmin = async (req, res, next) => {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
   
-      const admin = await Admin.findById(adminId).populate({
-        path: 'movies',
-        select: 'title language description status postedUrl',
-        options: {
-          skip: (page - 1) * limit,
-          limit: limit,
-        },
-      });
+      
+      const admin = await Admin.findById(adminId)
+        .populate({
+          path: 'movies',
+          select: 'title language description status postedUrl',
+          options: {
+            skip: (page - 1) * limit,
+            limit: limit,
+          },
+        })
+        .exec();
   
       if (!admin) {
         return res.status(404).json({ message: 'Admin not found' });
       }
   
       const movies = admin.movies;
-      const totalCount = await Movie.find().count();
+      const totalCount = await Movie.find().countDocuments();
       const totalPages = Math.ceil(totalCount / limit);
   
       res.json({ message: 'Movies found', movies, totalPages });
@@ -213,6 +202,7 @@ const updateAdmin = async (req, res, next) => {
       res.status(500).json({ message: 'Failed to fetch movies', error });
     }
   };
+  
   
   
   /**Add A Movie */

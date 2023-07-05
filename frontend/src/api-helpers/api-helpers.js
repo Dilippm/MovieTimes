@@ -258,8 +258,14 @@ export const updateOwnerProfile= async(data,image)=>{
   /**get all users */
   export const getUsers = async (page, limit) => {
     const id = localStorage.getItem("adminId");
-    const res = await axios.get(`${BaseURL}admin/users/${id}`, {
-      params: { page, limit }, // Include page and limit as query parameters
+    const token = localStorage.getItem("admintoken")
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const res = await axios.get(`${BaseURL}admin/users/${id}`,config, {
+      params: { page, limit }, 
     });
   
     if (res.status !== 200) {
@@ -296,22 +302,26 @@ export const updateOwnerProfile= async(data,image)=>{
   };
   
   /* get movies*/
- export const getMovies = async (page, limit) => {
-  const id = localStorage.getItem('adminId');
-  const res = await axios.get(`${BaseURL}admin/movies/${id}`, {
-    params: {
-      page,
-      limit,
-    },
-  });
-  if (res.status !== 200) {
-    throw new Error('Unexpected error');
-  }
-  const resData = res.data;
- 
+  export const getMovies = async (page, limit) => {
+    const id = localStorage.getItem('adminId');
+    const token = localStorage.getItem('admintoken');
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        page,
+        limit,
+      },
+    };
+    const res = await axios.get(`${BaseURL}admin/movies/${id}`, config);
+    if (res.status !== 200) {
+      throw new Error('Unexpected error');
+    }
+    const resData = res.data;
+    return resData;
+  };
   
-  return resData;
-};
 
   /* Add Movie*/
   export const AddMovie = async (movieData, file) => {
@@ -890,6 +900,21 @@ export const getBookingsForOwner =async()=>{
 
   } catch (error) {
     console.error("Error fetching all bookings:", error);
+    throw error;
+  }
+}
+
+/**Get All Upcomming Movies */
+export const getAllUpcommingMovies =async()=>{
+  try {
+   
+    const response = await axios.get(`${BaseURL}movie/allupcommingmovies`);
+    
+    return response.data;
+
+
+  } catch (error) {
+    console.error("Error fetching movies:", error);
     throw error;
   }
 }

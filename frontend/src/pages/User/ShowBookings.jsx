@@ -13,7 +13,8 @@ const ShowBookings = () => {
     const [bookings, setBookings] = useState([]);
     const [cancelConfirmationOpen, setCancelConfirmationOpen] = useState(false);
     const [selectedBookingId, setSelectedBookingId] = useState('');
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const BookingsPerPage = 1;
     useEffect(() => {
         fetchBookings();
     }, []);
@@ -65,16 +66,24 @@ const ShowBookings = () => {
         const formattedBookingDate = new Date(bookingDate);
         return currentDate < formattedBookingDate;
     };
-
+    const indexOfLastBooking = currentPage * BookingsPerPage;
+    const indexOfFirstBooking = indexOfLastBooking - BookingsPerPage;
+    const currentBookings = bookings.slice(indexOfFirstBooking, indexOfLastBooking);
+  
+    const totalBookingsPages = Math.ceil(bookings.length / BookingsPerPage);
+  
+    const handlePageChange = (page) => {
+      setCurrentPage(page);
+    }
     return (
         <>
             <Header />
             <ToastContainer />
             <Container maxWidth="80%">
-                <Typography variant="h3" component="h1" gutterBottom sx={{ margin: "30px", marginTop: "50px", marginLeft: "850px" }}>
-                    <b> Bookings</b>
+            <Typography variant="h4" marginTop={8} padding={2} textAlign="center" bgcolor="#900C3F" color="white" marginBottom={2}>
+                    <b> All Bookings</b>
                 </Typography>
-                {bookings.map((booking) => (
+                {currentBookings.map((booking) => (
                     <Card key={booking.id} sx={{ margin: 'auto', background: 'linear-gradient(45deg, black, red)', border: 0, borderRadius: 3, boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .9)', color: 'white', marginBottom: '20px', width: "80vw", height: "200px" }}>
                         <CardContent>
                             <Grid container spacing={4} direction="row">
@@ -83,7 +92,7 @@ const ShowBookings = () => {
                                         <b>Booking ID:</b>   {booking._id}
                                     </Typography>
                                     <Typography variant="body1" sx={{ fontSize: "30px" }} mt={2}>
-                                        <b>Date:</b>  {booking.date}
+                                        <b>Show Date:</b>  {booking.date}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={3}>
@@ -113,6 +122,26 @@ const ShowBookings = () => {
                         </CardContent>
                     </Card>
                 ))}
+                 {totalBookingsPages > 1 && (
+          <Grid container justifyContent="center">
+            <Button variant="contained" disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)} style={{marginBottom:"30px", color:"white", backgroundColor:currentPage ===  1? " " :"blue" }} >
+              Previous
+            </Button>
+            {Array.from({ length: totalBookingsPages }, (_, index) => (
+              <Button
+              variant="outlined"
+                key={index + 1}
+                onClick={() => handlePageChange(index + 1)}
+                style={{ fontWeight: currentPage === index + 1 ? 'bold' : 'normal' , backgroundColor: currentPage === index + 1 ? "blue":" ",color:"white", marginLeft:"10px", marginBottom:"30px" }}
+              >
+                {index + 1}
+              </Button>
+            ))}
+            <Button variant="contained" disabled={currentPage === totalBookingsPages} onClick={() => handlePageChange(currentPage + 1)} style={{marginBottom:"30px", color:"white", backgroundColor:currentPage ===  totalBookingsPages? " " :"blue", marginLeft:"10px" }}>
+              Next
+            </Button>
+          </Grid>
+        )}
             </Container>
 
             {/* Cancel Confirmation Dialog */}

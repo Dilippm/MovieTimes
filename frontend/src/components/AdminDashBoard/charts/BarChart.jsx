@@ -21,6 +21,8 @@ export default function BarChart() {
 
         const movieData = response.data.movieCollection;
       
+        const backgroundColors = generateColors(movieData.length);
+        const hoverBackgroundColors = generateColors(movieData.length);
 
         const data = {
           labels: movieData.map((movie) => movie[0]), 
@@ -28,8 +30,8 @@ export default function BarChart() {
             {
               label: 'Bookings',
               data: movieData.map((movie) => movie[1]), 
-              backgroundColor: ['rgba(255, 0, 0, 0.4)', 'rgba(0, 128, 0, 0.4)'], // Set background colors to red and green
-              borderColor: ['darkred', 'darkgreen'],
+              backgroundColor: backgroundColors,
+              hoverBackgroundColor: hoverBackgroundColors,
               borderWidth: 5,
             },
           ],
@@ -52,7 +54,25 @@ export default function BarChart() {
 
     fetchData();
   }, []);
+  // Generate dynamic colors
+  const generateColors = (count) => {
+    const colors = [];
+    for (let i = 0; i < count; i++) {
+      const color = getRandomColor();
+      colors.push(color);
+    }
+    return colors;
+  };
 
+  // Generate random color
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
   return (
     <div className="card">
       <Chart type="bar" data={chartData} options={chartOptions} />

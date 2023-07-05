@@ -26,11 +26,14 @@ const GetMovies = () => {
     fetchMovies(currentPage);
   }, [currentPage]);
 
-  const fetchMovies = (page) => {
-    getMovies(page, limit)
+  const fetchMovies = () => {
+  
+    getMovies(currentPage, limit)
       .then((data) => {
         setMovies(data.movies);
+        console.log(movies);
         setTotalPages(data.totalPages);
+        console.log(totalPages);
       })
       .catch((err) => console.log(err));
   };
@@ -105,6 +108,22 @@ const GetMovies = () => {
     setCurrentPage(newPage);
   };
 
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          style={{ width: "50px", height: "50px", margin: "2px", backgroundColor: currentPage === i ? "green" : "#FFF", color: currentPage === i ? "#FFF" : "#000" }}
+          onClick={() => handlePageChange(i)}
+        >
+         <b>{i}</b> 
+        </button>
+      );
+    }
+    return pageNumbers;
+  };
+
   return (
     <>
       <ToastContainer />
@@ -118,10 +137,10 @@ const GetMovies = () => {
           <TextField
             sx={{
               input: {
-                color: 'white',
-                border: '3px solid black',
+                color: 'black',
+                border: '3px solid white',
                 borderRadius: 30,
-                backgroundColor: 'black',
+                backgroundColor: 'white',
                 width: '500px',
                 height: '40px',
               },
@@ -233,6 +252,7 @@ const GetMovies = () => {
                 Previous
               </Button>
             )}
+              {renderPageNumbers()}
             {currentPage < totalPages && (
               <Button
                 sx={{ margin: '10px', width: '100px' }}
