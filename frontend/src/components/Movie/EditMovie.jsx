@@ -8,7 +8,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { editMovie } from '../../api-helpers/api-helpers';
 import axios from 'axios';
 import BaseURL from '../../config';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 function EditMovie({ movieId, onEditMovie }) {
   const [open, setOpen] = useState(false);
   const [movieData, setMovieData] = useState({
@@ -37,7 +38,7 @@ function EditMovie({ movieId, onEditMovie }) {
   
         setMovieDetails(response.data.movie);
   
-        // Set the initial file value if it exists
+        
         if (response.data.movie.postedUrl) {
           setMovieData((prevData) => ({
             ...prevData,
@@ -79,7 +80,7 @@ function EditMovie({ movieId, onEditMovie }) {
     if (name === 'file') {
       setMovieData((prevData) => ({
         ...prevData,
-        file: files[0], // Get the first file from the files array
+        file: files[0], 
       }));
     } else {
       setMovieData((prevData) => ({
@@ -129,10 +130,10 @@ function EditMovie({ movieId, onEditMovie }) {
 
     try {
       const response = await editMovie(movieId, movieData, movieData.file);
-      console.log('response:', response);
+ 
       console.log('Movie edited successfully:', response);
 
-      // Reset form fields and close the dialog
+      
       setMovieData({
         title: '',
         language: '',
@@ -147,17 +148,24 @@ function EditMovie({ movieId, onEditMovie }) {
       });
       handleClose();
 
-      // Call the onEditMovie callback
+      
       if (onEditMovie) {
         onEditMovie();
       }
     } catch (error) {
       console.error('Failed to edit movie:', error);
+      if (error.name === 'Invalid image type') {
+        toast.error('Invalid image type. Please upload a valid image (png, jpeg, jpg, webp).');
+      } else {
+        toast.error('Failed to edit movie. Please try again later.');
+      }
+      
     }
   };
 
   return (
     <div>
+       <ToastContainer />
       <Button variant="contained" onClick={handleClickOpen} style={{ border: 'none', color: 'white' }}>
         <b>EDIT</b>
       </Button>

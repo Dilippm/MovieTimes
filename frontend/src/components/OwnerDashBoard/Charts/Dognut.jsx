@@ -24,26 +24,19 @@ export default function DoughnutChartDemo() {
             const movieData = response.data.movieCollection;
 
       const documentStyle = getComputedStyle(document.documentElement); 
-      console.log("modvie",movieData);
+ 
       const labels = movieData.map((movie) => movie[0]);
       const dataValues = movieData.map((movie) => movie[1]);
-
+      const backgroundColors = generateColors(dataValues.length);
+      const hoverBackgroundColors = generateColors(dataValues.length);
       // Set the chart data
       const data = {
         labels: labels,
         datasets: [
           {
             data: dataValues,
-            backgroundColor: [
-              documentStyle.getPropertyValue('--blue-500'),
-              documentStyle.getPropertyValue('--yellow-500'),
-              documentStyle.getPropertyValue('--green-500')
-            ],
-            hoverBackgroundColor: [
-              documentStyle.getPropertyValue('--blue-400'),
-              documentStyle.getPropertyValue('--yellow-400'),
-              documentStyle.getPropertyValue('--green-400')
-            ]
+            backgroundColor: backgroundColors,
+              hoverBackgroundColor: hoverBackgroundColors,
           }
         ]
       };
@@ -61,7 +54,25 @@ export default function DoughnutChartDemo() {
 
   fetchData();
 }, []);
-      
+      // Generate dynamic colors
+  const generateColors = (count) => {
+    const colors = [];
+    for (let i = 0; i < count; i++) {
+      const color = getRandomColor();
+      colors.push(color);
+    }
+    return colors;
+  };
+
+  // Generate random color
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
     return (
         <div className="card flex justify-content-center">
             <Chart type="doughnut" data={chartData} options={chartOptions} style={{ height:"550px",marginLeft:"160px" }} />

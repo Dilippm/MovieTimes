@@ -60,7 +60,7 @@ const Bookings = () => {
     <div>
       <Header />
       <Typography variant="h4" marginTop={8} padding={2} textAlign="center" bgcolor="#900C3F" color="white">
-        <b>Booking</b>
+        <b> Booking</b>
       </Typography>
       <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" minHeight="70vh" >
       <Card style={{ width: '500px', height: '550px', border: '3px solid #000', boxShadow: '10px 20px 4px rgba(0, 0, 0, 0.5)',backgroundColor:"#ECD5BB" }}>

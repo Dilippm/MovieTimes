@@ -7,7 +7,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(to right, #DDD0C8, #323232);
+  background-image: url('./assets/Background.png');
   background-size: 200% 200%;
   animation: gradientAnimation 10s ease infinite;
 }

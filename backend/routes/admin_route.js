@@ -38,6 +38,7 @@ adminRoute.post(
 adminRoute.post("/moviestatus/:id", verifyAdminToken, updatemovieStatus)
 adminRoute.post("/owners/:id", verifyAdminToken, changeOwnerStatus)
 adminRoute.post('/banners/:id', verifyAdminToken,addBanner)
+
 /**GET Routes */
 adminRoute.get('/:id', getAdmin)
 adminRoute.get("/users/:id",verifyAdminToken, getUsers)

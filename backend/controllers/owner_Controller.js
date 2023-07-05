@@ -75,6 +75,9 @@ const ownerLogin = async (req,res,next)=>{
             .status(404)
             .json({error: "owner doesn't exist!!"});
     }
+    if(!owner.Isapproved){
+      return res.status(400).json({error: "Sorry Your have been not aproved by admin"})
+    }
     const isPasswordCorrect = bcrypt.compareSync(password, owner.password);
     if (!isPasswordCorrect) {
         return res
@@ -108,50 +111,40 @@ const getOwner = async (req, res, next) => {
     return res.status(500).json({ message: 'Something went wrong' });
   }
 };
-/** admin update */
+/** owner update */
 const updateOwner = async (req, res, next) => {
-    const { id } = req.params;
-  
-    const { name, email, phone } = JSON.parse(req.body.ownerdata);
-  
-    try {
-      // Find the user by id
-      let owner = await Owner.findById(id);
-  
-      if (!owner) {
-        return res.status(404).json({ message: "Admin not found" });
-      }
-  
-      // Update the user properties
-      owner.name = name;
-      owner.email = email;
-      owner.phone = phone;
-  
-      // Check if a file was uploaded
-      if (req.file) {
-        if (owner.image) {
-          const imageRelativePath = owner.image.split(`${BASE_URL}/`)[1];
-        
-          const previousImagePath = path.join(__dirname, '../public/images', imageRelativePath);
-          fs.unlinkSync(previousImagePath);
-        }
-        // Generate a URL for the uploaded image
-        const imageUrl = `${BASE_URL}/${req.file.filename}`;
-        // Store the image URL in the user's profile
-        owner.image = imageUrl;
-      }
-  
-      // Save the updated user
-      owner = await owner.save();
-  
-      return res.status(200).json({ message: "Updated successfully", owner });
-    } catch (error) {
-      
-     
-      
-      return res.status(500).json({ message: "Something went wrong" });
+  const { id } = req.params;
+
+  const { name, email, phone } = JSON.parse(req.body.ownerdata);
+
+  try {
+    const updatedOwner = await Owner.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          name,
+          email,
+          phone,
+          ...(req.file && { image: `${BASE_URL}/${req.file.filename}` }),
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedOwner) {
+      return res.status(404).json({ message: "Owner not found" });
     }
-  };
+    
+    if (!updatedOwner.Isapproved) {
+      return res.status(400).json({ error: "Sorry, you have not been approved by admin" });
+    }
+
+    return res.status(200).json({ message: "Updated successfully", owner: updatedOwner });
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 
   /**Get Movies */
   const getMovies=async(req,res,next)=>{
@@ -163,6 +156,7 @@ const updateOwner = async (req, res, next) => {
             .json({error: "Unexpected error occurred"});
 
     }
+   
     let movies = await Movie.find();
     if(!movies){
       return res.status(500).json({error:"no movies found"})
@@ -310,44 +304,52 @@ const getAllUsers = async (req, res, next) => {
   /**Update the thatre */
 
 
-const updateTheatre = async (req, res, next) => {
-  const ownerId = req.ownerId;
-  const theatreId = req.params.id;
-  const updatedDetails = req.body;
-
-  try {
-    const ownertheatre = await Owner.findOne({ _id: ownerId }).populate('theatres');
-
-    if (!ownertheatre) {
-      return res.status(404).json({ message: 'Invalid owner ID' });
+  const updateTheatre = async (req, res, next) => {
+    const ownerId = req.ownerId;
+    const theatreId = req.params.id;
+    const updatedDetails = req.body;
+  
+    try {
+      const ownertheatre = await Owner.findOne({ _id: ownerId }).populate('theatres');
+  
+      if (!ownertheatre) {
+        return res.status(404).json({ message: 'Invalid owner ID' });
+      }
+  
+      const theatre = ownertheatre.theatres.find((theatre) => theatre._id.toString() === theatreId);
+  
+      if (!theatre) {
+        return res.status(404).json({ message: 'Invalid theatre ID' });
+      }
+  
+      const updatedTheatre = await Theatre.findByIdAndUpdate(
+        theatreId,
+        {
+          $set: {
+            name: updatedDetails.name,
+            seats: updatedDetails.seats,
+            price: updatedDetails.price,
+            movies: updatedDetails.movies,
+            showTimings: updatedDetails.showTimings.map((timing) => ({
+              _id: isValidObjectId(timing._id) ? new mongoose.Types.ObjectId(timing._id) : new mongoose.Types.ObjectId(),
+              startTime: timing.startTime,
+              owner: ownerId,
+            })),
+          },
+        },
+        { new: true }
+      );
+  
+      if (!updatedTheatre) {
+        return res.status(500).json({ message: 'Failed to update theatre' });
+      }
+  
+      return res.status(200).json({ message: 'Theatre updated successfully', theatre: updatedTheatre });
+    } catch (error) {
+      return res.status(500).json({ message: 'Request failed' });
     }
-
-    const theatre = ownertheatre.theatres.find((theatre) => theatre._id.toString() === theatreId);
-
-    if (!theatre) {
-      return res.status(404).json({ message: 'Invalid theatre ID' });
-    }
-
-    theatre.name = updatedDetails.name;
-    theatre.seats = updatedDetails.seats;
-    theatre.price = updatedDetails.price;
-    theatre.movies = updatedDetails.movies;
-    theatre.showTimings = updatedDetails.showTimings.map((timing) => ({
-      _id: isValidObjectId(timing._id) ? new mongoose.Types.ObjectId(timing._id) : new mongoose.Types.ObjectId(),
-      startTime: timing.startTime,
-      owner: ownerId,
-    }));
-
-    
-    await theatre.save();
-
-    return res.status(200).json({ message: 'Theatre updated successfully', theatre });
-  } catch (error) {
-   
-    
-    return res.status(500).json({ message: 'Request failed' });
-  }
-};
+  };
+  
 
 const isValidObjectId = (id) => {
   if (mongoose.isValidObjectId(id)) {
@@ -524,6 +526,7 @@ const getAllBookings = async(req,res,next)=>{
       return res.status(500).json({ message: "Something went wrong" });
     }
   }
+
 module.exports ={
     ownerRegister,
     getUsers,
@@ -541,7 +544,8 @@ module.exports ={
     getTheaterChart,
     getMovieChart,
     getuserbookings,
-    getAllUsers
+    getAllUsers,
+
     
 
 

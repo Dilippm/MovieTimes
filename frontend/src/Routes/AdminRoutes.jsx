@@ -14,6 +14,7 @@ import OwnerDetails from '../pages/Admin/OwnerDetails';
 import Banner from '../pages/Admin/Banner';
 import Revenue from '../pages/Admin/Revenue';
 import Bookings from '../pages/Admin/Bookings';
+import AdminErrorPage from '../pages/ErrorPage/AdminErrorPage';
 
 const AdminRoutes = () => {
   return (
@@ -31,6 +32,7 @@ const AdminRoutes = () => {
          <Route path='/banner' element={<AdminProtectedRoutes><Banner/></AdminProtectedRoutes>}/>
          <Route path='/bookings' element={<AdminProtectedRoutes><Bookings/></AdminProtectedRoutes>}/>
          <Route path='/admin_report' element ={<AdminProtectedRoutes><Revenue/></AdminProtectedRoutes>}/>
+         <Route path="*" element={<AdminErrorPage/>} />
         </Routes>
     </>
   )

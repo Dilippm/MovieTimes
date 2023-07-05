@@ -17,7 +17,8 @@ const {
     getTheaterChart,
     getMovieChart,
     getuserbookings,
-    getAllUsers
+    getAllUsers,
+    getAllToChat
 } = require("../controllers/owner_Controller");
 const verifyOwnerToken = require("../Middlewares/OwnerMiddleware");
 

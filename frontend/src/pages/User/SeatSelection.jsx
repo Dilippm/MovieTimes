@@ -149,7 +149,7 @@ const SeatSelection = () => {
 
       <hr style={{ boxShadow: '10px 20px 0px rgba(10, 0, 20, 0.7)' }} />
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '50px' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '50px'}}>
         <div
           style={{
             width: '2px',
@@ -159,7 +159,7 @@ const SeatSelection = () => {
             boxShadow: '10px 20px 0px rgba(10, 0, 20, 0.7)'
           }}
         ></div>
-        <Box sx={{ width: '75%', maxWidth: '75vw', marginLeft: '50px' }}>
+        <Box sx={{ width: '75%', maxWidth: '75vw', marginLeft: '50px' ,justifyContent:"center" }}>
           <h1 style={{ marginLeft: '400px' }}>Screen This way</h1>
           <br />
           <br />

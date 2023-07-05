@@ -220,48 +220,36 @@ const userLogin = async (req, res, next) => {
         .status(200)
         .json({message: "Login successfull",user,token});
 }
+
 /** user update */
 const updateUser = async (req, res, next) => {
   const { id } = req.params;
   const { name, email, phone } = JSON.parse(req.body.userdata);
 
   try {
-    // Find the user by id
-    let user = await User.findById(id);
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          name,
+          email,
+          phone,
+          ...(req.file && { image: `${BASE_URL}/${req.file.filename}` }),
+        },
+      },
+      { new: true }
+    );
 
-    if (!user) {
+    if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Update the user properties
-    user.name = name;
-    user.email = email;
-    user.phone = phone;
-
-    // Check if a file was uploaded
-    if (req.file) {
-      if (user.image) {
-        const imageRelativePath = user.image.split(`${BASE_URL}/`)[1];
-      
-        const previousImagePath = path.join(__dirname, '../public/images', imageRelativePath);
-        fs.unlinkSync(previousImagePath);
-      }
-      // Generate a URL for the uploaded image
-      const imageUrl = `${BASE_URL}/${req.file.filename}`;
-      // Store the image URL in the user's profile
-      user.image = imageUrl;
-    }
-
-    // Save the updated user
-    user = await user.save();
-
-    return res.status(200).json({ message: "Updated successfully", user });
+    return res.status(200).json({ message: "Updated successfully", user: updatedUser });
   } catch (error) {
-   
-   
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
 
 /**get user booking using userid */
 const getBookingsofUser =async(req,res,next)=>{
@@ -616,14 +604,22 @@ const getTheatre = async (req, res) => {
       if (!theater) {
         return res.status(404).json({ message: 'Theater not found' });
       }
-  
+   
+    const booking = await Booking.findOne({ user: userId, theater: theater.name });
+    if (!booking) {
+      return res.status(400).json({ message: 'You must have a booking for this theater to submit a rating' });
+    }
+      const existingRating = theater.ratings.find((rating) => rating.user.toString() === userId);
+      if (existingRating) {
+        return res.status(400).json({ message: 'You have already submitted a rating for this theater' });
+      }
       const ratingData = {
         user: userId,
         comment: comment,
         rating: rating
       };
   
-      // Check if file is present and add image field
+     
       if (file) {
         const imageUrl = `${BASE_URL}/${file.filename}`;
         ratingData.image = imageUrl;
@@ -631,10 +627,14 @@ const getTheatre = async (req, res) => {
   
       theater.ratings.push(ratingData);
   
-      const totalRatings = theater.ratings.length;
-     
+      const totalRatings = theater.ratings.length * 5;
+      
+      
       const sumRatings = theater.ratings.reduce((sum, rating) => sum + rating.rating, 0);
-      theater.totalRating = sumRatings / totalRatings;
+     
+      
+      theater.totalRating = (sumRatings / totalRatings) * 5;
+      
   
       await theater.save();
   
@@ -652,6 +652,7 @@ module.exports = {
     userRegister,
     updateUser,
     userLogin,
+ 
     getBookingsofUser,
     userGooleLogin,
     getUser,
