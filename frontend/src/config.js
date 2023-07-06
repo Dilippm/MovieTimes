@@ -1,4 +1,4 @@
-const BaseURL = 'http://localhost:5000/';
+const BaseURL = 'https://movietimess.onrender.com/';
 
 export default BaseURL;
 
