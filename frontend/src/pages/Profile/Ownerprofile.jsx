@@ -20,7 +20,7 @@ const OwnerProfile = () => {
     const fetchUserProfile = async () => {
       try {
         const res = await OwnerProfiles();
-        console.log("resdataprofile:",res);
+     
         setState(res);
         setImageUrl(res.owner.image);
       } catch (error) {
@@ -38,6 +38,8 @@ const OwnerProfile = () => {
       const resData = await updateOwnerProfile(state.owner, imageFile);
       if (resData) {
         toast.success("Profile updated successfully");
+        localStorage.removeItem("ownername");
+        localStorage.setItem("ownername",resData.name)
         navigate('/owner/ownerprofile');
       }
     } catch (error) {

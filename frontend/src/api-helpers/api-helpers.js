@@ -291,10 +291,10 @@ export const updateOwnerProfile= async(data,image)=>{
       });
   
       const resData = res.data;
-  
+  console.log(resData);
       return resData;
     } catch (error) {
-      // Handle error
+     
       
       
       throw error;
