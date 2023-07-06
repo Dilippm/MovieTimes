@@ -61,6 +61,8 @@ const UserProfile = () => {
                
 
                 navigate('/profile');
+                localStorage.removeItem("name");
+                localStorage.setItem("name",resData.user.name)
             }
         } catch (error) {
             console.log(error);

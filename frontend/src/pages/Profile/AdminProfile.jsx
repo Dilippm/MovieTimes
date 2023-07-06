@@ -20,7 +20,7 @@ const AdminProfile = () => {
     const fetchUserProfile = async () => {
       try {
         const res = await AdminProfiles();
-        console.log("resdataprofile:",res);
+       
         setState(res);
         setImageUrl(res.admin.image);
       } catch (error) {
@@ -38,6 +38,8 @@ const AdminProfile = () => {
       const resData = await updateAdminProfile(state.admin, imageFile);
       if (resData) {
         toast.success("Profile updated successfully");
+        localStorage.removeItem("adminname");
+        localStorage.setItem("adminname",resData.name)
         navigate('/admin/adminprofile');
       }
     } catch (error) {
