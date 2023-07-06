@@ -17,7 +17,7 @@ app.use(express.json());
 // Enable CORS
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: 'https://musical-marigold-8bed5a.netlify.app/',
     credentials: true,
   })
 );
