@@ -8,7 +8,7 @@ const config = require('../config');
 const jwtSecret = config.JWT_SECRET;
 const fs = require('fs');
 const path = require('path');
-
+const cloudinary = require('../cloudinaryConfig');
 const BASE_URL =config.BASE_URL;
 /** Add New movie */
 const addMovie = async (req, res, next) => {
@@ -139,6 +139,50 @@ const getUpCommingMovies =async(req,res,next)=>{
   
 
   /**update movie by id */
+  // const updateMovieById = async (req, res, next) => {
+  //   const { title, language, description } = JSON.parse(req.body.admindata);
+  
+  //   const extractedToken = req.headers.authorization.split(" ")[1];
+  
+  //   if (!extractedToken || extractedToken.trim() === "") {
+  //     return res.status(404).json({ message: "Token not found" });
+  //   }
+  
+  //   let adminId;
+  //   try {
+  //     const decodedToken = jwt.verify(extractedToken, jwtSecret);
+  //     adminId = decodedToken.id;
+  //   } catch (error) {
+  //     return res.status(400).json({ message: `${error.message}` });
+  //   }
+  
+  //   // Update movie
+  //   const movieId = req.params.id;
+  
+  //   try {
+  //     const updateFields = {
+  //       title,
+  //       language,
+  //       description,
+  //     };
+  
+  //     if (req.file) {
+  //       const imageUrl = `${BASE_URL}/${req.file.filename}`;
+  //       updateFields.postedUrl = imageUrl;
+  //     }
+  
+  //     const updatedMovie = await Movie.updateOne({ _id: movieId }, { $set: updateFields });
+  
+  //     if (updatedMovie.nModified === 0) {
+  //       return res.status(404).json({ message: "Invalid movie ID" });
+  //     }
+  
+  //     return res.status(200).json({ message: "Movie updated successfully" });
+  //   } catch (error) {
+  //     return res.status(500).json({ message: "Request failed" });
+  //   }
+  // };
+  
   const updateMovieById = async (req, res, next) => {
     const { title, language, description } = JSON.parse(req.body.admindata);
   
@@ -167,8 +211,9 @@ const getUpCommingMovies =async(req,res,next)=>{
       };
   
       if (req.file) {
-        const imageUrl = `${BASE_URL}/${req.file.filename}`;
-        updateFields.postedUrl = imageUrl;
+        // Upload the image to Cloudinary
+        const cloudinaryResponse = await cloudinary.uploader.upload(req.file.path);
+        updateFields.postedUrl = cloudinaryResponse.secure_url;
       }
   
       const updatedMovie = await Movie.updateOne({ _id: movieId }, { $set: updateFields });
@@ -176,6 +221,9 @@ const getUpCommingMovies =async(req,res,next)=>{
       if (updatedMovie.nModified === 0) {
         return res.status(404).json({ message: "Invalid movie ID" });
       }
+  
+      // Cleanup the local file
+      fs.unlinkSync(req.file.path);
   
       return res.status(200).json({ message: "Movie updated successfully" });
     } catch (error) {
