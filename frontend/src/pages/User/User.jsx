@@ -35,7 +35,7 @@ const User = () => {
     e.preventDefault();
     try {
       const resData = await sendUserAuthRequest(inputs);
-      console.log("usedata:",resData);
+     
       if (resData) {
         dispatch(userActions.login());
         localStorage.setItem('userId', resData.user._id);

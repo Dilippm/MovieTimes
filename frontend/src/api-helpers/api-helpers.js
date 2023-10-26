@@ -150,7 +150,8 @@ export const UserProfiles = async()=>{
 }
 /**update user profile */
 export const updateUserProfile= async(data,image)=>{
-  
+  console.log("data",data);
+  console.log("image",image);
 try {
   const id= localStorage.getItem("userId");
   const formData = new FormData();
@@ -164,6 +165,7 @@ try {
     withCredentials: true,
   };
   const res = await axios.post(`${BaseURL}user/${id}`,formData,config);
+  console.log(res);
   const resData = res.data;
     return resData;
   

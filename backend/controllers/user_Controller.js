@@ -17,6 +17,7 @@ const sendEmail = require("../utils/sendEmail");
 const crypto =require("crypto")
 const fs = require('fs');
 const path = require('path');
+const cloudinary = require('../cloudinaryConfig');
 /* all user details*/
 const getUsers = async (req, res, next) => {
     let users;
@@ -227,22 +228,30 @@ const updateUser = async (req, res, next) => {
   const { name, email, phone } = JSON.parse(req.body.userdata);
 
   try {
+    const updateFields = {
+      name,
+      email,
+      phone,
+    };
+
+    if (req.file) {
+      // Upload the image to Cloudinary
+      const cloudinaryResponse = await cloudinary.uploader.upload(req.file.path);
+      updateFields.image = cloudinaryResponse.secure_url;
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      {
-        $set: {
-          name,
-          email,
-          phone,
-          ...(req.file && { image: `${BASE_URL}/${req.file.filename}` }),
-        },
-      },
+      { $set: updateFields },
       { new: true }
     );
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    // Cleanup the local file
+    fs.unlinkSync(req.file.path);
 
     return res.status(200).json({ message: "Updated successfully", user: updatedUser });
   } catch (error) {

@@ -98,7 +98,7 @@ const UserProfile = () => {
 
     return (
         <> < Header /> 
-        <Box width={"100%"} height={"100%"} margin={"auto"} marginTop={3}>
+        <Box width={"100%"} height={"100%"} margin={"auto"} marginTop={3}  >
             <Box
                 sx={{
                     display: 'flex',
@@ -133,12 +133,13 @@ const UserProfile = () => {
                                                 src={imageUrl}
                                                 alt="Profile"
                                                 style={{
-                                                    width: '50%',
-                                                    height: '50%',
+                                                    width: '200px',
+                                                    height: '200px',
                                                     marginTop: '10px',
                                                     margin: 'auto',
                                                     cursor: 'pointer',
-                                                    marginLeft: '90px'
+                                                    marginLeft: '90px',
+                                                   
                                                 }}/>
                                             <input
                                                 id="imageInput"
